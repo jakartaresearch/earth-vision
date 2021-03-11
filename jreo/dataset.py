@@ -25,9 +25,6 @@ class Dataset(ABC):
         
         Returns:
             None
-
-        TODO:
-            - Download request to the designated output directory
         """
 
         assert n > 0
@@ -64,16 +61,29 @@ class Dataset(ABC):
 
         download_urls = [url + file_name + ".tar.gz" for idx, file_name in enumerate(download_list)]
 
+        # Check if directory exists, if not create one
+        if not os.path.exists(f"{out_dir}/{self.dataset_id}"):
+            os.mkdir(f"{out_dir}/{self.dataset_id}")
+
         # Downloading in streams and chunks
         for idx, file_url in enumerate(download_urls):
             print(f"Downloading file {idx + 1} out of {len(download_urls)}...")
-            local_filename = f"{out_dir}/{file_url.split('/')[-1]}"
+            root_output_dir = f"{out_dir}/{self.dataset_id}/"
+            local_filename = f"{root_output_dir}/{file_url.split('/')[-1]}"
+            
             with requests.get(file_url, stream=True) as r:
                 with open(local_filename, 'wb') as f:
                     shutil.copyfileobj(r.raw, f)
-        
-        return download_urls
 
+            # Unzip tar files
+            print("Unzipping...")
+            unzipped_dir = f"{local_filename}".replace(".tar.gz", "")
+            os.mkdir(unzipped_dir)
+            shutil.unpack_archive(local_filename, f"{unzipped_dir}")
+
+            # Remove the tar file
+            print(f"Deleting {file_url.split('/')[-1]}...")
+            os.remove(local_filename)
 
 
 class L8Biome(Dataset):
