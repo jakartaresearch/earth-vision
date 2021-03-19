@@ -4,6 +4,18 @@ Jakarta Research Earth Observatory - Library
 ## Objective
 To ease dataset preparation for AI or Deep Learning analytics in solving __Earth Observation__ (EO) tasks.
 
+## Examples
+### 1. Dataset Download
+```
+from jreo import dataset
+
+l8sparcs = dataset.L8Sparcs()
+
+# Downloading (1 tifs downloaded at root directory dataset)
+l8sparcs.download(n=1, out_dir='./dataset')
+```
+
+
 ## Features In Progress
 1. Wrapper to download open sourced EO dataset for ML tasks:
 - Landsat 8 Biome
