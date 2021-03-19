@@ -9,10 +9,10 @@ To ease dataset preparation for AI or Deep Learning analytics in solving __Earth
 ```
 from jreo import dataset
 
-l8biome = dataset.L8Biome()
+l8sparcs = dataset.L8Sparcs()
 
-# Downloading (10 tifs downloaded at root directory dataset)
-l8biome.download(n=10, out_dir='./dataset')
+# Downloading (1 tifs downloaded at root directory dataset)
+l8sparcs.download(n=1, out_dir='./dataset')
 ```
 
 
