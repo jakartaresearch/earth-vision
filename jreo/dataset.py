@@ -1,7 +1,6 @@
 import os
 import requests
 import yaml
-import requests
 import shutil
 import random
 from abc import ABC, abstractmethod
@@ -13,25 +12,34 @@ class Dataset(ABC):
     def __init__(self, dataset_id, **kwargs):
         self.dataset_id = dataset_id
 
-    def download(self, out_dir, land_category=[], cloud_status=[],  shadows=False, n=1):
+    def download(self, out_dir, land_category=None, cloud_status=None,  shadows=False, n=1):
         """Function to download specific dataset.
 
         Args:
             n (int): The number of scenes to download (default: 1).
             out_dir (str): The output directory to store the downloaded dataset.
-            land_category (list[str]): The land types, choose within [barren, forest, grass, shrubland, snow, urban, water, wetlands] (default: []).
-            cloud_status (list[str]): The cloud status of the scene, choose within [random, clear, cloudy] (default: []).
+            land_category (list[str]): The land types, choose within [barren, forest, grass, shrubland, snow, urban, water, wetlands] (default: None).
+            cloud_status (list[str]): The cloud status of the scene, choose within [random, clear, cloudy] (default: None).
             shadows (boolean): The presence of shadows in the scene (default: False)
         
         Returns:
             None
         """
 
-        if self.dataset_id == "L8Biome": assert n > 0 
-        if self.dataset_id == "L8Sparcs": assert n == 1 
-        assert os.path.exists(out_dir)
+        # Assertions and Type-checkings
+        if self.dataset_id == "L8Biome": assert n > 0, "The number of files to be downloaded should be greater than 0"
+        if self.dataset_id == "L8Sparcs": assert n == 1, "The number of file to be downloaded should be exactly 1"
+
+        if land_category is None: land_category = []
+        else: assert isinstance(land_category, list), "Make sure the input is in list"
+        if cloud_status is None: cloud_status = []
+        else: assert isinstance(cloud_status, list), "Make sure the input is in list"
+
+        if not os.path.exists(f"{out_dir}"):
+            os.mkdir(f"{out_dir}")
         
-        with open(f"./constants/{self.dataset_id}/source.yaml") as stream:
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        with open(f"{current_path}/constants/{self.dataset_id}/source.yaml") as stream:
             try:
                 source_metadata = yaml.safe_load(stream)
                 url = source_metadata["url"]
