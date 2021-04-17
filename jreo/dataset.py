@@ -29,6 +29,7 @@ class Dataset(ABC):
         # Assertions and Type-checkings
         if self.dataset_id == "L8Biome": assert n > 0, "The number of files to be downloaded should be greater than 0"
         if self.dataset_id == "L8Sparcs": assert n == 1, "The number of file to be downloaded should be exactly 1"
+        if self.dataset_id == "L7Irish": assert n > 0, "The number of file to be downloaded should be greater than 0"
 
         if land_category is None: land_category = []
         else: assert isinstance(land_category, list), "Make sure the input is in list"
@@ -45,7 +46,7 @@ class Dataset(ABC):
                 url = source_metadata["url"]
                 del source_metadata["url"]
 
-                if self.dataset_id == "L8Biome":
+                if self.dataset_id == "L8Biome" or self.dataset_id == "L7Irish":
                     download_list = list(source_metadata.keys())
 
                     for scene, meta in source_metadata.items():
@@ -61,7 +62,7 @@ class Dataset(ABC):
             except yaml.YAMLError as exc:
                 return exc
 
-        if self.dataset_id == "L8Biome":
+        if self.dataset_id == "L8Biome" or self.dataset_id == "L7Irish":
             while len(download_list) < n:
                 download_list.append(random.choice(list(source_metadata.keys())))
                 download_list = list(set(download_list))
@@ -70,7 +71,7 @@ class Dataset(ABC):
                 random.shuffle(download_list)
                 download_list = download_list[0:n]
 
-        if self.dataset_id == "L8Biome":
+        if self.dataset_id == "L8Biome" or self.dataset_id == "L7Irish":
             download_urls = [url + file_name + ".tar.gz" for idx, file_name in enumerate(download_list)]
         elif self.dataset_id == "L8Sparcs":
             download_urls = [url]
@@ -91,7 +92,7 @@ class Dataset(ABC):
 
             # Unzip tar files
             print("Unzipping...")
-            if self.dataset_id == "L8Biome":
+            if self.dataset_id == "L8Biome" or self.dataset_id == "L7Irish":
                 unzipped_dir = f"{local_filename}".replace(".tar.gz", "")
             elif self.dataset_id == "L8Sparcs":
                 unzipped_dir = f"{local_filename}".replace(".zip", "")
@@ -112,3 +113,7 @@ class L8Biome(Dataset):
 class L8Sparcs(Dataset):
     def __init__(self, **kwargs):
         super().__init__(dataset_id="L8Sparcs")
+
+class L7Irish(Dataset):
+    def __init__(self, **kwargs):
+        super().__init__(dataset_id="L7Irish")
