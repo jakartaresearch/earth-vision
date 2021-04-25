@@ -2,7 +2,7 @@ import cv2
 import os
 import numpy as np
 
-from config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
+from .config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
 
 size   = 300
 stride = 300
