@@ -47,15 +47,17 @@ We use GitHub issues to track public bugs. Report a bug by opening a new issue.
 
 ### Code Formatting and Typing
 
-TBD
+Jakartavision uses pycodestyle for formatting, with all the defaults.
+
+- 4 spaces for indentation or tabs
 
 ### Unit Test
 
-TBD
+We are currently formulating the unit test. Kindly open an issue for clear discussion.
 
 ### Documentation
 
-Jakartavision uses pydoctyle for formatting docstrings. All the defaults and on the brach `gh-pages`.
+Jakartavision uses `pydoctyle` for formatting docstrings. All the defaults and on the brach `gh-pages`.
 
 Please follow the instruction to build and deploy the documentation locally.
 
@@ -64,10 +66,6 @@ pdoc --html jakartavision docs
 ```
 
 Then open `docs/index.html` in your browser.
-
-### Style
-
-- 4 spaces for indentation or tabs
 
 ## License
 
