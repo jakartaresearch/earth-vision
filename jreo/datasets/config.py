@@ -1,30 +1,31 @@
+"""Configuration file for labels, labelmap, data ids."""
 LABELS = ['BUILDING', 'CLUTTER', 'VEGETATION', 'WATER', 'GROUND', 'CAR']
 
 # Class to color (BGR)
 LABELMAP = {
-    0 : (255,   0, 255),
-    1 : (75,   25, 230),
-    2 : (180,  30, 145),
-    3 : (75,  180,  60),
-    4 : (48,  130, 245),
-    5 : (255, 255, 255),
-    6 : (200, 130,   0),
+    0: (255,   0, 255),
+    1: (75,   25, 230),
+    2: (180,  30, 145),
+    3: (75,  180,  60),
+    4: (48,  130, 245),
+    5: (255, 255, 255),
+    6: (200, 130,   0),
 }
 
 # Color (BGR) to class
 INV_LABELMAP = {
-    (255,   0, 255) : 0,
-    (75,   25, 230) : 1,
-    (180,  30, 145) : 2,
-    (75,  180,  60) : 3,
-    (48,  130, 245) : 4,
-    (255, 255, 255) : 5,
-    (200, 130,   0) : 6,
+    (255,   0, 255): 0,
+    (75,   25, 230): 1,
+    (180,  30, 145): 2,
+    (75,  180,  60): 3,
+    (48,  130, 245): 4,
+    (255, 255, 255): 5,
+    (200, 130,   0): 6,
 }
 
-LABELMAP_RGB = { k: (v[2], v[1], v[0]) for k, v in LABELMAP.items() }
+LABELMAP_RGB = {k: (v[2], v[1], v[0]) for k, v in LABELMAP.items()}
 
-INV_LABELMAP_RGB = { v: k for k, v in LABELMAP_RGB.items() }
+INV_LABELMAP_RGB = {v: k for k, v in LABELMAP_RGB.items()}
 
 train_ids = [
     "1d4fbe33f3_F1BE1D4184INSPIRE",
