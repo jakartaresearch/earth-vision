@@ -20,7 +20,7 @@ class DroneDeploy():
         download (bool, optional): If true, downloads the dataset from the internet and
             puts it in root directory. If dataset is already downloaded, it is not
             downloaded again.
-        tensor_data (bool, optional): If true, raw dataset will converted to tensor data.
+        data_mode (int): 0 for train data, 1 for validation data, and 2 for testing data
     """
 
     resources = {
@@ -28,10 +28,13 @@ class DroneDeploy():
         'dataset-medium': 'https://dl.dropboxusercontent.com/s/r0dj9mhyv4bgbme/dataset-medium.tar.gz?dl=0'
     }
 
-    def __init__(self, root: str, dataset_type='dataset-sample', download: bool = False, tensor_data: bool = False):
+    def __init__(self, root: str, dataset_type='dataset-sample', download: bool = False, data_mode: int = 0):
         self.root = root
-        self.dataset = dataset_type
-        self.filename = f'{self.dataset}.tar.gz'
+        self.dataset_type = dataset_type
+        self.filename = f'{dataset_type}.tar.gz'
+        self.data_mode = data_mode
+        self.label_path = f'{dataset_type}/label-chips'
+        self.image_path = f'{dataset_type}/image-chips'
 
         if download and self._check_exists():
             print(f'zipfile "{self.filename}" already exists.')
@@ -39,35 +42,34 @@ class DroneDeploy():
         if download and not self._check_exists():
             self.download()
 
-        if tensor_data:
-            self.train_dataset, self.valid_dataset = self.load_dataset()
+        self.load_dataset()
 
     def download(self):
         """Download a dataset, extract it and create the tiles."""
-        print(f'Downloading "{self.dataset}"')
+        print(f'Downloading "{self.dataset_type}"')
         self.root = os.path.expanduser(self.root)
         fpath = os.path.join(self.root, self.filename)
-        _urlretrieve(self.resources[self.dataset], fpath)
+        _urlretrieve(self.resources[self.dataset_type], fpath)
 
-        if not os.path.exists(self.dataset):
+        if not os.path.exists(self.dataset_type):
             print(f'Extracting "{self.filename}"')
             os.system(f'tar -xvf {self.filename}')
         else:
-            print(f'Folder "{self.dataset}" already exists.')
+            print(f'Folder "{self.dataset_type}" already exists.')
 
-        image_chips = f'{self.dataset}/image-chips'
-        label_chips = f'{self.dataset}/label-chips'
+        image_chips = f'{self.dataset_type}/image-chips'
+        label_chips = f'{self.dataset_type}/label-chips'
 
         if not os.path.exists(image_chips) and not os.path.exists(label_chips):
             print("Creating chips")
-            run(self.dataset)
+            run(self.dataset_type)
         else:
             print(
                 f'chip folders "{image_chips}" and "{label_chips}" already exist.')
 
     def _check_exists(self) -> bool:
-        if self.dataset not in self.resources.keys():
-            print(f"Unknown dataset {self.dataset}")
+        if self.dataset_type not in self.resources.keys():
+            print(f"Unknown dataset {self.dataset_type}")
             print(f"Available dataset : {self.resources.keys()}")
             sys.exit(0)
 
@@ -77,22 +79,13 @@ class DroneDeploy():
             return False
 
     def load_dataset(self):
-        train_files = [
-            f'{self.dataset}/image-chips/{fname}' for fname in load_lines(f'{self.dataset}/train.txt')]
-        valid_files = [
-            f'{self.dataset}/image-chips/{fname}' for fname in load_lines(f'{self.dataset}/valid.txt')]
-
-        train_dataset = DroneDataset(self.dataset, train_files)
-        valid_dataset = DroneDataset(self.dataset, valid_files)
-        return train_dataset, valid_dataset
-
-
-class DroneDataset(Dataset):
-    def __init__(self, dataset, image_files):
-        self.label_path = f'{dataset}/label-chips'
-        self.image_path = f'{dataset}/image-chips'
-        self.image_files = image_files
-        random.shuffle(self.image_files)
+        if self.data_mode == 0:
+            files = [
+                f'{self.dataset_type}/image-chips/{fname}' for fname in load_lines(f'{self.dataset_type}/train.txt')]
+        elif self.data_mode == 1:
+            files = [
+                f'{self.dataset_type}/image-chips/{fname}' for fname in load_lines(f'{self.dataset_type}/valid.txt')]
+        self.image_files = files
 
     def __len__(self):
         return len(self.image_files)
