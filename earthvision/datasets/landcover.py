@@ -1,0 +1,2 @@
+class LandCover():
+    raise NotImplementedError

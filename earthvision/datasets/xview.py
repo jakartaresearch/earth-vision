@@ -1,0 +1,2 @@
+class XView():
+    raise NotImplementedError

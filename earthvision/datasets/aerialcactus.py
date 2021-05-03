@@ -1,0 +1,2 @@
+class AerialCactus():
+    raise NotImplementedError
