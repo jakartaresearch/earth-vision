@@ -5,3 +5,4 @@ __pycache__
 *.tif
 *.png
 settings.json
+dataset
