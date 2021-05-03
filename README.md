@@ -11,7 +11,7 @@ To ease researcher to run ML pipelines for AI or Deep Learning Applications in s
 ### 1. Dataset Download
 
 ```
-from jreo import dataset
+from earthvision import dataset
 
 l8sparcs = dataset.L8Sparcs()
 
