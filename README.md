@@ -1,5 +1,5 @@
-# JREO (Jakarta Research Earth Observation)
-Jakarta Research Earth Observatory - Library
+# Jakarta Vision
+Jakarta AI Research (JAIR) Earth Observatory Library
 
 ## Objective
 To ease dataset preparation for AI or Deep Learning analytics in solving __Earth Observation__ (EO) tasks.
@@ -16,15 +16,21 @@ l8sparcs.download(n=1, out_dir='./dataset')
 ```
 
 
-## Features In Progress
+## Features done
 1. Wrapper to download open sourced EO dataset for ML tasks:
 - Landsat 8 Biome
 - Landsat 8 SPARCS
 - Landsat 7
-2. Data pre-processors:
+
+## Features In Progress
+
+1. Data pre-processors:
 - Resizers
 - Reflectance normalizers
 - Dataset loader integration with popular ML frameworks
+
+2. More benchmark open-sourced datasets
+3. State-of-the-art EO models
 
 ## Features Plans
 Feel free to suggest features you would like to see by __opening an issue__.
