@@ -1,4 +1,7 @@
 from earthvision import dataset
 
-l8biome = dataset.L8Biome()
-l8biome.download(n=1, land_category= ['barren', 'forest'], out_dir='./dataset')
+try:
+    l8biome = dataset.L8Biome()
+    print("Your development environment has been setup properly")
+except:
+    print("Installation failed, please open an issue to let us know!")
