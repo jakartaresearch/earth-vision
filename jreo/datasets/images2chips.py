@@ -82,31 +82,13 @@ def get_split(scene):
 
 
 def run(prefix):
-    open(prefix + '/train.txt', mode='w').close()
-    open(prefix + '/valid.txt', mode='w').close()
-    open(prefix + '/test.txt', mode='w').close()
-
-    if not os.path.exists(os.path.join(prefix, 'image-chips')):
-        os.mkdir(os.path.join(prefix, 'image-chips'))
-
-    if not os.path.exists(os.path.join(prefix, 'label-chips')):
-        os.mkdir(os.path.join(prefix, 'label-chips'))
-
     lines = [line for line in open(f'{prefix}/index.csv')]
-    num_images = len(lines) - 1
-    print(
-        f"converting {num_images} images to chips - this may take a few minutes but only needs to be done once.")
+    print("converting images to chips - this may take a few minutes but only needs to be done once.")
 
     for lineno, line in enumerate(lines):
-
         line = line.strip().split(' ')
         scene = line[1]
         dataset = get_split(scene)
-
-        if dataset == 'test.txt':
-            print(
-                f"not converting test image {scene} to chips, it will be used for inference.")
-            continue
 
         orthofile = os.path.join(prefix, 'images',     scene + '-ortho.tif')
         elevafile = os.path.join(prefix, 'elevations', scene + '-elev.tif')

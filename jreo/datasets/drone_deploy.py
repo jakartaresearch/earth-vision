@@ -60,12 +60,12 @@ class DroneDeploy():
         image_chips = f'{self.dataset_type}/image-chips'
         label_chips = f'{self.dataset_type}/label-chips'
 
-        if not os.path.exists(image_chips) and not os.path.exists(label_chips):
-            print("Creating chips")
-            run(self.dataset_type)
-        else:
-            print(
-                f'chip folders "{image_chips}" and "{label_chips}" already exist.')
+        if not os.path.exists(image_chips):
+            os.mkdir(image_chips)
+        if not os.path.exists(label_chips):
+            os.mkdir(label_chips)
+
+        run(self.dataset_type)
 
     def _check_exists(self) -> bool:
         if self.dataset_type not in self.resources.keys():
@@ -80,11 +80,14 @@ class DroneDeploy():
 
     def load_dataset(self):
         if self.data_mode == 0:
-            files = [
-                f'{self.dataset_type}/image-chips/{fname}' for fname in load_lines(f'{self.dataset_type}/train.txt')]
+            list_chip = 'train.txt'
         elif self.data_mode == 1:
-            files = [
-                f'{self.dataset_type}/image-chips/{fname}' for fname in load_lines(f'{self.dataset_type}/valid.txt')]
+            list_chip = 'valid.txt'
+        elif self.data_mode == 2:
+            list_chip = 'test.txt'
+
+        files = [f'{self.dataset_type}/image-chips/{fname}'
+                 for fname in load_lines(os.path.join(self.dataset_type, list_chip))]
         self.image_files = files
 
     def __len__(self):
