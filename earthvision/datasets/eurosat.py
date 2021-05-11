@@ -1,0 +1,2 @@
+class EuroSat():
+    raise NotImplementedError

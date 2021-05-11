@@ -1,4 +1,4 @@
-from jreo import dataset
+from earthvision import dataset
 
 try:
     l8biome = dataset.L8Biome()

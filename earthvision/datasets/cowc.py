@@ -1,0 +1,2 @@
+class COWC():
+    raise NotImplementedError
