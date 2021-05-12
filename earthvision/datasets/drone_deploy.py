@@ -3,9 +3,10 @@ import sys
 import os
 import numpy as np
 import random
+import cv2
 import torch
-from .images2chips import run
-from .utils import _urlretrieve, to_categorical
+from .drone_deploy_config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
+from .utils import _urlretrieve
 
 from PIL import Image
 from torch.utils.data import Dataset
@@ -119,3 +120,118 @@ def load_img(fname):
 
 def mask_to_classes(mask):
     return to_categorical(mask[:, :, 0], 6)
+
+
+def to_categorical(y, num_classes=None, dtype='float32'):
+    """Converts a class vector (integers) to binary class matrix.
+    E.g. for use with categorical_crossentropy.
+    Args:
+        y: class vector to be converted into a matrix
+            (integers from 0 to num_classes).
+        num_classes: total number of classes. If `None`, this would be inferred
+          as the (largest number in `y`) + 1.
+        dtype: The data type expected by the input. Default: `'float32'`.
+    Returns:
+        A binary matrix representation of the input. The classes axis is placed
+        last.
+    Raises:
+        Value Error: If input contains string value
+    """
+    y = np.array(y, dtype='int')
+    input_shape = y.shape
+    if input_shape and input_shape[-1] == 1 and len(input_shape) > 1:
+        input_shape = tuple(input_shape[:-1])
+    y = y.ravel()
+    if not num_classes:
+        num_classes = np.max(y) + 1
+    n = y.shape[0]
+    categorical = np.zeros((n, num_classes), dtype=dtype)
+    categorical[np.arange(n), y] = 1
+    output_shape = input_shape + (num_classes,)
+    categorical = np.reshape(categorical, output_shape)
+    return categorical
+
+
+def get_split(scene):
+    if scene in train_ids:
+        return "train.txt"
+    if scene in val_ids:
+        return 'valid.txt'
+    if scene in test_ids:
+        return 'test.txt'
+
+
+def color2class(orthochip, img):
+    ret = np.zeros((img.shape[0], img.shape[1]), dtype='uint8')
+    ret = np.dstack([ret, ret, ret])
+    colors = np.unique(img.reshape(-1, img.shape[2]), axis=0)
+
+    # Skip any chips that would contain magenta (IGNORE) pixels
+    seen_colors = set([tuple(color) for color in colors])
+    IGNORE_COLOR = LABELMAP[0]
+    if IGNORE_COLOR in seen_colors:
+        return None, None
+
+    for color in colors:
+        locs = np.where((img[:, :, 0] == color[0]) & (
+            img[:, :, 1] == color[1]) & (img[:, :, 2] == color[2]))
+        ret[locs[0], locs[1], :] = INV_LABELMAP[tuple(color)] - 1
+
+    return orthochip, ret
+
+
+def image2tile(prefix, scene, dataset, orthofile, elevafile, labelfile, windowx,
+               windowy, stridex, stridey):
+
+    ortho = cv2.imread(orthofile)
+    label = cv2.imread(labelfile)
+
+    assert(ortho.shape[0] == label.shape[0])
+    assert(ortho.shape[1] == label.shape[1])
+
+    shape = ortho.shape
+    xsize = shape[1]
+    ysize = shape[0]
+    print(
+        f"converting {dataset} image {orthofile} {xsize}x{ysize} to chips ...")
+
+    counter = 0
+    for xi in range(0, shape[1] - windowx, stridex):
+        for yi in range(0, shape[0] - windowy, stridey):
+            orthochip = ortho[yi:yi+windowy, xi:xi+windowx, :]
+            labelchip = label[yi:yi+windowy, xi:xi+windowx, :]
+
+            orthochip, classchip = color2class(orthochip, labelchip)
+
+            if classchip is None:
+                continue
+
+            orthochip_filename = os.path.join(prefix, 'image-chips',
+                                              scene + '-' + str(counter).zfill(6) + '.png')
+            labelchip_filename = os.path.join(prefix, 'label-chips',
+                                              scene + '-' + str(counter).zfill(6) + '.png')
+
+            with open(f"{prefix}/{dataset}", mode='a') as fd:
+                fd.write(scene + '-' + str(counter).zfill(6) + '.png\n')
+
+            cv2.imwrite(orthochip_filename, orthochip)
+            cv2.imwrite(labelchip_filename, classchip)
+            counter += 1
+
+
+def run(prefix, size=300, stride=300):
+    lines = [line for line in open(f'{prefix}/index.csv')]
+    print("converting images to chips - this may take a few minutes but only needs to be done once.")
+
+    for lineno, line in enumerate(lines):
+        line = line.strip().split(' ')
+        scene = line[1]
+        dataset = get_split(scene)
+
+        orthofile = os.path.join(prefix, 'images',     scene + '-ortho.tif')
+        elevafile = os.path.join(prefix, 'elevations', scene + '-elev.tif')
+        labelfile = os.path.join(prefix, 'labels',     scene + '-label.png')
+
+        if os.path.exists(orthofile) and os.path.exists(labelfile):
+            image2tile(prefix, scene, dataset, orthofile, elevafile, labelfile,
+                       windowx=size, windowy=size, stridex=stride, stridey=stride)

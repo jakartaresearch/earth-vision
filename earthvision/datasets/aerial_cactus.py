@@ -4,8 +4,7 @@ import os
 import numpy as np
 import random
 import torch
-from .images2chips import run
-from .utils import _urlretrieve, to_categorical
+from .utils import _urlretrieve
 
 from PIL import Image
 from torch.utils.data import Dataset
@@ -29,14 +28,13 @@ class AerialCactus():
 
         self.load_dataset()
 
-
     def _check_exists(self) -> bool:
         if os.path.exists(self.training_path) \
-            and os.path.exists(self.validation_path) \
-            and os.path.exists(os.path.join(self.training_path, 'cactus')) \
-            and os.path.exists(os.path.join(self.training_path, 'no_cactus')) \
-            and os.path.exists(os.path.join(self.validation_path, 'cactus')) \
-            and os.path.exists(os.path.join(self.validation_path, 'no_cactus')):
+                and os.path.exists(self.validation_path) \
+                and os.path.exists(os.path.join(self.training_path, 'cactus')) \
+                and os.path.exists(os.path.join(self.training_path, 'no_cactus')) \
+                and os.path.exists(os.path.join(self.validation_path, 'cactus')) \
+                and os.path.exists(os.path.join(self.validation_path, 'no_cactus')):
             return True
         else:
             return False
