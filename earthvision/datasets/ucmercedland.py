@@ -1,0 +1,2 @@
+class UCMercedLand():
+    raise NotImplementedError

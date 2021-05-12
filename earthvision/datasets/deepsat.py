@@ -1,0 +1,2 @@
+class DeepSat():
+    raise NotImplementedError

@@ -1,13 +1,17 @@
-# JREO (Jakarta Research Earth Observation)
-Jakarta Research Earth Observatory - Library
+# earthvision
+
+Earth Vision is a python library for solving computer vision tasks specifically for satellite imagery.
 
 ## Objective
-To ease dataset preparation for AI or Deep Learning analytics in solving __Earth Observation__ (EO) tasks.
+
+To ease researcher to run ML pipelines for AI or Deep Learning Applications in solving **Earth Observation** (EO) tasks.
 
 ## Examples
+
 ### 1. Dataset Download
+
 ```
-from jreo import dataset
+from earthvision import dataset
 
 l8sparcs = dataset.L8Sparcs()
 
@@ -15,19 +19,10 @@ l8sparcs = dataset.L8Sparcs()
 l8sparcs.download(n=1, out_dir='./dataset')
 ```
 
+## Features
 
-## Features In Progress
 1. Wrapper to download open sourced EO dataset for ML tasks:
+
 - Landsat 8 Biome
 - Landsat 8 SPARCS
 - Landsat 7
-2. Data pre-processors:
-- Resizers
-- Reflectance normalizers
-- Dataset loader integration with popular ML frameworks
-
-## Features Plans
-Feel free to suggest features you would like to see by __opening an issue__.
-1. GPU memory optimization
-2. High-level pipeline to integrate varied data sources
-

@@ -1,0 +1,2 @@
+class NEONTreeCrowns():
+    raise NotImplementedError
