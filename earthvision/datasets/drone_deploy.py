@@ -5,7 +5,7 @@ import numpy as np
 import random
 import cv2
 import torch
-from .drone_deploy_config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
+from ..constants.DroneDeploy.config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
 from .utils import _urlretrieve
 
 from PIL import Image
