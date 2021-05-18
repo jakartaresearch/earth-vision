@@ -1,8 +1,6 @@
-"""Aerial Cactus Dataset"""
-
-
 class AerialCactus():
-    """Aerial Cactus <https://www.kaggle.com/c/aerial-cactus-identification> Dataset. 
+    """Aerial Cactus Dataset.
+    <https://www.kaggle.com/c/aerial-cactus-identification>
     """
 
     def __init__(self):
@@ -15,4 +13,6 @@ class AerialCactus():
         raise NotImplementedError
 
     def download(self):
+        """download and extract file.
+        """
         raise NotImplementedError
