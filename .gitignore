@@ -2,3 +2,11 @@ data
 .jreo
 ./jreo/data
 __pycache__
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+*.tif
+*.png
+*.csv
+*.txt
+settings.json
+dataset
