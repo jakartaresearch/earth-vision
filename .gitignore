@@ -1,6 +1,4 @@
 data
-.jreo
-./jreo/data
 __pycache__
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
@@ -8,5 +6,11 @@ __pycache__
 *.png
 *.csv
 *.txt
+*.zip
+*.rar
+*.pt
+*.pth
+*.ipynb
+.vscode
 settings.json
 dataset
