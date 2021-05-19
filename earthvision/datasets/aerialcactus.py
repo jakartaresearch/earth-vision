@@ -5,11 +5,12 @@ import posixpath
 import numpy as np
 import pandas as pd
 import torch
+from torch.utils.data import Dataset
 from torchvision.transforms import Resize
 from .utils import _urlretrieve, _load_img
 
 
-class AerialCactus():
+class AerialCactus(Dataset):
     """Aerial Cactus Dataset.
 
     <https://www.kaggle.com/c/aerial-cactus-identification>
@@ -47,9 +48,13 @@ class AerialCactus():
             label = self.target_transform(label)
         image = np.array(image)
         image = torch.from_numpy(image)
-        sample = {"image": image, "label": label}
+        sample = (image, label)
 
         return sample
+
+    def __iter__(self):
+        for index in range(self.__len__()):
+            yield self.__getitem__(index)
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
@@ -58,7 +63,7 @@ class AerialCactus():
         label = []
         for cat, enc in classes.items():
             cat_path = os.path.join(
-                self.root, 'archive', self.data_mode, self.data_mode, cat)
+                self.root, 'cactus-aerial-photos', self.data_mode, self.data_mode, cat)
             cat_image = [os.path.join(cat_path, path)
                          for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
