@@ -1,9 +1,6 @@
-data
-__pycache__
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
 *.tif
 *.png
+*.jpg
 *.csv
 *.txt
 *.zip
@@ -11,6 +8,10 @@ __pycache__
 *.pt
 *.pth
 *.ipynb
+*/.ipynb_checkpoints/*
+data
+dataset
+__pycache__
+.ipynb_checkpoints
 .vscode
 settings.json
-dataset
