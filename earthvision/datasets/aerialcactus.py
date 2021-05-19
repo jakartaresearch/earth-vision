@@ -1,13 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
-from PIL import Image
+import torch
 from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
 from torchvision.transforms import Resize
 import torch
 
-class AerialCactus():
+class AerialCactus(Dataset):
     """Aerial Cactus Dataset.
 
     <https://www.kaggle.com/c/aerial-cactus-identification>
@@ -33,16 +32,23 @@ class AerialCactus():
             label = self.target_transform(label)
         image = np.array(image)
         image = torch.from_numpy(image)
-        sample = {"image": image, "label": label}
+        sample = (image, label)
+
         return sample
-    
+
+    def __iter__(self):
+        for index in range(self.__len__()):
+            yield self.__getitem__(index)
+
     def get_path_and_label(self):
         classes = {'cactus':1, 'no_cactus':0}
         image_path = []
         label = []
         for cat, enc in classes.items():
-            cat_path = os.path.join(self.root, 'archive', self.data_mode, self.data_mode, cat)
-            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
+            cat_path = os.path.join(
+                self.root, 'cactus-aerial-photos', self.data_mode, self.data_mode, cat)
+            cat_image = [os.path.join(cat_path, path)
+                         for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
             image_path += cat_image
             label += cat_label
