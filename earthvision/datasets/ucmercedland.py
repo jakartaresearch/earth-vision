@@ -10,7 +10,7 @@ from torch.utils.data import Dataset
 
 class UCMercedLand():
     """UC Merced Land Use Dataset.
-    <http://weegee.vision.ucmerced.edu/datasets/landuse.html>
+    <http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip>
     """
 
     def __init__(self):
