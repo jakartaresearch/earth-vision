@@ -27,13 +27,14 @@ class AerialCactus(Dataset):
 
         self.root = root
         self.data_mode = data_mode
-        self.img_labels = self.get_path_and_label()
         self.transform = transform
         self.target_transform = target_transform
 
         if not self._check_exists():
             self.download()
             self.extract_file()
+
+        self.img_labels = self.get_path_and_label()
 
     def __len__(self):
         return len(self.img_labels)
