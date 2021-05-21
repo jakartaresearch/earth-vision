@@ -74,7 +74,7 @@ class RESISC45(Dataset):
     def download(self):
         """Download and extract file."""
         file_url = posixpath.join(self.mirrors, self.resources)
-        _urlretrieve(file_url, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def extract_file(self):
         """Extract file from compressed."""
