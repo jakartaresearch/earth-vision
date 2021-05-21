@@ -46,7 +46,7 @@ class RESISC45(Dataset):
         return len(self.img_labels)
 
     def __iter__(self):
-        for index in self.__len__():
+        for index in range(self.__len__()):
             yield self.__getitem__(index)
 
     def get_path_and_label(self):
@@ -78,9 +78,6 @@ class RESISC45(Dataset):
 
     def extract_file(self):
         """Extract file from compressed."""
-        path_destination = os.path.join(
-            self.root, self.resources.replace(".zip", ""))
-        os.makedirs(path_destination, exist_ok=True)
         shutil.unpack_archive(os.path.join(
-            self.root, self.resources), f"{path_destination}")
+            self.root, self.resources), f"{self.root}")
         os.remove(os.path.join(self.root, self.resources))
