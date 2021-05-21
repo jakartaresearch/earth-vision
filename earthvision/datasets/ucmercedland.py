@@ -7,7 +7,6 @@ import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import Resize
 from .utils import _urlretrieve, _load_img
-from PIL import Image
 
 class UCMercedLand(Dataset):
     """UC Merced Land Use Dataset.
