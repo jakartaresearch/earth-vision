@@ -52,7 +52,7 @@ class RESISC45(Dataset):
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
         DATA_SIZE = 700
-        category = os.listdir('NWPU-RESISC45')
+        category = os.listdir(os.path.join(self.root, 'NWPU-RESISC45'))
         image_path = []
         label = []
         for cat in category:
@@ -83,4 +83,4 @@ class RESISC45(Dataset):
         os.makedirs(path_destination, exist_ok=True)
         shutil.unpack_archive(os.path.join(
             self.root, self.resources), f"{path_destination}")
-        os.remove(self.resources)
+        os.remove(os.path.join(self.root, self.resources))
