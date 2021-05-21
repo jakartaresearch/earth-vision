@@ -13,7 +13,7 @@ from .utils import _urlretrieve, _to_categorical, _load_img
 class RESISC45(Dataset):
 
     mirrors = "https://storage.googleapis.com/ossjr"
-    resources = "NWPU-RESISC45.rar"
+    resources = "NWPU-RESISC45.zip"
 
     def __init__(self, root, transform=None, target_transform=None):
         self.root = root
@@ -79,7 +79,7 @@ class RESISC45(Dataset):
     def extract_file(self):
         """Extract file from compressed."""
         path_destination = os.path.join(
-            self.root, self.resources.replace(".rar", ""))
+            self.root, self.resources.replace(".zip", ""))
         os.makedirs(path_destination, exist_ok=True)
         shutil.unpack_archive(self.resources, f"{path_destination}")
         os.remove(self.resources)
