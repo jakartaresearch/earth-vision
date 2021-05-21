@@ -1,23 +1,29 @@
 """RESISC45 Dataset."""
 import os
+import posixpath
+import shutil
 import numpy as np
 import pandas as pd
 import torch
+from torch.utils.data import Dataset
 from ..constants.RESISC45.config import CLASS_ENC
 from .utils import _urlretrieve, _to_categorical, _load_img
-from torch.utils.data import Dataset
 
 
 class RESISC45(Dataset):
+
+    mirrors = "https://storage.googleapis.com/ossjr"
+    resources = "NWPU-RESISC45.rar"
+
     def __init__(self, root, transform=None, target_transform=None):
         self.root = root
         self.transform = transform
         self.target_transform = target_transform
         self.class_enc = CLASS_ENC
-        
-        # download data here
-        #
-        #
+
+        if not self._check_exists():
+            self.download()
+            self.extract_file()
 
         self.img_labels = self.get_path_and_label()
 
@@ -33,14 +39,15 @@ class RESISC45(Dataset):
         image = np.array(image)
         image = torch.from_numpy(image)
         sample = (image, label)
-        
+
         return sample
 
     def __len__(self):
         return len(self.img_labels)
 
     def __iter__(self):
-        raise NotImplementedError
+        for index in self.__len__():
+            yield self.__getitem__(index)
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
@@ -53,13 +60,26 @@ class RESISC45(Dataset):
             label += [cat_enc] * DATA_SIZE
             for num in range(1, DATA_SIZE+1):
                 filename = cat + '_' + str(num).zfill(3) + '.jpg'
-                image_path += [os.path.join(self.root, 'NWPU-RESISC45', cat, filename)]
+                image_path += [os.path.join(self.root,
+                                            'NWPU-RESISC45', cat, filename)]
         df = pd.DataFrame({'image': image_path, 'label': label})
 
         return df
 
-    def download(self):
-        raise NotImplementedError
-
     def _check_exists(self):
-        raise NotImplementedError
+        is_exists = os.path.exists(os.path.join(self.root, "NWPU-RESISC45"))
+
+        return is_exists
+
+    def download(self):
+        """Download and extract file."""
+        file_url = posixpath.join(self.mirrors, self.resources)
+        _urlretrieve(file_url, self.resources)
+
+    def extract_file(self):
+        """Extract file from compressed."""
+        path_destination = os.path.join(
+            self.root, self.resources.replace(".rar", ""))
+        os.makedirs(path_destination, exist_ok=True)
+        shutil.unpack_archive(self.resources, f"{path_destination}")
+        os.remove(self.resources)
