@@ -30,7 +30,7 @@ class RESISC45(Dataset):
 
     def __getitem__(self, idx):
         img_path = self.img_labels.iloc[idx, 0]
-        label = self.class_enc[self.img_labels.iloc[idx, 1]]
+        label = self.img_labels.iloc[idx, 1]
         image = _load_img(img_path)
         if self.transform:
             image = self.transform(image)
