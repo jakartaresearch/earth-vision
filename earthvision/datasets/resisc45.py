@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-from ..constants.RESISC45.config import CLASS_ENC
+from ..constants.RESISC45.config import CLASS_ENC, CLASS_DEC
 from .utils import _urlretrieve, _load_img
 
 
@@ -20,6 +20,7 @@ class RESISC45(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.class_enc = CLASS_ENC
+        self.class_dec = CLASS_DEC
 
         if not self._check_exists():
             self.download()
