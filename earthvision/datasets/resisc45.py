@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 from ..constants.RESISC45.config import CLASS_ENC
-from .utils import _urlretrieve, _to_categorical, _load_img
+from .utils import _urlretrieve, _load_img
 
 
 class RESISC45(Dataset):
@@ -31,7 +31,6 @@ class RESISC45(Dataset):
         img_path = self.img_labels.iloc[idx, 0]
         label = self.img_labels.iloc[idx, 1]
         image = _load_img(img_path)
-        label = _to_categorical(label, len(self.class_enc))
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
