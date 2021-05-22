@@ -1,7 +1,6 @@
 import urllib
 import numpy as np
 from tqdm import tqdm
-import torch
 from PIL import Image
 
 
@@ -14,6 +13,7 @@ def _urlretrieve(url: str, filename: str, chunk_size: int = 1024) -> None:
                         break
                     pbar.update(chunk_size)
                     fh.write(chunk)
+
 
 def _load_img(fname):
     return Image.open(fname)
