@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-from ..constants.RESISC45.config import CLASS_ENC
-from .utils import _urlretrieve, _to_categorical, _load_img
+from ..constants.RESISC45.config import CLASS_ENC, CLASS_DEC
+from .utils import _urlretrieve, _load_img
 
 
 class RESISC45(Dataset):
@@ -20,6 +20,7 @@ class RESISC45(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.class_enc = CLASS_ENC
+        self.class_dec = CLASS_DEC
 
         if not self._check_exists():
             self.download()
@@ -29,9 +30,8 @@ class RESISC45(Dataset):
 
     def __getitem__(self, idx):
         img_path = self.img_labels.iloc[idx, 0]
-        label = self.img_labels.iloc[idx, 1]
+        label = self.class_enc[self.img_labels.iloc[idx, 1]]
         image = _load_img(img_path)
-        label = _to_categorical(label, len(self.class_enc))
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
