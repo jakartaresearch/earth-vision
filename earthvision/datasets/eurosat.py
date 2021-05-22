@@ -28,6 +28,10 @@ class EuroSat():
     def __len__(self):
         raise NotImplementedError
 
+    def __iter__(self):
+        """Iterator of the class."""
+        raise NotImplementedError
+
     def _check_exists(self) -> None:
         # If the files exist, load them (TBD)
         if os.path.exists(self.root):
