@@ -4,4 +4,4 @@ from .aerialcactus import AerialCactus
 from .resisc45 import RESISC45
 from .ucmercedland import UCMercedLand
 
-__all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45']
+__all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45', 'UCMercedLand']
