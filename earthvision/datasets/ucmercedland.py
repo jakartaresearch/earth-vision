@@ -19,7 +19,7 @@ class UCMercedLand(Dataset):
     def __init__(self,
                  root: str,
                  data_mode: str = 'Images',
-                 transform=Resize((32, 32)),
+                 transform=Resize((256, 256)),
                  target_transform=None):
 
         self.root = root
