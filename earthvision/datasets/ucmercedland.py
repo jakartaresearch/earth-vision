@@ -6,7 +6,6 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import Resize
-from sklearn.model_selection import train_test_split
 from .utils import _urlretrieve, _load_img
 
 
