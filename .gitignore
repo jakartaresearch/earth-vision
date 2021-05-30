@@ -14,4 +14,4 @@ dataset
 __pycache__
 .ipynb_checkpoints
 .vscode
-settings.json
+settings.json.DS_Store
