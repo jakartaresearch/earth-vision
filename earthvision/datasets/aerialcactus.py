@@ -12,7 +12,6 @@ from .utils import _urlretrieve, _load_img
 
 class AerialCactus(Dataset):
     """Aerial Cactus Dataset.
-
     <https://www.kaggle.com/c/aerial-cactus-identification>
     """
 
