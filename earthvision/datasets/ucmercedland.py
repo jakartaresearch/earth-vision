@@ -6,7 +6,9 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import Resize
+from sklearn.model_selection import train_test_split
 from .utils import _urlretrieve, _load_img
+
 
 class UCMercedLand(Dataset):
     """UC Merced Land Use Dataset.
@@ -81,7 +83,7 @@ class UCMercedLand(Dataset):
         label = []
         for cat, enc in classes.items():
             cat_path = os.path.join(
-                self.root, 'UCMerced_LandUse', self.data_mode, cat)
+                self.root, 'UCMerced_LandUse', 'UCMerced_LandUse', self.data_mode, cat)
             cat_image = [os.path.join(cat_path, path)
                          for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
@@ -93,7 +95,7 @@ class UCMercedLand(Dataset):
 
     def _check_exists(self):
         self.data_path = os.path.join(
-            self.root, "UCMerced_LandUse", "Images")
+            self.root, "UCMerced_LandUse", "UCMerced_LandUse", "Images")
 
         return os.path.exists(os.path.join(self.data_path, "agricultural")) and \
             os.path.exists(os.path.join(self.data_path, "airplane")) and \
@@ -118,9 +120,7 @@ class UCMercedLand(Dataset):
             os.path.exists(os.path.join(self.data_path, "tenniscourt"))
 
     def download(self):
-        """download and extract file.
-        """
-        #raise NotImplementedError
+        """download and extract file."""
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
     
