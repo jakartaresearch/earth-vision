@@ -82,7 +82,7 @@ class UCMercedLand(Dataset):
         label = []
         for cat, enc in classes.items():
             cat_path = os.path.join(
-                self.root, 'UCMerced_LandUse', 'UCMerced_LandUse', self.data_mode, cat)
+                self.root, 'UCMerced_LandUse', self.data_mode, cat)
             cat_image = [os.path.join(cat_path, path)
                          for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
