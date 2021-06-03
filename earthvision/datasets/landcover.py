@@ -22,7 +22,8 @@ class LandCover():
                  root: str,
                  data_mode: str = 'Images',
                  transform=Resize((256, 256)),
-                 target_transform=Resize((256, 256)):
+                 target_transform=Resize((256, 256))):
+            
 
         self.root = root
         self.data_mode = data_mode
@@ -35,7 +36,7 @@ class LandCover():
 
         self.img_labels = self.get_path_and_label()
 
-    def __getitem__(self, index):
+    def __getitem__(self, idx):
         img_path = self.img_labels.iloc[idx, 0]
         mask_path = self.img_labels.iloc[idx, 1]
         image = _load_img(img_path)
