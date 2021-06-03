@@ -18,8 +18,22 @@ class LandCover():
     mirrors = "https://landcover.ai/download/"
     resources = "landcover.ai.v1.zip"
 
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self,
+                 root: str,
+                 data_mode: str = 'Images',
+                 transform=Resize((256, 256)),
+                 target_transform=Resize((256, 256)):
+
+        self.root = root
+        self.data_mode = data_mode
+        self.transform = transform
+        self.target_transform = target_transform
+
+        if not self._check_exists():
+            self.download()
+            self.extract_file()
+
+        self.img_labels = self.get_path_and_label()
 
     def __getitem__(self, index):
         img_path = self.img_labels.iloc[idx, 0]
