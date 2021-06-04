@@ -71,13 +71,13 @@ class LandCover():
         raise NotImplementedError
 
     def _check_exists(self):
-        """download and extract file.
+        """Check file has been download or not
         """
         raise NotImplementedError
+        
     
      def extract_file(self):
-         """Extract file from compressed.
-        """
+         """Extract file from compressed."""
         raise NotImplementedError
     
 
