@@ -55,11 +55,31 @@ class LandCover():
 
     def __len__(self):
         return len(self.img_labels)
+    
+    def __iter__(self):
+        for index in range(self.__len__()):
+            yield self.__getitem__(index)
+
+    def get_path_and_label(self):
+        """Return dataframe type consist of image path and corresponding label."""
+        raise NotImplementedError
+
 
     def download(self):
         """download and extract file.
         """
         raise NotImplementedError
+
+    def _check_exists(self):
+        """download and extract file.
+        """
+        raise NotImplementedError
+    
+     def extract_file(self):
+         """Extract file from compressed.
+        """
+        raise NotImplementedError
+    
 
 
   
