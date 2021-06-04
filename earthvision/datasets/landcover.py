@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 from torchvision.transforms import Resize
 from .utils import _urlretrieve, _load_img
 
-class LandCover():
+class LandCover(Dataset):
 
     """
     The LandCover.ai (Land Cover from Aerial Imagery) dataset.
