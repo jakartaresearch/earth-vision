@@ -71,8 +71,7 @@ class LandCover(Dataset):
         raise NotImplementedError
 
     def _check_exists(self):
-        """Check file has been download or not
-        """
+        """Check file has been download or not"""
         raise NotImplementedError
         
     
