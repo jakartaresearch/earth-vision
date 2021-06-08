@@ -8,6 +8,7 @@ from torch.utils.data import Dataset
 from torchvision.transforms import Resize
 from .utils import _urlretrieve, _load_img
 
+
 class LandCover(Dataset):
 
     """
@@ -23,7 +24,6 @@ class LandCover(Dataset):
                  data_mode: str = 'Images',
                  transform=Resize((256, 256)),
                  target_transform=Resize((256, 256))):
-            
 
         self.root = root
         self.data_mode = data_mode
@@ -55,7 +55,7 @@ class LandCover(Dataset):
 
     def __len__(self):
         return len(self.img_labels)
-    
+
     def __iter__(self):
         for index in range(self.__len__()):
             yield self.__getitem__(index)
@@ -63,9 +63,9 @@ class LandCover(Dataset):
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
         raise NotImplementedError
-        
 
-
+    def to_chip_img_mask():
+        raise NotImplementedError
 
     def download(self):
         """download and extract file.
@@ -78,18 +78,14 @@ class LandCover(Dataset):
         """Check file has been download or not"""
         # raise NotImplementedError
         self.data_path = os.path.join(
-            self.root, "landcover", "landcover")
+            self.root, "landcover",)
 
         return os.path.exists(os.path.join(self.data_path, "images")) and \
             os.path.exists(os.path.join(self.data_path, "masks"))
-        
-    
+
     def extract_file(self):
         """Extract file from compressed."""
         os.makedirs(os.path.join(self.root, "landcover"))
-        shutil.unpack_archive(os.path.join(self.root, self.resources), os.path.join(self.root, "landcover"))
+        shutil.unpack_archive(os.path.join(
+            self.root, self.resources), os.path.join(self.root, "landcover"))
         os.remove(os.path.join(self.root, self.resources))
-
-
-
-  
