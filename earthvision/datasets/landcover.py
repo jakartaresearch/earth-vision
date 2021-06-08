@@ -15,8 +15,8 @@ class LandCover(Dataset):
     <https://landcover.ai/download/landcover.ai.v1.zip>
     """
 
-    mirrors = "https://landcover.ai/download/"
-    resources = "landcover.ai.v1.zip"
+    mirrors = "https://storage.googleapis.com/ossjr/"
+    resources = "landcover-small.zip"
 
     def __init__(self,
                  root: str,
@@ -34,7 +34,7 @@ class LandCover(Dataset):
             self.download()
             self.extract_file()
 
-        self.img_labels = self.get_path_and_label()
+        # self.img_labels = self.get_path_and_label()
 
     def __getitem__(self, idx):
         img_path = self.img_labels.iloc[idx, 0]
@@ -63,22 +63,33 @@ class LandCover(Dataset):
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
         raise NotImplementedError
+        
+
 
 
     def download(self):
         """download and extract file.
         """
-        raise NotImplementedError
+        # raise NotImplementedError
+        file_url = posixpath.join(self.mirrors, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def _check_exists(self):
         """Check file has been download or not"""
-        raise NotImplementedError
+        # raise NotImplementedError
+        self.data_path = os.path.join(
+            self.root, "landcover", "landcover")
+
+        return os.path.exists(os.path.join(self.data_path, "images")) and \
+            os.path.exists(os.path.join(self.data_path, "masks"))
         
     
-     def extract_file(self):
-         """Extract file from compressed."""
-        raise NotImplementedError
-    
+    def extract_file(self):
+        """Extract file from compressed."""
+        os.makedirs(os.path.join(self.root, "landcover"))
+        shutil.unpack_archive(os.path.join(self.root, self.resources), os.path.join(self.root, "landcover"))
+        os.remove(os.path.join(self.root, self.resources))
+
 
 
   
