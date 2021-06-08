@@ -13,20 +13,19 @@ from .utils import _urlretrieve, _load_img
 class EuroSat():
     """EuroSat Land Cover Categories. 
     `Download EuroSat RGB <http://madm.dfki.de/files/sentinel>`
-
     Args:
         root (string): Root directory of dataset.
     """
-    
+
     mirrors = "http://madm.dfki.de/files/sentinel"
     resources = "EuroSAT.zip"
 
     def __init__(self,
-                root: str,
-                data_mode: str = '2750',
-                transform=Resize((64, 64)),
-                target_transform=None):
-                
+                 root: str,
+                 data_mode: str = '2750',
+                 transform=Resize((64, 64)),
+                 target_transform=None):
+
         self.root = root
         self.data_mode = data_mode
         self.transform = transform
@@ -74,36 +73,36 @@ class EuroSat():
             os.path.exists(os.path.join(self.data_path, "River")) and \
             os.path.exists(os.path.join(self.data_path, "SeaLake"))
 
-
     def download(self):
-       """Download file"""
-       file_url = posixpath.join(self.mirrors, self.resources)
-       _urlretrieve(file_url, os.path.join(self.root, self.resources))
+        """Download file"""
+        file_url = posixpath.join(self.mirrors, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def extract_file(self):
         """Extract the .zip file"""
-        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
+        shutil.unpack_archive(os.path.join(
+            self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
-        classes = {"AnnualCrop": 0, \
-                    "Forest": 1, \
-                    "HerbaceousVegetation": 2, \
-                    "Highway": 3, \
-                    "Industrial": 4, \
-                    "Pasture": 5, \
-                    "PermanentCrop": 6, \
-                    "Residential": 7, \
-                    "River": 8, \
-                    "SeaLake": 9}
+        classes = {"AnnualCrop": 0,
+                   "Forest": 1,
+                   "HerbaceousVegetation": 2,
+                   "Highway": 3,
+                   "Industrial": 4,
+                   "Pasture": 5,
+                   "PermanentCrop": 6,
+                   "Residential": 7,
+                   "River": 8,
+                   "SeaLake": 9}
         image_path = []
         label = []
         for cat, enc in classes.items():
             cat_path = os.path.join(
                 self.root, self.data_mode, cat)
             cat_image = [os.path.join(cat_path, path)
-                            for path in os.listdir(cat_path)]
+                         for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
             image_path += cat_image
             label += cat_label

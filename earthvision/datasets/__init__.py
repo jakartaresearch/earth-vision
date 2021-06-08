@@ -5,4 +5,5 @@ from .eurosat import EuroSat
 from .resisc45 import RESISC45
 from .ucmercedland import UCMercedLand
 
-__all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45', 'UCMercedLand', 'EuroSat']
+__all__ = ['DroneDeploy', 'AerialCactus',
+           'RESISC45', 'UCMercedLand', 'EuroSat']
