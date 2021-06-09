@@ -90,7 +90,3 @@ class L8SPARCS():
     def __iter__(self):
         for index in range(self.__len__()):
             yield self.__getitem__(index)
-
-    
-    # NOTE: 1) do we need "transform" and "target_transform" as in eurosat.py ?
-    # 2) is the output of __getitem__ correct?
