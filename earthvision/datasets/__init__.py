@@ -6,4 +6,4 @@ from .resisc45 import RESISC45
 from .ucmercedland import UCMercedLand
 from .l8sparcs import L8SPARCS
 
-__all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45', 'UCMercedLand', 'EuroSat', 'L8SPARCS']
+__all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45', 'UCMercedLand', 'EuroSat','L8SPARCS']

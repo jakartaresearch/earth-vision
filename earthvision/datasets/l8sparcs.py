@@ -53,7 +53,7 @@ class L8SPARCS():
 
 
     def get_path_and_label(self):
-        """Get the path of the images and labels (masks) in a dataframe format"""
+        """Get the path of the images and labels (masks) in a dataframe"""
         image_path = []
         label = []
 
@@ -66,6 +66,31 @@ class L8SPARCS():
         df = pd.DataFrame({'image': sorted(image_path), 'label': sorted(label)})
 
         return df
+    
+    def __getitem__(self, idx):
+        """Return a tensor image and its tensor mask"""
+        img_path = self.img_labels.iloc[idx, 0]
+        mask_path = self.img_labels.iloc[idx, 1]
+
+        image = _load_img(img_path)
+        image = np.array(image)
+        image = torch.from_numpy(image)
+        
+        mask = _load_img(mask_path)
+        mask = np.array(mask)
+        mask = torch.from_numpy(mask)
+        
+        sample = (image, mask)
+
+        return sample
+
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __iter__(self):
+        for index in range(self.__len__()):
+            yield self.__getitem__(index)
 
     
-    # NOTE: do we need "transform" and "target_transform" as in eurosat.py ?
+    # NOTE: 1) do we need "transform" and "target_transform" as in eurosat.py ?
+    # 2) is the output of __getitem__ correct?
