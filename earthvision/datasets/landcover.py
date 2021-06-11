@@ -8,6 +8,8 @@ from torch.utils.data import Dataset
 from torchvision.transforms import Resize
 from .utils import _urlretrieve, _load_img
 
+import glob
+import cv2
 
 class LandCover(Dataset):
 
@@ -126,3 +128,4 @@ class LandCover(Dataset):
         shutil.unpack_archive(os.path.join(
             self.root, self.resources), os.path.join(self.root, "landcover"))
         os.remove(os.path.join(self.root, self.resources))
+        self.to_chip_img_mask("landcover")
