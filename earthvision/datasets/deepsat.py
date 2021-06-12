@@ -4,7 +4,7 @@ import scipy.io as sio
 import torch
 import requests
 import gdown
-import sys 
+import sys
 
 from torch.utils.data import Dataset
 
@@ -21,14 +21,16 @@ class DeepSat(Dataset):
         data_mode (int): 0 for train data, and 1 for test data.
     """
 
-    resources = {'SAT-4_and_SAT-6_datasets': 'https://drive.google.com/uc?id=0B0Fef71_vt3PUkZ4YVZ5WWNvZWs&export=download'}
-    dataset_types = ['SAT-4','SAT-6']
+    resources = {
+        'SAT-4_and_SAT-6_datasets': 'https://drive.google.com/uc?id=0B0Fef71_vt3PUkZ4YVZ5WWNvZWs&export=download'}
+    dataset_types = ['SAT-4', 'SAT-6']
 
     def __init__(self, root: str, dataset_type='SAT-4', download: bool = False, data_mode: int = 0):
         self.root = root
         self.dataset_type = dataset_type
         self.data_mode = data_mode
-        self.folder_pth = os.path.join(self.root,list(self.resources.keys())[0])
+        self.folder_pth = os.path.join(
+            self.root, list(self.resources.keys())[0])
         self.filename = list(self.resources.keys())[0] + '.tar.gz'
 
         if download and self._check_exists():
@@ -39,26 +41,26 @@ class DeepSat(Dataset):
 
         dataset = self.load_dataset()
         self.choose_data_mode(dataset)
-    
+
     def download(self):
         """Download dataset and extract it"""
 
         self.root = os.path.expanduser(self.root)
-        print("download dataset...")
-        
+        print("Download dataset...")
 
-        gdown.download(self.resources['SAT-4_and_SAT-6_datasets'], self.filename, quiet=False)
+        gdown.download(self.resources['SAT-4_and_SAT-6_datasets'],
+                       os.path.join(self.root, self.filename), quiet=False)
 
         if os.path.exists(self.folder_pth):
             print(f'file {self.folder_pth} already exists')
         else:
             os.mkdir(self.folder_pth)
-            print(f'extracting file {self.filename}')
-            os.system(f'tar -xvf {os.path.join(self.root,self.filename)} -C {self.folder_pth}')
+            print(f'Extracting file {self.filename}')
+            os.system(
+                f'tar -xvf {os.path.join(self.root, self.filename)} -C {self.folder_pth}')
             os.system(f'mv {self.folder_pth} {self.root}')
-            print("extracting file success")
+            print("Extracting file success !")
 
-        
     def _check_exists(self) -> bool:
         if self.dataset_type not in self.dataset_types:
             print(f"Unknown dataset {self.dataset_type}")
@@ -70,9 +72,7 @@ class DeepSat(Dataset):
         else:
             return False
 
-
     def load_dataset(self):
-        
         filename = {'SAT-4': 'sat-4-full.mat', 'SAT-6': 'sat-6-full.mat'}
         dataset = sio.loadmat(os.path.join(
             self.folder_pth, filename[self.dataset_type]))
