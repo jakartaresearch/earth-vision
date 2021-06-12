@@ -33,12 +33,13 @@ class DroneDeploy():
         self.root = root
         self.dataset_type = dataset_type
         self.filename = f'{dataset_type}.tar.gz'
+        self.filepath = os.path.join(self.root, self.filename)
         self.data_mode = data_mode
         self.label_path = f'{dataset_type}/label-chips'
         self.image_path = f'{dataset_type}/image-chips'
 
         if download and self._check_exists():
-            print(f'zipfile "{self.filename}" already exists.')
+            print(f'zipfile "{self.filepath}" already exists.')
 
         if download and not self._check_exists():
             self.download()
@@ -52,9 +53,10 @@ class DroneDeploy():
         fpath = os.path.join(self.root, self.filename)
         _urlretrieve(self.resources[self.dataset_type], fpath)
 
-        if not os.path.exists(self.dataset_type):
-            print(f'Extracting "{self.filename}"')
-            os.system(f'tar -xvf {self.filename}')
+        if not os.path.exists(os.path.join(self.root, self.dataset_type)):
+            print(f'Extracting "{self.filepath}"')
+            os.system(f'tar -xvf {self.filepath}')
+            os.system(f'mv {self.dataset_type} {self.root}')
         else:
             print(f'Folder "{self.dataset_type}" already exists.')
 
@@ -62,11 +64,11 @@ class DroneDeploy():
         label_chips = f'{self.dataset_type}/label-chips'
 
         if not os.path.exists(image_chips):
-            os.mkdir(image_chips)
+            os.mkdir(os.path.join(self.root, image_chips))
         if not os.path.exists(label_chips):
-            os.mkdir(label_chips)
+            os.mkdir(os.path.join(self.root, label_chips))
 
-        run(self.dataset_type)
+        run(os.path.join(self.root, self.dataset_type))
 
     def _check_exists(self) -> bool:
         if self.dataset_type not in self.resources.keys():
@@ -74,7 +76,7 @@ class DroneDeploy():
             print(f"Available dataset : {self.resources.keys()}")
             sys.exit(0)
 
-        if os.path.exists(self.filename):
+        if os.path.exists(self.filepath):
             return True
         else:
             return False
@@ -87,8 +89,8 @@ class DroneDeploy():
         elif self.data_mode == 2:
             list_chip = 'test.txt'
 
-        files = [f'{self.dataset_type}/image-chips/{fname}'
-                 for fname in load_lines(os.path.join(self.dataset_type, list_chip))]
+        files = [f'{os.path.join(self.root, self.dataset_type)}/image-chips/{fname}'
+                 for fname in load_lines(os.path.join(self.root, self.dataset_type, list_chip))]
         self.image_files = files
 
     def __len__(self):
