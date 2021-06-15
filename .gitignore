@@ -8,6 +8,7 @@
 *.pt
 *.pth
 *.ipynb
+*.mat
 */.ipynb_checkpoints/*
 data
 dataset
