@@ -80,7 +80,7 @@ class COWC():
         
         if self.task_mode == 'counting':
             if self.data_mode == 'train':
-                label_name = 'COWC_train_list_64_class.txt'     ###############
+                label_name = 'COWC_train_list_64_class.txt.bz2'
             else: # self.data_mode == 'test'
                 label_name = 'COWC_test_list_64_class.txt.bz2'
         else: # self.task_mode == 'detection'
