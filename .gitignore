@@ -8,11 +8,13 @@
 *.pt
 *.pth
 *.ipynb
+*.mat
 */.ipynb_checkpoints/*
 .DS_Store
 data
 dataset
-*/__pycache__/
+__pycache__
 .ipynb_checkpoints
 .vscode
-settings.json.DS_Store
+settings.json
+.DS_Store

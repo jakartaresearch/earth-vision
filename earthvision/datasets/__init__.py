@@ -5,7 +5,8 @@ from .eurosat import EuroSat
 from .resisc45 import RESISC45
 from .ucmercedland import UCMercedLand
 from .l8sparcs import L8SPARCS
-from .landcover import LandCover
+from .deepsat import DeepSat
+from .landcover import
 
 __all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45',
-           'UCMercedLand', 'EuroSat', 'L8SPARCS', 'LandCover']
+           'UCMercedLand', 'EuroSat', 'L8SPARCS', 'DeepSat', 'LandCover']
