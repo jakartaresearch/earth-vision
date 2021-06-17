@@ -11,6 +11,7 @@ from .utils import _urlretrieve, _load_img
 import glob
 import cv2
 
+
 class LandCover(Dataset):
 
     """
@@ -35,6 +36,7 @@ class LandCover(Dataset):
         if not self._check_exists():
             self.download()
             self.extract_file()
+            self.to_chip_img_mask("landcover")
 
         # self.img_labels = self.get_path_and_label()
 
@@ -96,10 +98,12 @@ class LandCover(Dataset):
                     mask_tile = mask[y:y + TARGET_SIZE, x:x + TARGET_SIZE]
 
                     if img_tile.shape[0] == TARGET_SIZE and img_tile.shape[1] == TARGET_SIZE:
-                        out_img_path = os.path.join(OUTPUT_DIR, "{}_{}.jpg".format(img_filename, k))
+                        out_img_path = os.path.join(
+                            OUTPUT_DIR, "{}_{}.jpg".format(img_filename, k))
                         cv2.imwrite(out_img_path, img_tile)
 
-                        out_mask_path = os.path.join(OUTPUT_DIR, "{}_{}_m.png".format(mask_filename, k))
+                        out_mask_path = os.path.join(
+                            OUTPUT_DIR, "{}_{}_m.png".format(mask_filename, k))
                         cv2.imwrite(out_mask_path, mask_tile)
 
                     k += 1
@@ -128,4 +132,3 @@ class LandCover(Dataset):
         shutil.unpack_archive(os.path.join(
             self.root, self.resources), os.path.join(self.root, "landcover"))
         os.remove(os.path.join(self.root, self.resources))
-        self.to_chip_img_mask("landcover")
