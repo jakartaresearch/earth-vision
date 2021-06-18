@@ -47,7 +47,7 @@ class COWC():
             )
             self.file_mapping = file_mapping_detection
         else:
-            raise ValueError
+            raise ValueError('task_mode not recognized.')
 
         for filename, compressed in self.file_mapping.items():
             if not self._check_exists_subfile(filename):
@@ -83,19 +83,19 @@ class COWC():
         if self.task_mode == 'counting':
             if self.data_mode == 'train':
                 label_name = 'COWC_train_list_64_class.txt.bz2'
-            elif self.data_mode == 'test':  # self.data_mode == 'test'
+            elif self.data_mode == 'test':
                 label_name = 'COWC_test_list_64_class.txt.bz2'
             else:
-                raise ValueError
+                raise ValueError('data_mode not recognized.')
         elif self.task_mode  == 'detection':
             if self.data_mode == 'train':
                 label_name = 'COWC_train_list_detection.txt.bz2'
-            elif self.data_mode == 'test':  # self.data_mode == 'test'
+            elif self.data_mode == 'test':
                 label_name = 'COWC_test_list_detection.txt.bz2'
             else:
-                raise ValueError
+                raise ValueError('data_mode not recognized.')
         else:
-            raise ValueError
+            raise ValueError('task_mode not recognized.')
 
         label_path = os.path.join(self.task_path, label_name)
         df = pd.read_csv(label_path, sep=' ', header=None)
