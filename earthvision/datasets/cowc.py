@@ -41,11 +41,13 @@ class COWC():
                 self.root, 'cowc/datasets/patch_sets/counting'
             )
             self.file_mapping = file_mapping_counting
-        else:  # self.task_mode = 'detection'
+        elif self.task_mode  == 'detection':
             self.task_path = os.path.join(
                 self.root, 'cowc/datasets/patch_sets/detection'
             )
             self.file_mapping = file_mapping_detection
+        else:
+            raise ValueError
 
         for filename, compressed in self.file_mapping.items():
             if not self._check_exists_subfile(filename):
@@ -85,13 +87,15 @@ class COWC():
                 label_name = 'COWC_test_list_64_class.txt.bz2'
             else:
                 raise ValueError
-        else:  # self.task_mode == 'detection'
+        elif self.task_mode  == 'detection':
             if self.data_mode == 'train':
                 label_name = 'COWC_train_list_detection.txt.bz2'
             elif self.data_mode == 'test':  # self.data_mode == 'test'
                 label_name = 'COWC_test_list_detection.txt.bz2'
             else:
                 raise ValueError
+        else:
+            raise ValueError
 
         label_path = os.path.join(self.task_path, label_name)
         df = pd.read_csv(label_path, sep=' ', header=None)
