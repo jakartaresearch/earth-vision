@@ -17,8 +17,8 @@ class COWC():
     https://gdo152.llnl.gov/cowc/
     """
 
-    mirrors = "https://storage.googleapis.com/ossjr"
-    resources = "cowc-everything-small.txz"
+    mirrors = "https://gdo152.llnl.gov/cowc/download"
+    resources = "cowc-everything.txz"
 
     def __init__(self,
                  root: str,
