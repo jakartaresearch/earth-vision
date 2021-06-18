@@ -9,7 +9,7 @@ import pandas as pd
 from torch.utils.data import Dataset
 from .utils import _urlretrieve, _load_img
 from ..constants.COWC.config import file_mapping_counting, \
-                                    file_mapping_detection
+    file_mapping_detection
 
 
 class COWC():
@@ -41,16 +41,16 @@ class COWC():
                 self.root, 'cowc/datasets/patch_sets/counting'
             )
             self.file_mapping = file_mapping_counting
-        else: # self.task_mode = 'detection'
+        else:  # self.task_mode = 'detection'
             self.task_path = os.path.join(
                 self.root, 'cowc/datasets/patch_sets/detection'
             )
             self.file_mapping = file_mapping_detection
-            
+
         for filename, compressed in self.file_mapping.items():
             if not self._check_exists_subfile(filename):
                 self.extract_subfile(filename, compressed)
-            
+
         self.img_labels = self.get_path_and_label()
 
     def __getitem__(self, idx):
@@ -59,12 +59,12 @@ class COWC():
         folder = img_path.split('/', 1)[0]
         img_path = os.path.join(self.task_path, folder, img_path)
         image = _load_img(img_path)
-        
+
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
             label = self.target_transform(label)
-        
+
         image = np.array(image)
         image = torch.from_numpy(image)
         sample = (image, label)
@@ -77,27 +77,31 @@ class COWC():
     def get_path_and_label(self):
         """Return dataframe type consist of image path 
         and corresponding label."""
-        
+
         if self.task_mode == 'counting':
             if self.data_mode == 'train':
                 label_name = 'COWC_train_list_64_class.txt.bz2'
-            else: # self.data_mode == 'test'
+            elif self.data_mode == 'test':  # self.data_mode == 'test'
                 label_name = 'COWC_test_list_64_class.txt.bz2'
-        else: # self.task_mode == 'detection'
+            else:
+                raise ValueError
+        else:  # self.task_mode == 'detection'
             if self.data_mode == 'train':
                 label_name = 'COWC_train_list_detection.txt.bz2'
-            else: # self.data_mode == 'test'
+            elif self.data_mode == 'test':  # self.data_mode == 'test'
                 label_name = 'COWC_test_list_detection.txt.bz2'
-        
+            else:
+                raise ValueError
+
         label_path = os.path.join(self.task_path, label_name)
         df = pd.read_csv(label_path, sep=' ', header=None)
 
         return df
-    
+
     def _check_exists_subfile(self, filename):
         path_to_check = os.path.join(self.task_path, filename)
         return os.path.exists(path_to_check)
-    
+
     def extract_subfile(self, filename, compressed):
         comp_path = os.path.join(self.task_path, compressed)
         file_path = os.path.join(self.task_path, filename)
@@ -111,7 +115,7 @@ class COWC():
     def download(self):
         """download file."""
         file_url = posixpath.join(self.mirrors, self.resources)
-        _urlretrieve(file_url, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def extract_file(self):
         """Extract file from compressed."""
