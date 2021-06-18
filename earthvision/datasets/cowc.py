@@ -41,11 +41,13 @@ class COWC():
                 self.root, 'cowc/datasets/patch_sets/counting'
             )
             self.file_mapping = file_mapping_counting
-        else:  # self.task_mode = 'detection'
+        elif self.task_mode == 'detection':
             self.task_path = os.path.join(
                 self.root, 'cowc/datasets/patch_sets/detection'
             )
             self.file_mapping = file_mapping_detection
+        else:
+            raise ValueError('task_mode not recognized.')
 
         for filename, compressed in self.file_mapping.items():
             if not self._check_exists_subfile(filename):
@@ -75,23 +77,25 @@ class COWC():
         return len(self.img_labels)
 
     def get_path_and_label(self):
-        """Return dataframe type consist of image path 
+        """Return dataframe type consist of image path
         and corresponding label."""
 
         if self.task_mode == 'counting':
             if self.data_mode == 'train':
                 label_name = 'COWC_train_list_64_class.txt.bz2'
-            elif self.data_mode == 'test':  # self.data_mode == 'test'
+            elif self.data_mode == 'test':
                 label_name = 'COWC_test_list_64_class.txt.bz2'
             else:
-                raise ValueError
-        else:  # self.task_mode == 'detection'
+                raise ValueError('data_mode not recognized.')
+        elif self.task_mode == 'detection':
             if self.data_mode == 'train':
                 label_name = 'COWC_train_list_detection.txt.bz2'
-            elif self.data_mode == 'test':  # self.data_mode == 'test'
+            elif self.data_mode == 'test':
                 label_name = 'COWC_test_list_detection.txt.bz2'
             else:
-                raise ValueError
+                raise ValueError('data_mode not recognized.')
+        else:
+            raise ValueError('task_mode not recognized.')
 
         label_path = os.path.join(self.task_path, label_name)
         df = pd.read_csv(label_path, sep=' ', header=None)
@@ -119,5 +123,6 @@ class COWC():
 
     def extract_file(self):
         """Extract file from compressed."""
-        shutil.unpack_archive(self.resources, self.root)
+        shutil.unpack_archive(os.path.join(
+            self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
