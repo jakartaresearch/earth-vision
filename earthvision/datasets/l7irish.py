@@ -33,7 +33,7 @@ class L7Irish():
         self.data_modes = [filename.split('.tar.gz')[0] for filename in self.resources]
 
         if not self._check_exists():
-            self.download()c
+            self.download()
             self.extract_file()
         
         self.img_labels = self.get_path_and_label()
