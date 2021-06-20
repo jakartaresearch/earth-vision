@@ -91,8 +91,5 @@ class AerialCactus(Dataset):
 
     def extract_file(self):
         """Extract file from compressed."""
-        path_destination = os.path.join(
-            self.root, self.resources.replace(".zip", ""))
-        os.makedirs(path_destination, exist_ok=True)
-        shutil.unpack_archive(self.resources, f"{path_destination}")
+        shutil.unpack_archive(self.resources, self.root)
         os.remove(os.path.join(self.root, self.resources))
