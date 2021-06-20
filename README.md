@@ -1,4 +1,4 @@
-# earthvision
+# earth-vision
 
 Earth Vision is a python library for solving computer vision tasks specifically for satellite imagery.
 
@@ -11,18 +11,31 @@ To ease researcher to run ML pipelines for AI or Deep Learning Applications in s
 ### 1. Dataset Download
 
 ```
-from earthvision import dataset
+from torch.utils.data import DataLoader
+from earthvision.datasets import DeepSat
 
-l8sparcs = dataset.L8Sparcs()
+train_dataset = DeepSat(root='./', dataset_type='SAT-4', download=True, data_mode=0)
+test_dataset = DeepSat(root='./', dataset_type='SAT-4', download=False, data_mode=1)
 
-# Downloading (1 tifs downloaded at root directory dataset)
-l8sparcs.download(n=1, out_dir='./dataset')
+train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True)
+
+train_data, train_label = next(iter(train_dataloader))
+test_data, test_label = next(iter(test_dataloader))
 ```
 
 ## Features
 
 1. Wrapper to download open sourced EO dataset for ML tasks:
 
-- Landsat 8 Biome
-- Landsat 8 SPARCS
-- Landsat 7
+- AerialCactus
+- COWC
+- DeepSat
+- DroneDeploy
+- EuroSat
+- L8SPARCS
+- LandCover
+- RESISC45
+- UCMercedLand
+
+
