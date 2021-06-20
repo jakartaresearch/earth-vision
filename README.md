@@ -8,7 +8,7 @@ To ease researcher to run ML pipelines for AI or Deep Learning Applications in s
 
 ## Examples
 
-### 1. Dataset Download
+### Dataset Download
 
 ```
 from torch.utils.data import DataLoader
