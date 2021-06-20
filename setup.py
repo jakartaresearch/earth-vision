@@ -6,10 +6,13 @@ with open('README.md', encoding='utf8') as f:
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
+version = '0.0.1'
+download_url = f'https://github.com/jakartaresearch/earth-vision/archive/v{version}.tar.gz'
+
 setup(
     name='earth-vision',
     packages=find_packages(),
-    version='0.0.1',
+    version=version,
     license='MIT',
     description='Python library for solving computer vision tasks specifically for satellite imagery',
     long_description=long_description,
@@ -17,7 +20,7 @@ setup(
     author='Jakarta Research Team',
     author_email='researchjair@gmail.com',
     url='https://github.com/jakartaresearch/earth-vision',
-    download_url=f'https://github.com/jakartaresearch/earth-vision/archive/v{version}.tar.gz',
+    download_url=download_url,
     keywords=['computer-vision', 'pytorch',
               'machine-learning', 'satellite-imagery'],
     install_requires=required,
