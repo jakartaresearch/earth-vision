@@ -95,4 +95,4 @@ class AerialCactus(Dataset):
             self.root, self.resources.replace(".zip", ""))
         os.makedirs(path_destination, exist_ok=True)
         shutil.unpack_archive(self.resources, f"{path_destination}")
-        os.remove(self.resources)
+        os.remove(os.path.join(self.root, self.resources))
