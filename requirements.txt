@@ -1,4 +1,10 @@
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torch>=1.7.1
 torchvision>=0.8.2
-gdown==3.13.0
+gdown>=3.13.0
+scipy>=1.6.0
+opencv-python>=4.5.1.48
+Pillow>=8.2.0
+tqdm>=4.61.1
+pandas>=1.2.4
+numpy>=1.20.3
