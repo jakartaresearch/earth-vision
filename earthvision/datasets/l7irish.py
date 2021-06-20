@@ -6,9 +6,7 @@ import pandas as pd
 import glob
 import torch
 from torch.utils.data import Dataset
-from torchvision.transforms import Resize
 from PIL import Image
-import requests
 import requests
 from bs4 import BeautifulSoup
 from .utils import _urlretrieve, _load_img
@@ -35,7 +33,7 @@ class L7Irish():
         self.data_modes = [filename.split('.tar.gz')[0] for filename in self.resources]
 
         if not self._check_exists():
-            self.download()
+            self.download()c
             self.extract_file()
         
         self.img_labels = self.get_path_and_label()
@@ -86,7 +84,33 @@ class L7Irish():
         for data_mode in self.data_modes:
             for image in glob.glob(os.path.join(self.root,data_mode,'L7*.TIF')):
                 image_path.append(image)
-                label.append(glob.glob(os.path.join(self.root,data_mode,'*mask*')))                
+
+                label.extend(glob.glob(os.path.join(self.root,data_mode,'*mask*')))                
             
         df = pd.DataFrame({'image': image_path, 'label': label})
         return df
+
+    
+    def __getitem__(self, idx):
+        """Return a tensor image and its tensor mask"""
+        img_path = self.img_labels.iloc[idx, 0]
+        mask_path = self.img_labels.iloc[idx, 1]
+
+        image = _load_img(img_path)
+        image = np.array(image)
+        image = torch.from_numpy(image)
+        
+        mask = _load_img(mask_path)
+        mask = np.array(mask)
+        mask = torch.from_numpy(mask)
+        
+        sample = (image, mask)
+
+        return sample
+    
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __iter__(self):
+        for index in range(self.__len__()):
+            yield self.__getitem__(index)
