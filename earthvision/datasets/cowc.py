@@ -7,8 +7,8 @@ import torch
 import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
-from .utils import _urlretrieve, _load_img
-from ..constants.COWC.config import file_mapping_counting, \
+from earthvision.datasets.utils import _urlretrieve, _load_img
+from earthvision.constants.COWC.config import file_mapping_counting, \
     file_mapping_detection
 
 

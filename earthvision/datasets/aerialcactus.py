@@ -86,10 +86,14 @@ class AerialCactus(Dataset):
 
     def download(self):
         """Download and extract file."""
+        if not os.path.exists(self.root):
+            os.makedirs(self.root)
+
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def extract_file(self):
         """Extract file from compressed."""
-        shutil.unpack_archive(self.resources, self.root)
+        path_destination = os.path.join(self.root, "cactus-aerial-photos")
+        shutil.unpack_archive(self.resources, path_destination)
         os.remove(os.path.join(self.root, self.resources))

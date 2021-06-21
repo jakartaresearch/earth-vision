@@ -5,8 +5,8 @@ import numpy as np
 import random
 import cv2
 import torch
-from ..constants.DroneDeploy.config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
-from .utils import _urlretrieve
+from earthvision.constants.DroneDeploy.config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
+from earthvision.datasets.utils import _urlretrieve
 
 from PIL import Image
 from torch.utils.data import Dataset
