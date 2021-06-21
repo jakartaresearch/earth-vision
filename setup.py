@@ -6,7 +6,7 @@ with open('README.md', encoding='utf8') as f:
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
-version = '0.0.4'
+version = '0.0.5'
 download_url = f'https://github.com/jakartaresearch/earth-vision/archive/v{version}.tar.gz'
 
 setup(
