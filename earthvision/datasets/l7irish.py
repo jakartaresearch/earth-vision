@@ -28,7 +28,7 @@ class L7Irish():
                 root: str):
         
         self.root = root
-        self.download_urls = self.get_download_url()[:3] # NOTE: for now, use the first 3 urls only
+        self.download_urls = self.get_download_url()
         self.resources = [url.split('/')[-1] for url in self.download_urls]
         self.data_modes = [filename.split('.tar.gz')[0] for filename in self.resources]
 
