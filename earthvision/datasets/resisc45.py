@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-from ..constants.RESISC45.config import CLASS_ENC, CLASS_DEC
-from .utils import _urlretrieve, _load_img
+from earthvision.constants.RESISC45.config import CLASS_ENC, CLASS_DEC
+from earthvision.datasets.utils import _urlretrieve, _load_img
 
 
 class RESISC45(Dataset):
