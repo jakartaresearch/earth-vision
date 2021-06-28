@@ -44,14 +44,9 @@ class L7Irish():
         soup = BeautifulSoup(page.content, 'html.parser')
             
         urls = [url.get('href') for url in soup.find_all('a')]
+        urls = list(filter(None, urls))
 
-        download_urls = []
-        for url in urls:
-            try: 
-                if url.endswith('.gz'):
-                    download_urls.append(url)
-            except:
-                None
+        download_urls = filter(lambda url: url.endswith('.gz'), urls)
         
         return download_urls
 
@@ -69,6 +64,8 @@ class L7Irish():
     
     def _check_exists(self):
         is_exists = []
+        if not os.path.isdir(self.root):
+            os.mkdir(self.root)
 
         for data_mode in self.data_modes:
             data_path = os.path.join(self.root, data_mode)
