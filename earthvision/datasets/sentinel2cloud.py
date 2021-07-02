@@ -41,9 +41,10 @@ class Sentinel2Cloud(Dataset):
 
         if not self._check_exists():
             self.download()
-            self.extract_file
+            self.extract_file()
         
-        self.img_labels = self.download()
+        self.img_labels = ""
+        
 
     def __itemget__(self, idx):
         img_path = self.img_labels.iloc[idx, 0]
@@ -76,19 +77,53 @@ class Sentinel2Cloud(Dataset):
         """
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
-        _urlretrieve(file_url, os.path.join(self.root, self.mask_resources))
-        _urlretrieve(file_url, os.path.join(self.root, self.shapefile_resources))
-        _urlretrieve(file_url, os.path.join(self.root, self.thumbnail_resources))
-        _urlretrieve(file_url, os.path.join(self.root, self.alt_mask_resources))
+
+        mask_file_url = posixpath.join(self.mirrors, self.mask_resources)
+        _urlretrieve(mask_file_url, os.path.join(self.root, self.mask_resources))
+        
+        shapefile_file_url = posixpath.join(self.mirrors, self.shapefile_resources)
+        _urlretrieve(shapefile_file_url, os.path.join(self.root, self.shapefile_resources))
+
+        thumbnail_file_url = posixpath.join(self.mirrors, self.thumbnail_resources)
+        _urlretrieve(thumbnail_file_url, os.path.join(self.root, self.thumbnail_resources))
+        
+        altmasks_file_url = posixpath.join(self.mirrors, self.alt_mask_resources)
+        _urlretrieve(altmasks_file_url, os.path.join(self.root, self.alt_mask_resources))
 
 
     def _check_exists(self):
         """ Check file has been download or not
         """
-        self.data_path = os.path.join(self.root, "sentinel2cloud", )
+        self.data_path = os.path.join(self.root, "sentinel2cloud")
 
         return os.path.exists(os.path.join(self.data_path, "subscenes")) and \
             os.path.exists(os.path.join(self.data_path, "masks")) and \
             os.path.exists(os.path.join(self.data_path, "shapefiles")) and \
             os.path.exists(os.path.join(self.data_path, "thumbnails")) and \
             os.path.exists(os.path.join(self.data_path, "alt_masks"))
+
+    def extract_file(self):
+        """Extract file from compressed.
+        """
+        
+        os.makedirs(os.path.join(self.root, "sentinel2cloud"))
+
+        shutil.unpack_archive(os.path.join(
+            self.root, self.resources), os.path.join(self.root, "sentinel2cloud"))
+        os.remove(os.path.join(self.root, self.resources))
+
+        shutil.unpack_archive(os.path.join(
+            self.root, self.mask_resources), os.path.join(self.root, "sentinel2cloud"))
+        os.remove(os.path.join(self.root, self.mask_resources))
+
+        shutil.unpack_archive(os.path.join(
+            self.root, self.shapefile_resources), os.path.join(self.root, "sentinel2cloud"))
+        os.remove(os.path.join(self.root, self.shapefile_resources))
+
+        shutil.unpack_archive(os.path.join(
+            self.root, self.thumbnail_resources), os.path.join(self.root, "sentinel2cloud"))
+        os.remove(os.path.join(self.root, self.thumbnail_resources))
+
+        shutil.unpack_archive(os.path.join(
+            self.root, self.alt_mask_resources), os.path.join(self.root, "sentinel2cloud"))
+        os.remove(os.path.join(self.root, self.alt_mask_resources))
