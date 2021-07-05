@@ -11,4 +11,4 @@ from .cowc import COWC
 from .l7irish import L7Irish
 
 __all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45',
-           'UCMercedLand', 'EuroSat', 'L8SPARCS', 'DeepSat', 'LandCover', 'COWC','L7Irish']
+           'UCMercedLand', 'EuroSat', 'L8SPARCS', 'DeepSat', 'LandCover', 'COWC','L7Irish','SpaceNet7']
