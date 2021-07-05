@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import Resize
-from .utils import _urlretrieve, _load_img
+from .utils import _urlretrieve, _load_img, _load_npy
 
 import glob
 import cv2
@@ -50,8 +50,8 @@ class Sentinel2Cloud(Dataset):
         img_path = self.img_labels.iloc[idx, 0]
         mask_path = self. img_labels.iloc[idx, 1]
 
-        image = _load_img(img_path)
-        mask = _load_img(mask_path)
+        image = _load_npy(img_path)
+        mask = _load_npy(mask_path)
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
@@ -71,6 +71,24 @@ class Sentinel2Cloud(Dataset):
     def __iter__(self):
         for index in range(self.__len__()):
             yield self.__itemget__(index)
+
+    def get_image_path_and_mask_path(self):
+        """Return dataframe type consist of image path and mask path."""
+        image_path = []
+        mask_path = []
+
+        img_path = os.path.join(self.root, 'sentinel2cloud', 'subscenes')
+        msk_path = os.path.join(self.root, 'sentinel2cloud', 'masks')
+
+        images_path = [os.path.join(img_path, path)
+                       for path in os.listdir(img_path)]
+        images_path.sort()
+        masks_path = [os.path.join(img_path, path)
+                      for path in os.listdir(msk_path)]
+        masks_path.sort()
+
+        df = pd.DataFrame({'image': images_path, 'mask': masks_path})
+        return df
 
     def download(self):
         """download and extract file.
