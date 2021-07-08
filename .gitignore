@@ -9,6 +9,7 @@
 *.pth
 *.ipynb
 *.mat
+*.tar.gz
 */.ipynb_checkpoints/*
 data
 dataset
