@@ -30,36 +30,26 @@ class Sentinel2Cloud(Dataset):
 
     def __init__(self,
                  root: str,
-                 data_mode: str = 'Images',
-                 transform=Resize((256, 256)),
-                 target_transform = None):
+                 data_mode: str = 'Images'):
         
         self.root = root
         self.data_mode = data_mode
-        self.transform = transform
-        self.target_transform = target_transform
 
         if not self._check_exists():
             self.download()
             self.extract_file()
         
-        self.img_labels = ""
+        self.img_labels = self.get_image_path_and_mask_path()
         
 
-    def __itemget__(self, idx):
+    def __getitem__(self, idx):
         img_path = self.img_labels.iloc[idx, 0]
         mask_path = self. img_labels.iloc[idx, 1]
 
         image = _load_npy(img_path)
         mask = _load_npy(mask_path)
-        if self.transform:
-            image = self.transform(image)
-        if self.target_transform:
-            mask = self.target_transform(mask)
         
-        image = np.array(image)
         image = torch.from_numpy(image)
-        mask = np.array(mask)
         mask = torch.from_numpy(mask)
         sample = (image, mask)
 
@@ -74,17 +64,13 @@ class Sentinel2Cloud(Dataset):
 
     def get_image_path_and_mask_path(self):
         """Return dataframe type consist of image path and mask path."""
-        image_path = []
-        mask_path = []
 
         img_path = os.path.join(self.root, 'sentinel2cloud', 'subscenes')
         msk_path = os.path.join(self.root, 'sentinel2cloud', 'masks')
 
-        images_path = [os.path.join(img_path, path)
-                       for path in os.listdir(img_path)]
+        images_path = glob.glob(os.path.join(img_path, "*.npy"))
         images_path.sort()
-        masks_path = [os.path.join(img_path, path)
-                      for path in os.listdir(msk_path)]
+        masks_path = glob.glob(os.path.join(msk_path, "*.npy"))
         masks_path.sort()
 
         df = pd.DataFrame({'image': images_path, 'mask': masks_path})
