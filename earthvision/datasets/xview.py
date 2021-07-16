@@ -1,3 +1,4 @@
+"""Dataset from DIUx xView 2018 Detection Challenge."""
 import os
 import shutil
 import posixpath
@@ -6,6 +7,8 @@ import glob
 import json
 import torch
 from .utils import _urlretrieve, _load_img
+from ..constants.XView.config import index_mapping, CLASS_ENC, CLASS_DEC
+
 
 class XView():
     """Dataset from DIUx xView 2018 Detection Challenge.
@@ -31,6 +34,8 @@ class XView():
     def __init__(self, root: str, data_mode: str = 'train'):
         self.root = root
         self.data_mode = data_mode
+        self.class_enc = CLASS_ENC
+        self.class_dec = CLASS_DEC
 
         # if not self._check_exists():
         #     self.download()
@@ -139,6 +144,7 @@ class XView():
 
             # label
             label = self.classes[self.chips == self.imgs[idx]]
+            label = np.vectorize(index_mapping.get)(label)
             label = torch.from_numpy(label)
             
             # combine bounding box and label
