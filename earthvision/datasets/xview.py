@@ -27,49 +27,59 @@ class XView():
     https://storage.googleapis.com/ossjr/xview/validation_images.tgz
     """
 
-    # TO BE CHANGED
-    mirrors = "https://landsat.usgs.gov/cloud-validation/sparcs/"
-    resources = "l8cloudmasks.zip"
+    mirrors = "https://storage.googleapis.com/ossjr/xview"
+    resources = ["train_images.tgz", "train_labels.tgz", "validation_images.tgz"]
     
     def __init__(self, root: str, data_mode: str = 'train'):
         self.root = root
         self.data_mode = data_mode
         self.class_enc = CLASS_ENC
         self.class_dec = CLASS_DEC
+        self.coords, self.chips, self.classes = None, None, None
 
-        # if not self._check_exists():
-        #     self.download()
-        #     self.extract_file()
+        if not self._check_exists():
+            self.download()
+            self.extract_file()
 
-        self.coords, self.chips, self.classes = \
-            self.get_path_and_label()
+        if self.data_mode == 'train':     
+            self.coords, self.chips, self.classes = \
+                self.get_path_and_label()
+            self.imgs = list(os.listdir(os.path.join(self.root, 'train_images')))
         
-        if self.data_mode == 'train':
-            self.imgs = list(os.listdir(os.path.join(self.root, 'xview/train_images')))
         elif self.data_mode == 'validation':
-            self.imgs = list(os.listdir(os.path.join(self.root, 'xview/val_images')))
+            self.imgs = list(os.listdir(os.path.join(self.root, 'val_images')))
+        
         else:
             raise ValueError("data_mode not recognized. Try 'train' or 'validation'")
 
-    def _check_exists(self) -> None:
-        """TODO"""
-        return
+    def _check_exists(self) -> bool:
+
+        if not os.path.isdir(self.root):
+            os.mkdir(self.root)
+        
+        return  os.path.exists(os.path.join(self.root, self.resources[0].split('.')[0])) \
+                and os.path.exists(os.path.join(self.root, 'xView_train.geojson')) \
+                    if self.data_mode == 'train' \
+                    else \
+                os.path.exists(os.path.join(self.root, 'val_images'))
 
     def download(self):
-       """Download file"""
-       file_url = posixpath.join(self.mirrors, self.resources)
-       _urlretrieve(file_url, os.path.join(self.root, self.resources))
+        """Download file"""
+        for resource in self.resources:
+            file_url = posixpath.join(self.mirrors, resource)
+            _urlretrieve(file_url, os.path.join(self.root, resource))
 
     def extract_file(self):
-        """Extract the .zip file"""
-        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
-        os.remove(os.path.join(self.root, self.resources))
+        """Extract the .tgz file"""
+        for resource in self.resources:
+            shutil.unpack_archive(os.path.join(self.root, resource), self.root)
+            os.remove(os.path.join(self.root, resource))
 
     def _check_exists_label(self, filename):
         """Check whether bounding boxes, image filenames, and labels 
         are already extracted from xView_train.geojson
         """
-        path_to_check = os.path.join(self.root, 'xview', filename)
+        path_to_check = os.path.join(self.root, filename)
         return path_to_check, os.path.exists(path_to_check)
 
     def get_path_and_label(self):
@@ -81,7 +91,7 @@ class XView():
             chips: image file names
             classes: classes for each ground truth
         """
-        # check existance
+        # check existnce
         coords_path, coords_exists = self._check_exists_label('coords.npy')
         chips_path, chips_exists = self._check_exists_label('chips.npy')
         classes_path, classes_exists = self._check_exists_label('classes.npy')
@@ -94,7 +104,7 @@ class XView():
             return coords, chips, classes
         
         # read xView_train.geojson
-        fname = os.path.join(self.root, 'xview/xView_train.geojson')
+        fname = os.path.join(self.root, 'xView_train.geojson')
         with open(fname) as f:
             data = json.load(f)
 
@@ -105,6 +115,8 @@ class XView():
 
         # extract
         feat_len = len(data['features'])
+        img_files = os.listdir(os.path.join(self.root, self.resources[0].split('.')[0]))
+
         for i in range(feat_len):
             properties = data['features'][i]['properties']
             b_id = properties['image_id']
@@ -112,7 +124,7 @@ class XView():
 
             # type_id 75 and 82 don't belong to any class
             # https://github.com/DIUx-xView/xView1_baseline/issues/3
-            if properties['type_id'] not in [75, 82]:
+            if properties['type_id'] not in [75, 82] and b_id in img_files:
                 chips.append(b_id)
                 classes.append(properties['type_id'])
                 coords.append(val)
@@ -133,17 +145,17 @@ class XView():
         """
         if self.data_mode == 'train':
             # image
-            img_path = os.path.join(self.root, 'xview/train_images', self.imgs[idx])
+            img_path = os.path.join(self.root, 'train_images', self.chips[idx])
             image = _load_img(img_path)
             image = np.array(image)
             image = torch.from_numpy(image)
 
             # bounding box
-            bbox = self.coords[self.chips == self.imgs[idx]]
+            bbox = self.coords[idx]
             bbox = torch.from_numpy(bbox)
 
             # label
-            label = self.classes[self.chips == self.imgs[idx]]
+            label = self.classes[idx]
             label = np.vectorize(index_mapping.get)(label)
             label = torch.from_numpy(label)
             
@@ -155,7 +167,7 @@ class XView():
             sample = (image, target)
         elif self.data_mode == 'validation':
             # image
-            img_path = os.path.join(self.root, 'xview/val_images', self.imgs[idx])
+            img_path = os.path.join(self.root, 'val_images', self.chips[idx])
             image = _load_img(img_path)
             image = np.array(image)
             image = torch.from_numpy(image)
