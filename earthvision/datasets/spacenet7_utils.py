@@ -1,3 +1,7 @@
+"""
+Script from https://github.com/CosmiQ/solaris and
+https://github.com/avanetten/CosmiQ_SN7_Baseline/blob/master/src/sn7_baseline_prep_funcs.py
+"""
 import multiprocessing
 import pandas as pd
 import numpy as np
@@ -26,7 +30,7 @@ def _check_df_load(df):
     else:
         raise ValueError(f"{df} is not an accepted DataFrame format.")
 
-    
+
 def _check_rasterio_im_load(im):
     """Check if `im` is already loaded in; if not, load it in."""
     if isinstance(im, str):
@@ -73,6 +77,8 @@ def _check_gdf_load(gdf):
         raise ValueError(f"{gdf} is not an accepted GeoDataFrame format.")
 
 # from mask.py
+
+
 def df_to_px_mask(df, channels=['footprint'], out_file=None, reference_im=None,
                   geom_col='geometry', do_transform=None, affine_obj=None,
                   shape=(900, 900), out_type='int', burn_value=255, **kwargs):
@@ -499,6 +505,8 @@ def _check_do_transform(df, reference_im, affine_obj):
         return True
 
 # from image.py
+
+
 def create_multiband_geotiff(array, out_name, proj, geo, nodata=0,
                              out_format=gdal.GDT_Byte, verbose=False):
     """Convert an array to an output georegistered geotiff.
@@ -532,7 +540,8 @@ def create_multiband_geotiff(array, out_name, proj, geo, nodata=0,
     if len(array.shape) == 2:
         array = array[np.newaxis, ...]
     os.makedirs(os.path.dirname(os.path.abspath(out_name)), exist_ok=True)
-    dataset = driver.Create(out_name, array.shape[2], array.shape[1], array.shape[0], out_format)
+    dataset = driver.Create(
+        out_name, array.shape[2], array.shape[1], array.shape[0], out_format)
     if verbose is True:
         print("Array Shape, should be [Channels, X, Y] or [X,Y]:", array.shape)
         print("Output Name:", out_name)
@@ -555,30 +564,17 @@ def create_multiband_geotiff(array, out_name, proj, geo, nodata=0,
         del dataset
 
 
-
-
-
-
-# from sn7_baseline_prep_funcs.py
-"""
-Created on Tue Aug 25 14:11:02 2020
-
-@author: avanetten
-"""
 def map_wrapper(x):
     '''For multi-threading'''
     return x[0](*(x[1:]))
 
 
-def make_geojsons_and_masks(name_root, image_path, json_path, 
+def make_geojsons_and_masks(name_root, image_path, json_path,
                             output_path_mask, output_path_mask_fbc=None):
     '''
     Make the stuffins
     mask_fbc is an (optional) three-channel fbc (footbrint, boundary, contact) mask
     '''
-    
-    print("  name_root:", name_root)
-
     # filter out null geoms (this is always a worthy check)
     gdf_tmp = _check_gdf_load(json_path)
     if len(gdf_tmp) == 0:
@@ -588,7 +584,7 @@ def make_geojsons_and_masks(name_root, image_path, json_path,
         try:
             im_tmp = io.imread(image_path)
         except:
-            print("Error loading image %s, skipping..." %(image_path))
+            print("Error loading image %s, skipping..." % (image_path))
             return
 
     # handle empty geojsons
@@ -607,15 +603,15 @@ def make_geojsons_and_masks(name_root, image_path, json_path,
         if output_path_mask_fbc:
             mask_arr = np.zeros((3, im.shape[1], im.shape[2]))
             create_multiband_geotiff(mask_arr, output_path_mask_fbc, proj, geo)
-        return 
-        
+        return
+
     # make masks (single channel)
     # https://github.com/CosmiQ/solaris/blob/master/docs/tutorials/notebooks/api_masks_tutorial.ipynb
     f_mask = df_to_px_mask(df=gdf_nonull, out_file=output_path_mask,
                            channels=['footprint'],
                            reference_im=image_path,
                            shape=(im_tmp.shape[0], im_tmp.shape[1]))
-    
+
     # three channel mask (takes awhile)
     # https://github.com/CosmiQ/solaris/blob/master/docs/tutorials/notebooks/api_masks_tutorial.ipynb
     if output_path_mask_fbc:
@@ -626,4 +622,3 @@ def make_geojsons_and_masks(name_root, image_path, json_path,
                                  shape=(im_tmp.shape[0], im_tmp.shape[1]))
 
     return
-
