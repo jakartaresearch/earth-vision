@@ -6,6 +6,7 @@ import numpy as np
 import glob
 import json
 import torch
+from torch.utils.data import Dataset
 from .utils import _urlretrieve, _load_img
 from ..constants.XView.config import index_mapping, CLASS_ENC, CLASS_DEC
 
@@ -151,11 +152,11 @@ class XView():
             image = torch.from_numpy(image)
 
             # bounding box
-            bbox = self.coords[idx]
+            bbox = self.coords[self.chips == self.chips[idx]]
             bbox = torch.from_numpy(bbox)
 
             # label
-            label = self.classes[idx]
+            label = self.classes[self.chips == self.chips[idx]]
             label = np.vectorize(index_mapping.get)(label)
             label = torch.from_numpy(label)
             
@@ -167,7 +168,7 @@ class XView():
             sample = (image, target)
         elif self.data_mode == 'validation':
             # image
-            img_path = os.path.join(self.root, 'val_images', self.chips[idx])
+            img_path = os.path.join(self.root, 'val_images', self.imgs[idx])
             image = _load_img(img_path)
             image = np.array(image)
             image = torch.from_numpy(image)
@@ -178,11 +179,5 @@ class XView():
         
         return sample
 
-
     def __len__(self):
         return len(self.imgs)
-        
-
-    def __iter__(self):
-        for index in range(self.__len__()):
-            yield self.__getitem__(index)
