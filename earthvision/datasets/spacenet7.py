@@ -21,7 +21,6 @@ class SpaceNet7(Dataset):
     """SpaceNet7
     SN7: Multi-Temporal Urban Development Challenge
     <https://spacenet.ai/sn7-challenge/>
-
     Args:
         root (string): Root directory of dataset.
         download (bool, optional): If true, downloads the dataset from the internet and
@@ -54,9 +53,18 @@ class SpaceNet7(Dataset):
             print("Data already extracted.")
 
         if self.data_mode == 'train':
-            # TODO: Check 'masks' folder di train data, if masks not available do generate_mask()
-            print('Generate label image mask from train data...')
-            self.generate_mask()
+            aois = sorted([f for f in os.listdir(os.path.join(self.root, 'train'))
+                if os.path.isdir(os.path.join(self.root, 'train', f))])  
+
+            aois_without_mask = []
+            for aoi in aois:
+                mask_dir = os.path.join(self.root, 'train', aoi, 'masks/')
+                if not self._check_exists(mask_dir):
+                    aois_without_mask.append(aoi)
+            
+            if len(aois_without_mask) != 0:
+                print('Generating masks...')
+                self.generate_mask(aois_without_mask)
 
         self.img_labels = self.get_path_and_label()
 
@@ -76,15 +84,15 @@ class SpaceNet7(Dataset):
     def extract_file(self):
         shutil.unpack_archive(self.dataset_path, self.root)
 
-    def generate_mask(self):
+    def generate_mask(self,aois):
         """
         Create Training Masks
         Multi-thread to increase speed
         We'll only make a 1-channel mask for now, but Solaris supports a multi-channel mask as well, see
             https://github.com/CosmiQ/solaris/blob/master/docs/tutorials/notebooks/api_masks_tutorial.ipynb
         """
-        aois = sorted([f for f in os.listdir(os.path.join(self.root, 'train'))
-                       if os.path.isdir(os.path.join(self.root, 'train', f))])
+        # aois = sorted([f for f in os.listdir(os.path.join(self.root, 'train'))
+        #                if os.path.isdir(os.path.join(self.root, 'train', f))])
         params = []
         make_fbc = False
 
@@ -140,7 +148,6 @@ class SpaceNet7(Dataset):
             subdirs = sorted([f for f in os.listdir(
                 d) if os.path.isdir(os.path.join(d, f))])
             for subdir in subdirs:
-
                 if pop == 'train':
                     im_files = [os.path.join(d, subdir, 'images_masked', f)
                                 for f in sorted(os.listdir(os.path.join(d, subdir, 'images_masked')))
