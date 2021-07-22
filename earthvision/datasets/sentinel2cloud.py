@@ -33,12 +33,9 @@ class Sentinel2Cloud(Dataset):
 
     """
 
-    # mirrors = "https://zenodo.org/record/4172871/files/"
+    mirrors = "https://zenodo.org/record/4172871/files/"
     resources = "subscenes.zip"
     mask_resources = "masks.zip"
-
-    mirrors = "https://storage.googleapis.com/ossjr/sentinel2/"
-
 
     def __init__(self,
                  root: str):
