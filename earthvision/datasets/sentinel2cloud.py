@@ -11,6 +11,7 @@ from .utils import _urlretrieve, _load_img, _load_npy
 import glob
 import cv2
 
+
 class Sentinel2Cloud(Dataset):
 
     """
@@ -37,22 +38,21 @@ class Sentinel2Cloud(Dataset):
     resources = "subscenes.zip"
     mask_resources = "masks.zip"
 
-    def __init__(self,
-                 root: str):
-        
+    def __init__(self, root: str):
+
         self.root = root
 
-        if not os.path.exists(self.root): os.makedirs(self.root)
+        if not os.path.exists(self.root):
+            os.makedirs(self.root)
 
         if not self._check_exists():
             self.download()
             self.extract_file()
-        
+
         self.img_labels = self.get_image_path_and_mask_path()
-        
 
     def __getitem__(self, idx):
-        """ Takes in a number for index 
+        """ Takes in a number for index
         Return sample data based on the index
         """
         img_path = self.img_labels.iloc[idx, 0]
@@ -60,7 +60,7 @@ class Sentinel2Cloud(Dataset):
 
         image = _load_npy(img_path)
         mask = _load_npy(mask_path)
-        
+
         image = torch.from_numpy(image)
         mask = torch.from_numpy(mask)
         sample = (image, mask)
@@ -93,8 +93,8 @@ class Sentinel2Cloud(Dataset):
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
         mask_file_url = posixpath.join(self.mirrors, self.mask_resources)
-        _urlretrieve(mask_file_url, os.path.join(self.root, self.mask_resources))
-    
+        _urlretrieve(mask_file_url, os.path.join(
+            self.root, self.mask_resources))
 
     def _check_exists(self):
         """ Check file has been download or not
@@ -104,11 +104,10 @@ class Sentinel2Cloud(Dataset):
         return os.path.exists(os.path.join(self.data_path, "subscenes")) and \
             os.path.exists(os.path.join(self.data_path, "masks"))
 
-
     def extract_file(self):
         """Extract file from compressed.
         """
-        
+
         os.makedirs(os.path.join(self.root, "sentinel2cloud"))
 
         shutil.unpack_archive(os.path.join(
