@@ -42,10 +42,7 @@ class Sentinel2Cloud(Dataset):
         
         self.root = root
 
-        if os.path.exists(self.root):
-            pass
-        else:
-            os.makedirs(self.root)
+        if not os.path.exists(self.root): os.makedirs(self.root)
 
         if not self._check_exists():
             self.download()
