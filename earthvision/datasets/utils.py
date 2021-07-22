@@ -17,3 +17,6 @@ def _urlretrieve(url: str, filename: str, chunk_size: int = 1024) -> None:
 
 def _load_img(fname):
     return Image.open(fname)
+
+def _load_npy(fname):
+    return np.load(fname)
