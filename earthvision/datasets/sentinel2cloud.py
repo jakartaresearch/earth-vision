@@ -18,19 +18,37 @@ class Sentinel2Cloud(Dataset):
     classification_tags<https://zenodo.org/record/4172871/files/classification_tags.csv?download=1>
     subscenes<https://zenodo.org/record/4172871/files/subscenes.zip?download=1>
     masks<https://zenodo.org/record/4172871/files/masks.zip?download=1>
+
+    Args:
+        root (string): Root directory of dataset.
+
+    Functions:
+
+    __getitem__(idx)
+    __len__()
+    get_image_path_and_mask_path()
+    download()
+    _check_exists()
+    extract_files()
+
     """
 
-    mirrors = "https://zenodo.org/record/4172871/files/"
-    resources = "subscenes.zip?download=1"
-    mask_resources = "masks.zip?download=1"
+    # mirrors = "https://zenodo.org/record/4172871/files/"
+    resources = "subscenes.zip"
+    mask_resources = "masks.zip"
+
+    mirrors = "https://storage.googleapis.com/ossjr/sentinel2/"
 
 
     def __init__(self,
-                 root: str,
-                 data_mode: str = 'Images'):
+                 root: str):
         
         self.root = root
-        self.data_mode = data_mode
+
+        if os.path.exists(self.root):
+            pass
+        else:
+            os.makedirs(self.root)
 
         if not self._check_exists():
             self.download()
@@ -40,6 +58,9 @@ class Sentinel2Cloud(Dataset):
         
 
     def __getitem__(self, idx):
+        """ Takes in a number for index 
+        Return sample data based on the index
+        """
         img_path = self.img_labels.iloc[idx, 0]
         mask_path = self. img_labels.iloc[idx, 1]
 
@@ -53,11 +74,9 @@ class Sentinel2Cloud(Dataset):
         return sample
 
     def __len__(self):
+        """ Return the len of the image labels
+        """
         return len(self.img_labels)
-
-    def __iter__(self):
-        for index in range(self.__len__()):
-            yield self.__getitem__(index)
 
     def get_image_path_and_mask_path(self):
         """Return dataframe type consist of image path and mask path."""
@@ -81,8 +100,7 @@ class Sentinel2Cloud(Dataset):
 
         mask_file_url = posixpath.join(self.mirrors, self.mask_resources)
         _urlretrieve(mask_file_url, os.path.join(self.root, self.mask_resources))
-        
-
+    
 
     def _check_exists(self):
         """ Check file has been download or not
@@ -91,6 +109,7 @@ class Sentinel2Cloud(Dataset):
 
         return os.path.exists(os.path.join(self.data_path, "subscenes")) and \
             os.path.exists(os.path.join(self.data_path, "masks"))
+
 
     def extract_file(self):
         """Extract file from compressed.
@@ -105,4 +124,3 @@ class Sentinel2Cloud(Dataset):
         shutil.unpack_archive(os.path.join(
             self.root, self.mask_resources), os.path.join(self.root, "sentinel2cloud"))
         os.remove(os.path.join(self.root, self.mask_resources))
-
