@@ -30,8 +30,8 @@ class SpaceNet7(Dataset):
     """
 
     resources = {
-        'train': 'https://storage.googleapis.com/ossjr/sample_SN7_buildings_train.tar.gz',
-        'test': 'https://storage.googleapis.com/ossjr/sample_SN7_buildings_test_public.tar.gz'}
+        'train': 's3://spacenet-dataset/spacenet/SN7_buildings/tarballs/SN7_buildings_train.tar.gz',
+        'test': 's3://spacenet-dataset/spacenet/SN7_buildings/tarballs/SN7_buildings_test_public.tar.gz'}
 
     def __init__(self, root: str, download: bool = False, data_mode: str = 'train'):
         self.root = root
@@ -40,6 +40,9 @@ class SpaceNet7(Dataset):
         self.dataset_path = os.path.join(root, self.filename)
         data_mode_folder = {'train': 'train', 'test': 'test_public'}
         self.folder_name = data_mode_folder.get(data_mode, 'NULL')
+
+        if not os.path.exists(self.root):
+            os.makedirs(self.root)
 
         if download:
             if self._check_exists(self.dataset_path):
@@ -54,15 +57,15 @@ class SpaceNet7(Dataset):
 
         if self.data_mode == 'train':
             aois = sorted([f for f in os.listdir(os.path.join(self.root, 'train'))
-                if os.path.isdir(os.path.join(self.root, 'train', f))])  
+                           if os.path.isdir(os.path.join(self.root, 'train', f))])
 
             aois_without_mask = []
             for aoi in aois:
                 mask_dir = os.path.join(self.root, 'train', aoi, 'masks/')
                 if not self._check_exists(mask_dir):
                     aois_without_mask.append(aoi)
-            
-            if len(aois_without_mask) != 0:
+
+            if aois_without_mask:
                 print('Generating masks...')
                 self.generate_mask(aois_without_mask)
 
@@ -84,15 +87,13 @@ class SpaceNet7(Dataset):
     def extract_file(self):
         shutil.unpack_archive(self.dataset_path, self.root)
 
-    def generate_mask(self,aois):
+    def generate_mask(self, aois):
         """
         Create Training Masks
         Multi-thread to increase speed
         We'll only make a 1-channel mask for now, but Solaris supports a multi-channel mask as well, see
             https://github.com/CosmiQ/solaris/blob/master/docs/tutorials/notebooks/api_masks_tutorial.ipynb
         """
-        # aois = sorted([f for f in os.listdir(os.path.join(self.root, 'train'))
-        #                if os.path.isdir(os.path.join(self.root, 'train', f))])
         params = []
         make_fbc = False
 
