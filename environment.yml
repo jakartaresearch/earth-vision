@@ -1,0 +1,26 @@
+name: earth-vision
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.8
+  - pip
+  - gdal
+  - pip:
+    - torch>=1.7.1
+    - torchvision>=0.8.2
+    - gdown>=3.13.0
+    - scipy>=1.6.0
+    - opencv-python>=4.5.1.48
+    - Pillow>=8.2.0
+    - tqdm>=4.61.1
+    - pandas>=1.2.4
+    - numpy>=1.20.3
+    - boto3>=1.17.105
+    - Fiona>=1.8.20
+    - geopandas>=0.9.0
+    - rasterio>=1.2.6
+    - affine>=2.3.0
+    - Shapely>=1.7.1
+    - beautifulsoup4>=4.9.3
+    - scikit-image>=0.18.2
