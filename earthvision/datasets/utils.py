@@ -55,3 +55,6 @@ def downloader(resource, root):
 
 def _load_img(fname):
     return Image.open(fname)
+
+def _load_npy(fname):
+    return np.load(fname)

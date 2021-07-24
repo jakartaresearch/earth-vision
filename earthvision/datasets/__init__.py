@@ -9,7 +9,9 @@ from .deepsat import DeepSat
 from .landcover import LandCover
 from .cowc import COWC
 from .l7irish import L7Irish
+from .sentinel2cloud import Sentinel2Cloud
 from .spacenet7 import SpaceNet7
 
 __all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45',
-           'UCMercedLand', 'EuroSat', 'L8SPARCS', 'DeepSat', 'LandCover', 'COWC', 'L7Irish', 'SpaceNet7']
+           'UCMercedLand', 'EuroSat', 'L8SPARCS', 'DeepSat', 'LandCover', 
+           'COWC', 'L7Irish', 'Sentinel2Cloud', 'SpaceNet7']
