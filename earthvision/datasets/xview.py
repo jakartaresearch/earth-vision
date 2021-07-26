@@ -28,7 +28,7 @@ class XView():
     https://storage.googleapis.com/ossjr/xview/validation_images.tgz
     """
 
-    mirrors = "https://storage.googleapis.com/ossjr/xview"
+    urls = []
     resources = ["train_images.tgz", "train_labels.tgz", "validation_images.tgz"]
     
     def __init__(self, root: str, data_mode: str = 'train'):
@@ -65,10 +65,22 @@ class XView():
                 os.path.exists(os.path.join(self.root, 'val_images'))
 
     def download(self):
-        """Download file"""
-        for resource in self.resources:
-            file_url = posixpath.join(self.mirrors, resource)
-            _urlretrieve(file_url, os.path.join(self.root, resource))
+        """Download file by asking users to input the link"""
+        train_images = input("Please follow the following steps to download the required dataset\n" + \
+                "1. Visit https://challenge.xviewdataset.org/login\n" + \
+                "2. Sign up for an account\n" + \
+                "3. Verify your account\n" \
+                "4. Follow this link: https://challenge.xviewdataset.org/download-links\n" \
+                "5. Copy the link for 'Download Training Images (tgz)' and paste it: ")
+
+        train_labels = input("\n6. Copy and paste the link for 'Download Training Labels (tgz)': ")
+
+        val_images = input("\n7. Copy and paste the link for 'Download Validation Images (tgz)': ")
+        
+        self.urls = [train_images, train_labels, val_images]
+
+        for idx, url in enumerate(self.urls):
+            _urlretrieve(url, os.path.join(self.root, self.resources[idx]))
 
     def extract_file(self):
         """Extract the .tgz file"""
