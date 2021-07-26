@@ -22,6 +22,15 @@ def _urlretrieve(url: str, filename: str, chunk_size: int = 1024) -> None:
 
 
 def s3_downloader(s3_client, local_file_name, s3_bucket, s3_object_key):
+    """Download dataset from Amazon S3.
+
+    Args:
+        s3_client: Object boto3.client.
+        local_file_name: Destination filepath.
+        s3_bucket: S3 bucket.
+        s3_object_key: S3 object key.
+
+    """
     meta_data = s3_client.head_object(Bucket=s3_bucket, Key=s3_object_key)
     total_length = int(meta_data.get('ContentLength', 0))
     downloaded = 0
@@ -40,6 +49,13 @@ def s3_downloader(s3_client, local_file_name, s3_bucket, s3_object_key):
 
 
 def downloader(resource, root):
+    """Downloader function that handle general download link or S3 cloud storage.
+
+    Args:
+        resource: Dataset resource link.
+        root: Dataset destination filepath.
+
+    """
     resource_type, obj = resource.split('://')[0], resource.split('://')[1]
     dest_pth = os.path.join(root, resource.split('/')[-1])
 
@@ -55,6 +71,7 @@ def downloader(resource, root):
 
 def _load_img(fname):
     return Image.open(fname)
+
 
 def _load_npy(fname):
     return np.load(fname)
