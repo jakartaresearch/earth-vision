@@ -21,7 +21,7 @@ def _urlretrieve(url: str, filename: str, chunk_size: int = 1024) -> None:
                     fh.write(chunk)
 
 
-def s3_downloader(s3_client, local_file_name, s3_bucket, s3_object_key):
+def s3_downloader(s3_client, local_file_name: str, s3_bucket: str, s3_object_key: str):
     """Download dataset from Amazon S3.
 
     Args:
@@ -48,7 +48,7 @@ def s3_downloader(s3_client, local_file_name, s3_bucket, s3_object_key):
             s3_bucket, s3_object_key, f, Callback=progress)
 
 
-def downloader(resource, root):
+def downloader(resource: str, root: str):
     """Downloader function that handle general download link or S3 cloud storage.
 
     Args:
