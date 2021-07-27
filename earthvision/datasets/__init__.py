@@ -13,4 +13,4 @@ from .sentinel2cloud import Sentinel2Cloud
 from .xview import XView
 
 __all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45', 'UCMercedLand', 'EuroSat', 
-'L8SPARCS', 'DeepSat', 'LandCover', 'COWC','L7Irish', 'Sentinel2Cloud', 'XView]
+'L8SPARCS', 'DeepSat', 'LandCover', 'COWC','L7Irish', 'Sentinel2Cloud', 'XView']
