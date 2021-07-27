@@ -9,6 +9,7 @@
 *.pth
 *.ipynb
 *.mat
+*.tar.gz
 */.ipynb_checkpoints/*
 data
 dataset
@@ -17,3 +18,4 @@ __pycache__
 .vscode
 settings.json
 .DS_Store
+train
