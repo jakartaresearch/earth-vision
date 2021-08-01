@@ -1,3 +1,5 @@
+#Reference https://github.com/cordmaur/38Cloud-Medium
+
 import os
 import shutil
 import posixpath
@@ -26,7 +28,7 @@ class Cloud38(Dataset):
 
         self.root = root
         self.data_path = os.path.join(self.root, "38cloud")
-        self.base_path = Path(os.path.join(self.data_path, os.path.join("38cloud", "38-Cloud_training")))
+        self.base_path = Path(os.path.join(self.data_path, "38-Cloud_training"))
 
         if not os.path.exists(self.root):
             os.makedirs(self.root)
@@ -46,12 +48,21 @@ class Cloud38(Dataset):
 
         for gt_patch in (self.base_path/'train_gt').iterdir():
             self.convert_tif_png(gt_patch, self.base_path/'labels')
+
+        self.labels = self.get_path()
         
         print("Done.")
 
+    def get_path(self):
+        label = []
+        path_label = os.path.join(self.base_path, 'labels')
+        path_gt = os.path.join(self.base_path, 'train_gt')
+        label_listing =  [os.path.join(path_label, i) for i in os.listdir(path_label)]
+        gt_listing =  [os.path.join(path_gt, i) for i in os.listdir(path_gt)]
+        return pd.DataFrame({'GT': gt_listing, 'Label': label_listing})
 
     def create_rgb_pil(self, red_filename: Path):
-        """
+        """Combining three bands to RGB format
         """
         self.red_filename = str(red_filename)
         green_fn = self.red_filename.replace('red', 'green')
@@ -70,7 +81,7 @@ class Cloud38(Dataset):
         return rgb
 
     def convert_tif_png(self, tif_file: Path, out_folder:Path):
-        """
+        """Converting TIF file to PNG format
         """
         self.tif_file = tif_file
         self.out_folder = out_folder
@@ -96,14 +107,14 @@ class Cloud38(Dataset):
         """Check file has been download or not
         """
 
-        return os.path.exists(os.path.join(self.data_path, os.path.join("38cloud", "38-Cloud_95-Cloud_Test_Metadata_Files"))) and \
-            os.path.exists(os.path.join(self.data_path, os.path.join("38cloud", "38-Cloud_test"))) and \
-            os.path.exists(os.path.join(self.data_path, os.path.join("38cloud", "38-Cloud_training"))) and \
-            os.path.exists(os.path.join(self.data_path, os.path.join("38cloud", "38-Cloud_Training_Metadata_Files")))
+        return os.path.exists(os.path.join(self.data_path, "38-Cloud_95-Cloud_Test_Metadata_Files")) and \
+            os.path.exists(os.path.join(self.data_path, "38-Cloud_test")) and \
+            os.path.exists(os.path.join(self.data_path, "38-Cloud_training")) and \
+            os.path.exists(os.path.join(self.data_path, "38-Cloud_Training_Metadata_Files"))
 
     def extract_file(self):
-        """
+        """Extract file from the compressed
         """
         print("Extracting...")
-        shutil.unpack_archive(os.path.join(self.root, self.resources), os.path.join(self.root, "38cloud"))
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
