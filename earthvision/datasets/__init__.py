@@ -10,9 +10,10 @@ from .landcover import LandCover
 from .cowc import COWC
 from .l7irish import L7Irish
 from .xview import XView
+from .so2sat import So2Sat
 
 __all__ = [
     'DroneDeploy', 'AerialCactus', 'RESISC45', 'UCMercedLand', 
     'EuroSat', 'L8SPARCS', 'DeepSat', 'LandCover', 'COWC',
-    'L7Irish', 'XView'
+    'L7Irish', 'XView', 'So2Sat'
 ]
