@@ -66,7 +66,6 @@ class So2Sat():
         if not os.path.exists(self.root):
             os.makedirs(self.root)
 
-        # wget.download('ftp://m1454690:m1454690@dataserv.ub.tum.de/', out=os.path.join(self.root, "so2sat_2"))
         for resource in self.resources:
             file_url = posixpath.join(self.mirrors, resource)
             _urlretrieve(file_url, os.path.join(self.root, resource)) 
