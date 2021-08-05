@@ -23,37 +23,37 @@ class L8Biome():
 
         self.root = root
         self.download_urls = self.get_download_url()
-        self.resources = [url.split('/')[-1] for url in self.download_urls]
-        self.data_modes = [filename.split('.tar.gz')[0]
-                           for filename in self.resources]
-
+        self.data_modes = [url.split("/")[-1] for url in self.download_urls]
+        
         if not self._check_exists():
             self.download()
             self.extract_file()
 
-        self.img_labels = self.get_path_and_label()
+#         self.img_labels = self.get_path_and_label()
 
     def get_download_url(self):
         """Get the urls to download the files."""
-        page = requests.get(self.mirror)
+        page = requests.get(self.mirrors)
         soup = BeautifulSoup(page.content, 'html.parser')
 
         urls = [url.get('href') for url in soup.find_all('a')]
 
-        download_urls = filter(lambda url: url.endswith('.tar.gz'), urls)
+        download_urls = list(filter(lambda url: url.endswith('.tar.gz') if url else None, urls))
         return download_urls
 
     def download(self):
         """Download file"""
-        for resource in self.resources:
-            file_url = posixpath.join(self.mirrors, resource)
-            _urlretrieve(file_url, os.path.join(self.root, resource))
+        for resource in self.download_urls:
+            filename = resource.split("/")[-1]
+            _urlretrieve(resource, os.path.join(self.root, filename))
+            break
 
     def extract_file(self):
         """Extract the .zip file"""
-        for resource in self.resources:
+        for resource in self.data_modes:
             shutil.unpack_archive(os.path.join(self.root, resource), self.root)
             os.remove(os.path.join(self.root, resource))
+            break
 
     def _check_exists(self):
         is_exists = []
