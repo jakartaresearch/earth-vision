@@ -17,10 +17,8 @@ import cv2
 
 
 class Cloud38(Dataset):
-    """
-    """
 
-    mirrors = "https://storage.googleapis.com/ossjr/"
+    mirrors = "http://vault.sfu.ca/index.php/s/pymNqYF09JkM8Bp/download"
     resources = "38cloud.zip"
 
     def __init__(self,
@@ -37,6 +35,13 @@ class Cloud38(Dataset):
             self.download()
             self.extract_file()
 
+        self.file_validator()        
+
+        self.labels = self.get_path()
+        
+        print("Done.")
+
+    def file_validator(self):
         if not (self.base_path/'train_rgb').exists():
             (self.base_path/'train_rgb').mkdir()
         
@@ -48,10 +53,6 @@ class Cloud38(Dataset):
 
         for gt_patch in (self.base_path/'train_gt').iterdir():
             self.convert_tif_png(gt_patch, self.base_path/'labels')
-
-        self.labels = self.get_path()
-        
-        print("Done.")
 
     def get_path(self):
         label = []
@@ -100,8 +101,8 @@ class Cloud38(Dataset):
     def download(self):
         """download and extract file.
         """
-        file_url = posixpath.join(self.mirrors, self.resources)
-        _urlretrieve(file_url, os.path.join(self.root, self.resources))
+        _urlretrieve(self.mirrors, os.path.join(self.root, self.resources))
+
 
     def _check_exists(self):
         """Check file has been download or not
@@ -118,3 +119,9 @@ class Cloud38(Dataset):
         print("Extracting...")
         shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
+
+        shutil.unpack_archive(os.path.join(self.root, '38-Cloud_training.zip'), self.root)
+        os.remove(os.path.join(self.root, '38-Cloud_training.zip'))
+
+        shutil.unpack_archive(os.path.join(self.root, '38-Cloud_test.zip'), self.root)
+        os.remove(os.path.join(self.root, '38-Cloud_test.zip'))
