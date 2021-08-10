@@ -75,3 +75,18 @@ def _load_img(fname):
 
 def _load_npy(fname):
     return np.load(fname)
+
+def _load_img_hdr(fname):
+    return open_image(fname).read_band(0)
+
+def _load_stack_img(list_path_file):
+    ls = []
+    for file_name in list_path_file:
+        im = Image.open(file_name)
+        ls.append(im)
+    stack_img = np.stack(ls)
+    return stack_img
+
+
+
+

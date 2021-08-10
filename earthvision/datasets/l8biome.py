@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 import requests
 from bs4 import BeautifulSoup
-from .utils import _urlretrieve, _load_img
+from .utils import _urlretrieve, _load_img,_load_img_hdr,_load_stack_img
 
 
 class L8Biome():
@@ -54,7 +54,8 @@ class L8Biome():
             shutil.unpack_archive(os.path.join(self.root, resource), self.root)
             os.remove(os.path.join(self.root, resource))
             break
-
+    
+    # Yang belum
     def _check_exists(self):
         is_exists = []
         if not os.path.isdir(self.root):
@@ -66,32 +67,37 @@ class L8Biome():
 
         return all(is_exists)
 
+
     def get_path_and_label(self):
         """Get the path of the images and labels (masks) in a dataframe"""
-        image_path = []
+        image_directory = []
         label = []
+        for 
 
         for data_mode in self.data_modes:
-            for image in glob.glob(os.path.join(self.root, data_mode, 'LC*.TIF')):
-                image_path.append(image)
+            for image_dir in glob.glob(os.path.join(self.root, data_mode)):
+                image_directory.append(image_dir)
 
                 label.extend(glob.glob(os.path.join(
                     self.root, data_mode, '*mask.hdr')))
 
-        df = pd.DataFrame({'image': image_path, 'label': label})
+        df = pd.DataFrame({'image': image_directory, 'label': label})
         return df
 
     def __getitem__(self, idx):
         """Return a tensor image and its tensor mask"""
-        img_path = self.img_labels.iloc[idx, 0]
+        img_directory = self.img_labels.iloc[idx, 0]
         mask_path = self.img_labels.iloc[idx, 1]
 
-        image = _load_img(img_path)
-        image = np.array(image)
+        ls_stack_path = []
+        for idx in range(1,12):
+            name_file = f"{img_directory}/{img_directory}_B{idx}.TIF"
+            ls_stack_path.append(name_file)
+
+        image = _load_stack_img(ls_stack_path)
         image = torch.from_numpy(image)
 
-        mask = _load_img(mask_path)
-        mask = np.array(mask)
+        mask = _load_img_hdr(mask_path)
         mask = torch.from_numpy(mask)
 
         sample = (image, mask)
