@@ -1,13 +1,18 @@
 import sys
 import os
 import urllib
+import collections
 import numpy as np
 import boto3
+from spectral import open_image
 
 from tqdm import tqdm
 from PIL import Image
 from botocore import UNSIGNED
 from botocore.client import Config
+
+# define MAX_IMAGE_PIXELS
+Image.MAX_IMAGE_PIXELS = 1000000000 
 
 
 def _urlretrieve(url: str, filename: str, chunk_size: int = 1024) -> None:
@@ -79,12 +84,31 @@ def _load_npy(fname):
 def _load_img_hdr(fname):
     return open_image(fname).read_band(0)
 
+def _resize_stack(ls):
+    ls_size = []
+    for im in ls:
+        ls_size.append(im.size)
+
+    h, w = zip(*ls_size)
+
+    h_mode = list(collections.Counter(h))[0]
+    w_mode = list(collections.Counter(w))[0]
+
+    for idx, (h, w) in enumerate(ls_size):
+        if (h != h_mode) | ((w != w_mode)):
+            ls[idx] = ls[idx].resize((h_mode, w_mode))
+
+    return ls
+
 def _load_stack_img(list_path_file):
     ls = []
     for file_name in list_path_file:
         im = Image.open(file_name)
         ls.append(im)
+    
+    ls = _resize_stack(ls)    
     stack_img = np.stack(ls)
+    stack_img = stack_img.astype(np.int16)
     return stack_img
 
 

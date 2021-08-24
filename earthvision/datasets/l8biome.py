@@ -29,7 +29,7 @@ class L8Biome():
             self.download()
             self.extract_file()
 
-#         self.img_labels = self.get_path_and_label()
+        self.img_labels = self.get_path_and_label()
 
     def get_download_url(self):
         """Get the urls to download the files."""
@@ -55,15 +55,16 @@ class L8Biome():
             os.remove(os.path.join(self.root, resource))
             break
     
-    # Yang belum
     def _check_exists(self):
         is_exists = []
         if not os.path.isdir(self.root):
             os.mkdir(self.root)
 
         for data_mode in self.data_modes:
+            data_mode = data_mode.replace('.tar.gz', '')
             data_path = os.path.join(self.root, "BC", data_mode)
             is_exists.append(os.path.exists(data_path))
+            break
 
         return all(is_exists)
 
@@ -72,15 +73,16 @@ class L8Biome():
         """Get the path of the images and labels (masks) in a dataframe"""
         image_directory = []
         label = []
-        for 
 
         for data_mode in self.data_modes:
-            for image_dir in glob.glob(os.path.join(self.root, data_mode)):
-                image_directory.append(image_dir)
-
-                label.extend(glob.glob(os.path.join(
-                    self.root, data_mode, '*mask.hdr')))
-
+            data_mode = data_mode.replace('.tar.gz', '')
+            image_dir = os.path.join(self.root, "BC", data_mode)
+            
+            image_directory.append(image_dir)
+            label.extend(glob.glob(os.path.join(self.root, "BC", data_mode, '*mask.hdr')))
+            
+            break
+            
         df = pd.DataFrame({'image': image_directory, 'label': label})
         return df
 
@@ -91,7 +93,8 @@ class L8Biome():
 
         ls_stack_path = []
         for idx in range(1,12):
-            name_file = f"{img_directory}/{img_directory}_B{idx}.TIF"
+            observation = img_directory.split("/")[-1]
+            name_file = f"{img_directory}/{observation}_B{idx}.TIF"
             ls_stack_path.append(name_file)
 
         image = _load_stack_img(ls_stack_path)
