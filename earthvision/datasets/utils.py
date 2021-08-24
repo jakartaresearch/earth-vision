@@ -12,7 +12,7 @@ from botocore import UNSIGNED
 from botocore.client import Config
 
 # define MAX_IMAGE_PIXELS
-Image.MAX_IMAGE_PIXELS = 1000000000 
+Image.MAX_IMAGE_PIXELS = 1000000000
 
 
 def _urlretrieve(url: str, filename: str, chunk_size: int = 1024) -> None:
@@ -81,8 +81,10 @@ def _load_img(fname):
 def _load_npy(fname):
     return np.load(fname)
 
+
 def _load_img_hdr(fname):
     return open_image(fname).read_band(0)
+
 
 def _resize_stack(ls):
     ls_size = []
@@ -100,17 +102,14 @@ def _resize_stack(ls):
 
     return ls
 
+
 def _load_stack_img(list_path_file):
     ls = []
     for file_name in list_path_file:
         im = Image.open(file_name)
         ls.append(im)
-    
-    ls = _resize_stack(ls)    
+
+    ls = _resize_stack(ls)
     stack_img = np.stack(ls)
     stack_img = stack_img.astype(np.int16)
     return stack_img
-
-
-
-

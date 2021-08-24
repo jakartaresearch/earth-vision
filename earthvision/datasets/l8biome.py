@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 import requests
 from bs4 import BeautifulSoup
-from .utils import _urlretrieve, _load_img,_load_img_hdr,_load_stack_img
+from .utils import _urlretrieve, _load_img, _load_img_hdr, _load_stack_img
 
 
 class L8Biome():
@@ -24,7 +24,7 @@ class L8Biome():
         self.root = root
         self.download_urls = self.get_download_url()
         self.data_modes = [url.split("/")[-1] for url in self.download_urls]
-        
+
         if not self._check_exists():
             self.download()
             self.extract_file()
@@ -38,7 +38,8 @@ class L8Biome():
 
         urls = [url.get('href') for url in soup.find_all('a')]
 
-        download_urls = list(filter(lambda url: url.endswith('.tar.gz') if url else None, urls))
+        download_urls = list(
+            filter(lambda url: url.endswith('.tar.gz') if url else None, urls))
         return download_urls
 
     def download(self):
@@ -54,7 +55,7 @@ class L8Biome():
             shutil.unpack_archive(os.path.join(self.root, resource), self.root)
             os.remove(os.path.join(self.root, resource))
             break
-    
+
     def _check_exists(self):
         is_exists = []
         if not os.path.isdir(self.root):
@@ -68,7 +69,6 @@ class L8Biome():
 
         return all(is_exists)
 
-
     def get_path_and_label(self):
         """Get the path of the images and labels (masks) in a dataframe"""
         image_directory = []
@@ -77,12 +77,13 @@ class L8Biome():
         for data_mode in self.data_modes:
             data_mode = data_mode.replace('.tar.gz', '')
             image_dir = os.path.join(self.root, "BC", data_mode)
-            
+
             image_directory.append(image_dir)
-            label.extend(glob.glob(os.path.join(self.root, "BC", data_mode, '*mask.hdr')))
-            
+            label.extend(glob.glob(os.path.join(
+                self.root, "BC", data_mode, '*mask.hdr')))
+
             break
-            
+
         df = pd.DataFrame({'image': image_directory, 'label': label})
         return df
 
@@ -92,7 +93,7 @@ class L8Biome():
         mask_path = self.img_labels.iloc[idx, 1]
 
         ls_stack_path = []
-        for idx in range(1,12):
+        for idx in range(1, 12):
             observation = img_directory.split("/")[-1]
             name_file = f"{img_directory}/{observation}_B{idx}.TIF"
             ls_stack_path.append(name_file)
