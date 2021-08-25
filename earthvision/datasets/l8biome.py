@@ -47,14 +47,12 @@ class L8Biome():
         for resource in self.download_urls:
             filename = resource.split("/")[-1]
             _urlretrieve(resource, os.path.join(self.root, filename))
-            break
 
     def extract_file(self):
         """Extract the .zip file"""
         for resource in self.data_modes:
             shutil.unpack_archive(os.path.join(self.root, resource), self.root)
             os.remove(os.path.join(self.root, resource))
-            break
 
     def _check_exists(self):
         is_exists = []
@@ -65,7 +63,6 @@ class L8Biome():
             data_mode = data_mode.replace('.tar.gz', '')
             data_path = os.path.join(self.root, "BC", data_mode)
             is_exists.append(os.path.exists(data_path))
-            break
 
         return all(is_exists)
 
@@ -81,8 +78,6 @@ class L8Biome():
             image_directory.append(image_dir)
             label.extend(glob.glob(os.path.join(
                 self.root, "BC", data_mode, '*mask.hdr')))
-
-            break
 
         df = pd.DataFrame({'image': image_directory, 'label': label})
         return df
@@ -110,7 +105,3 @@ class L8Biome():
 
     def __len__(self):
         return len(self.img_labels)
-
-    def __iter__(self):
-        for index in range(self.__len__()):
-            yield self.__getitem__(index)
