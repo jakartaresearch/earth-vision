@@ -7,8 +7,9 @@ import pandas as pd
 import torch
 import h5py
 from .utils import _urlretrieve
+from torch.utils.data import Dataset
 
-class So2Sat():
+class So2Sat(Dataset):
     """
     So2Sat Dataset to Predict Local Climate Zone (LCZ): <https://mediatum.ub.tum.de/1454690>
     """
@@ -42,10 +43,6 @@ class So2Sat():
         label = torch.from_numpy(label)
 
         return (sen1, sen2, label)
-
-    def __iter__(self):
-        for index in range(self.__len__()):
-            yield self.__getitem__(index)
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
