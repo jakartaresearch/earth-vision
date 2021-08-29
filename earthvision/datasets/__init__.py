@@ -13,9 +13,11 @@ from .sentinel2cloud import Sentinel2Cloud
 from .spacenet7 import SpaceNet7
 from .xview import XView
 from .cloud38 import Cloud38
+from .so2sat import So2Sat
 from .l8biome import L8Biome
 
 
 __all__ = ['DroneDeploy', 'AerialCactus', 'RESISC45',
            'UCMercedLand', 'EuroSat', 'L8SPARCS', 'DeepSat', 'LandCover',
-           'COWC', 'L7Irish', 'Sentinel2Cloud', 'SpaceNet7', 'XView', 'Cloud38', 'L8Biome']
+           'COWC', 'L7Irish', 'Sentinel2Cloud', 'SpaceNet7', 'XView', 'Cloud38',
+           'So2Sat', 'L8Biome']
