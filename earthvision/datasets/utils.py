@@ -87,9 +87,7 @@ def _load_img_hdr(fname):
 
 
 def _resize_stack(ls):
-    ls_size = []
-    for im in ls:
-        ls_size.append(im.size)
+    ls_size = [im.size for im in ls]
 
     h, w = zip(*ls_size)
 
@@ -104,10 +102,7 @@ def _resize_stack(ls):
 
 
 def _load_stack_img(list_path_file):
-    ls = []
-    for file_name in list_path_file:
-        im = Image.open(file_name)
-        ls.append(im)
+    ls = [Image.open(file_name) for file_name in list_path_file]
 
     ls = _resize_stack(ls)
     stack_img = np.stack(ls)
