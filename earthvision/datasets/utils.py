@@ -1,6 +1,7 @@
 import sys
 import os
 import urllib
+import ssl
 import numpy as np
 import boto3
 
@@ -11,8 +12,12 @@ from botocore.client import Config
 
 
 def _urlretrieve(url: str, filename: str, chunk_size: int = 1024) -> None:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
     with open(filename, "wb") as fh:
-        with urllib.request.urlopen(urllib.request.Request(url)) as response:
+        with urllib.request.urlopen(urllib.request.Request(url), context=ctx) as response:
             with tqdm(total=response.length) as pbar:
                 for chunk in iter(lambda: response.read(chunk_size), ""):
                     if not chunk:
