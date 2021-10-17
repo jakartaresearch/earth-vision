@@ -19,3 +19,4 @@ __pycache__
 settings.json
 .DS_Store
 train
+env-earthvision

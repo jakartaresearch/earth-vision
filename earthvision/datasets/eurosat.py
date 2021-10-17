@@ -20,6 +20,17 @@ class EuroSat():
     
     mirrors = "http://madm.dfki.de/files/sentinel"
     resources = "EuroSAT.zip"
+    classes = {"AnnualCrop": 0, \
+                    "Forest": 1, \
+                    "HerbaceousVegetation": 2, \
+                    "Highway": 3, \
+                    "Industrial": 4, \
+                    "Pasture": 5, \
+                    "PermanentCrop": 6, \
+                    "Residential": 7, \
+                    "River": 8, \
+                    "SeaLake": 9}
+
 
     def __init__(self,
                 root: str,
@@ -31,7 +42,7 @@ class EuroSat():
         self.data_mode = data_mode
         self.transform = transform
         self.target_transform = target_transform
-
+        
         if not self._check_exists():
             self.download()
             self.extract_file()
@@ -62,18 +73,9 @@ class EuroSat():
     def _check_exists(self) -> None:
         self.data_path = os.path.join(
             self.root, self.data_mode)
-
-        return os.path.exists(os.path.join(self.data_path, "AnnualCrop")) and \
-            os.path.exists(os.path.join(self.data_path, "Forest")) and \
-            os.path.exists(os.path.join(self.data_path, "HerbaceousVegetation")) and \
-            os.path.exists(os.path.join(self.data_path, "Highway")) and \
-            os.path.exists(os.path.join(self.data_path, "Industrial")) and \
-            os.path.exists(os.path.join(self.data_path, "Pasture")) and \
-            os.path.exists(os.path.join(self.data_path, "PermanentCrop")) and \
-            os.path.exists(os.path.join(self.data_path, "Residential")) and \
-            os.path.exists(os.path.join(self.data_path, "River")) and \
-            os.path.exists(os.path.join(self.data_path, "SeaLake"))
-
+        self.dir_classes = list(self.classes.keys())
+        
+        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
 
     def download(self):
        """Download file"""
@@ -87,19 +89,9 @@ class EuroSat():
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
-        classes = {"AnnualCrop": 0, \
-                    "Forest": 1, \
-                    "HerbaceousVegetation": 2, \
-                    "Highway": 3, \
-                    "Industrial": 4, \
-                    "Pasture": 5, \
-                    "PermanentCrop": 6, \
-                    "Residential": 7, \
-                    "River": 8, \
-                    "SeaLake": 9}
         image_path = []
         label = []
-        for cat, enc in classes.items():
+        for cat, enc in self.classes.items():
             cat_path = os.path.join(
                 self.root, self.data_mode, cat)
             cat_image = [os.path.join(cat_path, path)

@@ -16,6 +16,27 @@ class UCMercedLand(Dataset):
 
     mirrors = "http://weegee.vision.ucmerced.edu/datasets/"
     resources = "UCMerced_LandUse.zip"
+    classes = {'agricultural': 0,
+                   'airplane': 1,
+                   'baseballdiamond': 2,
+                   'beach': 3,
+                   'buildings': 4,
+                   'chaparral': 5,
+                   'denseresidential': 6,
+                   'forest': 7,
+                   'freeway': 8,
+                   'golfcourse': 9,
+                   'harbor': 10,
+                   'intersection': 11,
+                   'mediumresidential': 12,
+                   'mobilehomepark': 13,
+                   'overpass': 14,
+                   'parkinglot': 15,
+                   'river': 16,
+                   'runway': 17,
+                   'sparseresidential': 18,
+                   'storagetanks': 19,
+                   'tenniscourt': 20}
 
     def __init__(self,
                  root: str,
@@ -57,30 +78,9 @@ class UCMercedLand(Dataset):
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
-        classes = {'agricultural': 0,
-                   'airplane': 1,
-                   'baseballdiamond': 2,
-                   'beach': 3,
-                   'buildings': 4,
-                   'chaparral': 5,
-                   'denseresidential': 6,
-                   'forest': 7,
-                   'freeway': 8,
-                   'golfcourse': 9,
-                   'harbor': 10,
-                   'intersection': 11,
-                   'mediumresidential': 12,
-                   'mobilehomepark': 13,
-                   'overpass': 14,
-                   'parkinglot': 15,
-                   'river': 16,
-                   'runway': 17,
-                   'sparseresidential': 18,
-                   'storagetanks': 19,
-                   'tenniscourt': 20}
         image_path = []
         label = []
-        for cat, enc in classes.items():
+        for cat, enc in self.classes.items():
             cat_path = os.path.join(
                 self.root, 'UCMerced_LandUse', self.data_mode, cat)
             cat_image = [os.path.join(cat_path, path)
@@ -95,28 +95,9 @@ class UCMercedLand(Dataset):
     def _check_exists(self):
         self.data_path = os.path.join(
             self.root, "UCMerced_LandUse", "Images")
+        self.dir_classes = list(self.classes.keys())
 
-        return os.path.exists(os.path.join(self.data_path, "agricultural")) and \
-            os.path.exists(os.path.join(self.data_path, "airplane")) and \
-            os.path.exists(os.path.join(self.data_path, "baseballdiamond")) and \
-            os.path.exists(os.path.join(self.data_path, "beach")) and \
-            os.path.exists(os.path.join(self.data_path, "buildings")) and \
-            os.path.exists(os.path.join(self.data_path, "chaparral")) and \
-            os.path.exists(os.path.join(self.data_path, "denseresidential")) and \
-            os.path.exists(os.path.join(self.data_path, "forest")) and \
-            os.path.exists(os.path.join(self.data_path, "freeway")) and \
-            os.path.exists(os.path.join(self.data_path, "golfcourse")) and \
-            os.path.exists(os.path.join(self.data_path, "harbor")) and \
-            os.path.exists(os.path.join(self.data_path, "intersection")) and \
-            os.path.exists(os.path.join(self.data_path, "mediumresidential")) and \
-            os.path.exists(os.path.join(self.data_path, "mobilehomepark")) and \
-            os.path.exists(os.path.join(self.data_path, "overpass")) and \
-            os.path.exists(os.path.join(self.data_path, "parkinglot")) and \
-            os.path.exists(os.path.join(self.data_path, "river")) and \
-            os.path.exists(os.path.join(self.data_path, "runway")) and \
-            os.path.exists(os.path.join(self.data_path, "sparseresidential")) and \
-            os.path.exists(os.path.join(self.data_path, "storagetanks")) and \
-            os.path.exists(os.path.join(self.data_path, "tenniscourt"))
+        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
 
     def download(self):
         """download and extract file."""
@@ -125,9 +106,6 @@ class UCMercedLand(Dataset):
 
     def extract_file(self):
         """Extract file from compressed."""
-#         path_destination = os.path.join(
-#             self.root, self.resources.replace(".zip", ""))
-#         os.makedirs(path_destination, exist_ok=True)
         shutil.unpack_archive(os.path.join(
             self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
