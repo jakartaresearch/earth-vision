@@ -1,27 +1,33 @@
 """Class for Drone Deploy - Semantic Segmentation."""
+from PIL import Image
 import sys
 import os
 import numpy as np
 import random
 import cv2
 import torch
+
+from typing import Any, Callable, Optional, Tuple
+from .vision import VisionDataset
 from earthvision.constants.DroneDeploy.config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
 from earthvision.datasets.utils import _urlretrieve
 
-from PIL import Image
-from torch.utils.data import Dataset
 
-
-class DroneDeploy():
+class DroneDeploy(VisionDataset):
     """Drone Deploy Semantic Dataset.
 
     Args:
         root (string): Root directory of dataset.
         dataset_type (string, optional): Choose dataset type.
+        data_mode (int): 0 for train data, 1 for validation data, and 2 for testing data
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
         download (bool, optional): If true, downloads the dataset from the internet and
             puts it in root directory. If dataset is already downloaded, it is not
             downloaded again.
-        data_mode (int): 0 for train data, 1 for validation data, and 2 for testing data
+
     """
 
     resources = {
@@ -29,7 +35,18 @@ class DroneDeploy():
         'dataset-medium': 'https://dl.dropboxusercontent.com/s/r0dj9mhyv4bgbme/dataset-medium.tar.gz?dl=0'
     }
 
-    def __init__(self, root: str, dataset_type='dataset-sample', download: bool = False, data_mode: int = 0):
+    def __init__(
+            self,
+            root: str,
+            dataset_type='dataset-sample',
+            data_mode: int = 0,
+            transform: Optional[Callable] = None,
+            target_transform: Optional[Callable] = None,
+            download: bool = False) -> None:
+
+        super(DroneDeploy, self).__init__(
+            root, transform=transform, target_transform=target_transform)
+
         self.root = root
         self.dataset_type = dataset_type
         self.filename = f'{dataset_type}.tar.gz'
@@ -46,7 +63,7 @@ class DroneDeploy():
 
         self.load_dataset()
 
-    def download(self):
+    def download(self) -> None:
         """Download a dataset, extract it and create the tiles."""
         print(f'Downloading "{self.dataset_type}"')
         self.root = os.path.expanduser(self.root)
@@ -93,19 +110,31 @@ class DroneDeploy():
                  for fname in load_lines(os.path.join(self.root, self.dataset_type, list_chip))]
         self.image_files = files
 
-    def __len__(self):
-        return len(self.image_files)
-
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> Tuple[Any, Any]:
+        """
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
         image_file = self.image_files[idx]
         label_file = image_file.replace(self.image_path, self.label_path)
 
-        image = load_img(image_file)
-        label = mask_to_classes(load_img(label_file))
+        img = load_img(image_file)
+        img = np.array(img)
+        target = mask_to_classes(load_img(label_file))
+        target = np.array(target)
 
-        tensor_image = torch.from_numpy(np.array(image))
-        tensor_label = torch.from_numpy(np.array(label))
-        return tensor_image, tensor_label
+        if self.transform is not None:
+            img = Image.fromarray(img)
+            img = self.transform(img)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return img, target
+
+    def __len__(self) -> int:
+        return len(self.image_files)
 
     def on_epoch_end(self):
         random.shuffle(self.image_files)

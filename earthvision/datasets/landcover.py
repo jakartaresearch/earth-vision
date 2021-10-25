@@ -1,73 +1,86 @@
+from PIL import Image
 import os
 import shutil
 import posixpath
 import numpy as np
 import pandas as pd
-import torch
-from torch.utils.data import Dataset
-from torchvision.transforms import Resize
-from .utils import _urlretrieve, _load_img
-
 import glob
 import cv2
+import torch
+
+from typing import Any, Callable, Optional, Tuple
+from .utils import _urlretrieve, _load_img
+from .vision import VisionDataset
+from torchvision.transforms import Resize, ToTensor, Compose
 
 
-class LandCover(Dataset):
-
+class LandCover(VisionDataset):
     """
     The LandCover.ai (Land Cover from Aerial Imagery) dataset.
     <https://landcover.ai/download/landcover.ai.v1.zip>
+
+    Args:
+        root (string): Root directory of dataset.
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
     """
 
     mirrors = "https://landcover.ai/download"
     resources = "landcover.ai.v1.zip"
 
-    def __init__(self,
-                 root: str,
-                 data_mode: str = 'Images',
-                 transform=Resize((256, 256)),
-                 target_transform=Resize((256, 256))):
+    def __init__(
+            self,
+            root: str,
+            transform=Compose([Resize((256, 256)), ToTensor()]),
+            target_transform=Compose([Resize((256, 256)), ToTensor()]),
+            download: bool = False) -> None:
+
+        super(LandCover, self).__init__(
+            root, transform=transform, target_transform=target_transform)
 
         self.root = root
-        self.data_mode = data_mode
-        self.transform = transform
-        self.target_transform = target_transform
 
-        if not self._check_exists():
+        if download and self._check_exists():
+            print(f'zipfile "{self.resources}" already exists.')
+
+        if download and not self._check_exists():
             self.download()
             self.extract_file()
             self.to_chip_img_mask("landcover")
 
         self.img_labels = self.get_image_path_and_mask_path()
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Any, Any]:
+        """
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
         img_path = self.img_labels.iloc[idx, 0]
         mask_path = self.img_labels.iloc[idx, 1]
-        image = _load_img(img_path)
-        mask = _load_img(mask_path)
-        if self.transform:
-            image = self.transform(image)
-        if self.target_transform:
+        img = np.array(_load_img(img_path))
+        mask = np.array(_load_img(mask_path))
+
+        if self.transform is not None:
+            img = Image.fromarray(img)
+            img = self.transform(img)
+
+        if self.target_transform is not None:
             mask = self.target_transform(mask)
-        image = np.array(image)
-        image = torch.from_numpy(image)
-        mask = np.array(mask)
-        mask = torch.from_numpy(mask)
-        sample = (image, mask)
+        return img, mask
 
-        return sample
-
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.img_labels)
-
-    def __iter__(self):
-        for index in range(self.__len__()):
-            yield self.__getitem__(index)
 
     def get_image_path_and_mask_path(self):
         """Return dataframe type consist of image path and mask path."""
-        image_path = []
-        mask_path = []
+        image_path, mask_path = [], []
 
         img_path = os.path.join(self.root, 'landcover', 'output', 'images')
         msk_path = os.path.join(self.root, 'landcover', 'output', 'masks')
@@ -83,7 +96,6 @@ class LandCover(Dataset):
         return df
 
     def to_chip_img_mask(self, base):
-
         IMGS_DIR = "./{}/images".format(base)
         MASKS_DIR = "./{}/masks".format(base)
         OUTPUT_DIR = "./{}/output".format(base)
@@ -128,16 +140,14 @@ class LandCover(Dataset):
 
             print("Processed {} {}/{}".format(img_filename, i + 1, len(img_paths)))
 
-    def download(self):
+    def download(self) -> None:
         """download and extract file.
         """
-        # raise NotImplementedError
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def _check_exists(self):
         """Check file has been download or not"""
-        # raise NotImplementedError
         self.data_path = os.path.join(
             self.root, "landcover",)
 

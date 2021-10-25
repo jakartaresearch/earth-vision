@@ -1,53 +1,79 @@
 """RESISC45 Dataset."""
+from PIL import Image
 import os
 import posixpath
 import shutil
 import numpy as np
 import pandas as pd
 import torch
-from torch.utils.data import Dataset
+
+from typing import Any, Callable, Optional, Tuple
+from .vision import VisionDataset
 from earthvision.constants.RESISC45.config import CLASS_ENC, CLASS_DEC
 from earthvision.datasets.utils import _urlretrieve, _load_img
 
 
-class RESISC45(Dataset):
+class RESISC45(VisionDataset):
+    """RESISC45 Dataset.
+
+    Args:
+        root (string): Root directory of dataset.
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
+    """
 
     mirrors = "https://storage.googleapis.com/ossjr"
     resources = "NWPU-RESISC45.zip"
 
-    def __init__(self, root, transform=None, target_transform=None):
+    def __init__(
+            self,
+            root: str,
+            transform: Optional[Callable] = None,
+            target_transform: Optional[Callable] = None,
+            download: bool = False) -> None:
+
+        super(RESISC45, self).__init__(
+            root, transform=transform, target_transform=target_transform)
+
         self.root = root
-        self.transform = transform
-        self.target_transform = target_transform
         self.class_enc = CLASS_ENC
         self.class_dec = CLASS_DEC
 
-        if not self._check_exists():
+        if download and self._check_exists():
+            print(f'zipfile "{self.resources}" already exists.')
+
+        if download and not self._check_exists():
             self.download()
             self.extract_file()
 
         self.img_labels = self.get_path_and_label()
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Any, Any]:
+        """
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
         img_path = self.img_labels.iloc[idx, 0]
-        label = self.img_labels.iloc[idx, 1]
-        image = _load_img(img_path)
-        if self.transform:
-            image = self.transform(image)
-        if self.target_transform:
-            label = self.target_transform(label)
-        image = np.array(image)
-        image = torch.from_numpy(image)
-        sample = (image, label)
+        img = np.array(_load_img(img_path))
+        target = self.img_labels.iloc[idx, 1]
 
-        return sample
+        if self.transform is not None:
+            img = Image.fromarray(img)
+            img = self.transform(img)
 
-    def __len__(self):
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return img, target
+
+    def __len__(self) -> int:
         return len(self.img_labels)
-
-    def __iter__(self):
-        for index in range(self.__len__()):
-            yield self.__getitem__(index)
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
@@ -68,15 +94,14 @@ class RESISC45(Dataset):
 
     def _check_exists(self):
         is_exists = os.path.exists(os.path.join(self.root, "NWPU-RESISC45"))
-
         return is_exists
 
-    def download(self):
+    def download(self) -> None:
         """Download and extract file."""
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
-    def extract_file(self):
+    def extract_file(self) -> None:
         """Extract file from compressed."""
         shutil.unpack_archive(os.path.join(
             self.root, self.resources), f"{self.root}")
