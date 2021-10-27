@@ -1,4 +1,5 @@
 """Class for SpaceNet 7: Multi-Temporal Urban Development Challenge - Instance Segmentation."""
+from PIL import Image
 from logging import root
 import os
 import sys
@@ -10,50 +11,62 @@ import torch
 import multiprocessing
 import skimage
 
-from torch.utils.data import Dataset
-from torchvision.transforms import Resize
-from PIL import Image
+from typing import Any, Callable, Optional, Tuple
 from .utils import downloader, _load_img
+from .vision import VisionDataset
 from .spacenet7_utils import map_wrapper, make_geojsons_and_masks
 
 
-class SpaceNet7(Dataset):
+class SpaceNet7(VisionDataset):
     """SpaceNet7
     SN7: Multi-Temporal Urban Development Challenge
     <https://spacenet.ai/sn7-challenge/>
+
     Args:
         root (string): Root directory of dataset.
+        train (bool, optional): If True, creates dataset from training set, otherwise
+            creates from test set.
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
         download (bool, optional): If true, downloads the dataset from the internet and
             puts it in root directory. If dataset is already downloaded, it is not
             downloaded again.
-        data_mode (string): 'train' for train data and 'test' for test data.
     """
 
     resources = {
         'train': 's3://spacenet-dataset/spacenet/SN7_buildings/tarballs/SN7_buildings_train.tar.gz',
         'test': 's3://spacenet-dataset/spacenet/SN7_buildings/tarballs/SN7_buildings_test_public.tar.gz'}
 
-    def __init__(self, root: str, download: bool = False, data_mode: str = 'train'):
+    def __init__(
+            self,
+            root: str,
+            train: bool = True,
+            transform: Optional[Callable] = None,
+            target_transform: Optional[Callable] = None,
+            download: bool = False) -> None:
+
+        super(SpaceNet7, self).__init__(
+            root, transform=transform, target_transform=target_transform)
+
         self.root = root
-        self.data_mode = data_mode
-        self.filename = self.resources.get(data_mode, 'NULL').split('/')[-1]
+        self.data_mode = 'train' if train else 'test'
+        self.filename = self.resources.get(
+            self.data_mode, 'NULL').split('/')[-1]
         self.dataset_path = os.path.join(root, self.filename)
         data_mode_folder = {'train': 'train', 'test': 'test_public'}
-        self.folder_name = data_mode_folder.get(data_mode, 'NULL')
+        self.folder_name = data_mode_folder.get(self.data_mode, 'NULL')
 
         if not os.path.exists(self.root):
             os.makedirs(self.root)
 
-        if download:
-            if self._check_exists(self.dataset_path):
-                raise ValueError("Raw data already exists.")
-            else:
-                self.download()
+        if download and self._check_exists(self.dataset_path):
+            print('file already exists.')
 
-        if not self._check_exists(os.path.join(self.root, self.folder_name)):
+        if download and not self._check_exists(os.path.join(self.root, self.folder_name)):
+            self.download()
             self.extract_file()
-        else:
-            print("Data already extracted.")
 
         if self.data_mode == 'train':
             aois = sorted([f for f in os.listdir(os.path.join(self.root, 'train'))
@@ -172,24 +185,33 @@ class SpaceNet7(Dataset):
 
             return df
 
-    def __getitem__(self, idx):
-        """Return a tensor image and its tensor mask"""
-
+    def __getitem__(self, idx: int) -> Tuple[Any, Any]:
+        """
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (img, mask) or (img)
+        """
         img_path = self.img_labels.iloc[idx, 0]
-        image = _load_img(img_path)
-        image = np.array(image)
-        image = torch.from_numpy(image)
+        img = np.array(_load_img(img_path))
+
+        if self.transform is not None:
+            img = Image.fromarray(img)
+            img = self.transform(img)
 
         if self.data_mode == 'train':
             mask_path = self.img_labels.iloc[idx, 1]
-            mask = _load_img(mask_path)
-            mask = np.array(mask)
-            mask = torch.from_numpy(mask)
-            sample = (image, mask)
+            mask = np.array(_load_img(mask_path))
+
+            if self.target_transform is not None:
+                mask = Image.fromarray(mask)
+                mask = self.target_transform(mask)
+            sample = (img, mask)
+
         elif self.data_mode == 'test':
-            sample = (image)
+            sample = (img)
 
         return sample
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.img_labels)

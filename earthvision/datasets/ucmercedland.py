@@ -65,7 +65,7 @@ class UCMercedLand(VisionDataset):
         self.data_mode = 'Images'
 
         if download and self._check_exists():
-            print(f'zipfile "{self.resources}" already exists.')
+            print('file already exists.')
 
         if download and not self._check_exists():
             self.download()
@@ -78,7 +78,7 @@ class UCMercedLand(VisionDataset):
         Args:
             idx (int): Index
         Returns:
-            tuple: (image, target) where target is index of the target class.
+            tuple: (img, target) where target is index of the target class.
         """
         img_path = self.img_labels.iloc[idx, 0]
         img = np.array(_load_img(img_path))
@@ -89,6 +89,7 @@ class UCMercedLand(VisionDataset):
             img = self.transform(img)
 
         if self.target_transform is not None:
+            target = Image.fromarray(target)
             target = self.target_transform(target)
         return img, target
 

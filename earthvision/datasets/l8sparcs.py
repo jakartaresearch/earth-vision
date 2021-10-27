@@ -46,7 +46,7 @@ class L8SPARCS(VisionDataset):
         self.data_mode = 'sending'
 
         if download and self._check_exists():
-            print(f'zipfile "{self.resources}" already exists.')
+            print('file already exists.')
 
         if download and not self._check_exists():
             self.download()
@@ -90,7 +90,7 @@ class L8SPARCS(VisionDataset):
         Args:
             idx (int): Index
         Returns:
-            tuple: (image, target) where target is index of the target class.
+            tuple: (img, mask)
         """
         img_path = self.img_labels.iloc[idx, 0]
         mask_path = self.img_labels.iloc[idx, 1]
@@ -103,6 +103,7 @@ class L8SPARCS(VisionDataset):
             img = self.transform(img)
 
         if self.target_transform is not None:
+            mask = Image.fromarray(mask)
             mask = self.target_transform(mask)
         return img, mask
 

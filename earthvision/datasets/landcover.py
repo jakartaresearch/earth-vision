@@ -46,7 +46,7 @@ class LandCover(VisionDataset):
         self.root = root
 
         if download and self._check_exists():
-            print(f'zipfile "{self.resources}" already exists.')
+            print('file already exists.')
 
         if download and not self._check_exists():
             self.download()
@@ -60,7 +60,7 @@ class LandCover(VisionDataset):
         Args:
             idx (int): Index
         Returns:
-            tuple: (image, target) where target is index of the target class.
+            tuple: (img, mask)
         """
         img_path = self.img_labels.iloc[idx, 0]
         mask_path = self.img_labels.iloc[idx, 1]
@@ -72,6 +72,7 @@ class LandCover(VisionDataset):
             img = self.transform(img)
 
         if self.target_transform is not None:
+            mask = Image.fromarray(mask)
             mask = self.target_transform(mask)
         return img, mask
 
@@ -82,8 +83,8 @@ class LandCover(VisionDataset):
         """Return dataframe type consist of image path and mask path."""
         image_path, mask_path = [], []
 
-        img_path = os.path.join(self.root, 'landcover', 'output', 'images')
-        msk_path = os.path.join(self.root, 'landcover', 'output', 'masks')
+        img_path = os.path.join(self.root, 'landcover', 'images')
+        msk_path = os.path.join(self.root, 'landcover', 'masks')
 
         images_path = [os.path.join(img_path, path)
                        for path in os.listdir(img_path)]

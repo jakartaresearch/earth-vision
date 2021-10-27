@@ -56,7 +56,7 @@ class DroneDeploy(VisionDataset):
         self.image_path = f'{dataset_type}/image-chips'
 
         if download and self._check_exists():
-            print(f'zipfile "{self.filepath}" already exists.')
+            print('file already exists.')
 
         if download and not self._check_exists():
             self.download()
@@ -115,7 +115,7 @@ class DroneDeploy(VisionDataset):
         Args:
             idx (int): Index
         Returns:
-            tuple: (image, target) where target is index of the target class.
+            tuple: (img, target) where target is index of the target class.
         """
         image_file = self.image_files[idx]
         label_file = image_file.replace(self.image_path, self.label_path)
@@ -130,6 +130,7 @@ class DroneDeploy(VisionDataset):
             img = self.transform(img)
 
         if self.target_transform is not None:
+            target = Image.fromarray(target)
             target = self.target_transform(target)
         return img, target
 

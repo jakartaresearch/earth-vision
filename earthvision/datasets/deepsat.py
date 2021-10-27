@@ -52,7 +52,7 @@ class DeepSat(VisionDataset):
         self.filename = list(self.resources.keys())[0] + '.tar.gz'
 
         if download and self._check_exists():
-            print(f'zipfile "{self.filename}" already exists.')
+            print('file already exists.')
 
         if download and not self._check_exists():
             self.download()
@@ -110,7 +110,7 @@ class DeepSat(VisionDataset):
         Args:
             idx (int): Index
         Returns:
-            tuple: (image, target) where target is index of the target class.
+            tuple: (img, target) where target is index of the target class.
         """
         img = self.x[:, :, :, idx]
         target = self.y[:, idx]
@@ -120,6 +120,7 @@ class DeepSat(VisionDataset):
             img = self.transform(img)
 
         if self.target_transform is not None:
+            target = Image.fromarray(target)
             target = self.target_transform(target)
         return img, target
 
