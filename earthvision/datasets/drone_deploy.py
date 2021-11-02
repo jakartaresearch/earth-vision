@@ -5,11 +5,16 @@ import os
 import numpy as np
 import random
 import cv2
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .vision import VisionDataset
-from earthvision.constants.DroneDeploy.config import train_ids, val_ids, test_ids, LABELMAP, INV_LABELMAP
+from earthvision.constants.DroneDeploy.config import (
+    train_ids,
+    val_ids,
+    test_ids,
+    LABELMAP,
+    INV_LABELMAP,
+)
 from earthvision.datasets.utils import _urlretrieve
 
 
@@ -31,32 +36,34 @@ class DroneDeploy(VisionDataset):
     """
 
     resources = {
-        'dataset-sample': 'https://dl.dropboxusercontent.com/s/h8a8kev0rktf4kq/dataset-sample.tar.gz?dl=0',
-        'dataset-medium': 'https://dl.dropboxusercontent.com/s/r0dj9mhyv4bgbme/dataset-medium.tar.gz?dl=0'
+        "dataset-sample": "https://dl.dropboxusercontent.com/s/h8a8kev0rktf4kq/dataset-sample.tar.gz?dl=0",
+        "dataset-medium": "https://dl.dropboxusercontent.com/s/r0dj9mhyv4bgbme/dataset-medium.tar.gz?dl=0",
     }
 
     def __init__(
-            self,
-            root: str,
-            dataset_type='dataset-sample',
-            data_mode: int = 0,
-            transform: Optional[Callable] = None,
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        dataset_type="dataset-sample",
+        data_mode: int = 0,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
         super(DroneDeploy, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+            root, transform=transform, target_transform=target_transform
+        )
 
         self.root = root
         self.dataset_type = dataset_type
-        self.filename = f'{dataset_type}.tar.gz'
+        self.filename = f"{dataset_type}.tar.gz"
         self.filepath = os.path.join(self.root, self.filename)
         self.data_mode = data_mode
-        self.label_path = f'{dataset_type}/label-chips'
-        self.image_path = f'{dataset_type}/image-chips'
+        self.label_path = f"{dataset_type}/label-chips"
+        self.image_path = f"{dataset_type}/image-chips"
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -72,13 +79,13 @@ class DroneDeploy(VisionDataset):
 
         if not os.path.exists(os.path.join(self.root, self.dataset_type)):
             print(f'Extracting "{self.filepath}"')
-            os.system(f'tar -xvf {self.filepath}')
-            os.system(f'mv {self.dataset_type} {self.root}')
+            os.system(f"tar -xvf {self.filepath}")
+            os.system(f"mv {self.dataset_type} {self.root}")
         else:
             print(f'Folder "{self.dataset_type}" already exists.')
 
-        image_chips = f'{self.dataset_type}/image-chips'
-        label_chips = f'{self.dataset_type}/label-chips'
+        image_chips = f"{self.dataset_type}/image-chips"
+        label_chips = f"{self.dataset_type}/label-chips"
 
         if not os.path.exists(image_chips):
             os.mkdir(os.path.join(self.root, image_chips))
@@ -100,14 +107,16 @@ class DroneDeploy(VisionDataset):
 
     def load_dataset(self):
         if self.data_mode == 0:
-            list_chip = 'train.txt'
+            list_chip = "train.txt"
         elif self.data_mode == 1:
-            list_chip = 'valid.txt'
+            list_chip = "valid.txt"
         elif self.data_mode == 2:
-            list_chip = 'test.txt'
+            list_chip = "test.txt"
 
-        files = [f'{os.path.join(self.root, self.dataset_type)}/image-chips/{fname}'
-                 for fname in load_lines(os.path.join(self.root, self.dataset_type, list_chip))]
+        files = [
+            f"{os.path.join(self.root, self.dataset_type)}/image-chips/{fname}"
+            for fname in load_lines(os.path.join(self.root, self.dataset_type, list_chip))
+        ]
         self.image_files = files
 
     def __getitem__(self, idx) -> Tuple[Any, Any]:
@@ -120,8 +129,7 @@ class DroneDeploy(VisionDataset):
         image_file = self.image_files[idx]
         label_file = image_file.replace(self.image_path, self.label_path)
 
-        img = load_img(image_file)
-        img = np.array(img)
+        img = np.array(load_img(image_file))
         target = mask_to_classes(load_img(label_file))
         target = np.array(target)
 
@@ -142,7 +150,7 @@ class DroneDeploy(VisionDataset):
 
 
 def load_lines(fname):
-    with open(fname, 'r') as f:
+    with open(fname, "r") as f:
         return [line.strip() for line in f.readlines()]
 
 
@@ -154,7 +162,7 @@ def mask_to_classes(mask):
     return to_categorical(mask[:, :, 0], 6)
 
 
-def to_categorical(y, num_classes=None, dtype='float32'):
+def to_categorical(y, num_classes=None, dtype="float32"):
     """Converts a class vector (integers) to binary class matrix.
     E.g. for use with categorical_crossentropy.
     Args:
@@ -169,7 +177,7 @@ def to_categorical(y, num_classes=None, dtype='float32'):
     Raises:
         Value Error: If input contains string value
     """
-    y = np.array(y, dtype='int')
+    y = np.array(y, dtype="int")
     input_shape = y.shape
     if input_shape and input_shape[-1] == 1 and len(input_shape) > 1:
         input_shape = tuple(input_shape[:-1])
@@ -188,13 +196,13 @@ def get_split(scene):
     if scene in train_ids:
         return "train.txt"
     if scene in val_ids:
-        return 'valid.txt'
+        return "valid.txt"
     if scene in test_ids:
-        return 'test.txt'
+        return "test.txt"
 
 
 def color2class(orthochip, img):
-    ret = np.zeros((img.shape[0], img.shape[1]), dtype='uint8')
+    ret = np.zeros((img.shape[0], img.shape[1]), dtype="uint8")
     ret = np.dstack([ret, ret, ret])
     colors = np.unique(img.reshape(-1, img.shape[2]), axis=0)
 
@@ -205,46 +213,58 @@ def color2class(orthochip, img):
         return None, None
 
     for color in colors:
-        locs = np.where((img[:, :, 0] == color[0]) & (
-            img[:, :, 1] == color[1]) & (img[:, :, 2] == color[2]))
+        locs = np.where(
+            (img[:, :, 0] == color[0]) & (img[:, :, 1] == color[1]) & (img[:, :, 2] == color[2])
+        )
         ret[locs[0], locs[1], :] = INV_LABELMAP[tuple(color)] - 1
 
     return orthochip, ret
 
 
-def image2tile(prefix, scene, dataset, orthofile, elevafile, labelfile, windowx,
-               windowy, stridex, stridey):
+def image2tile(
+    prefix,
+    scene,
+    dataset,
+    orthofile,
+    elevafile,
+    labelfile,
+    windowx,
+    windowy,
+    stridex,
+    stridey,
+):
 
     ortho = cv2.imread(orthofile)
     label = cv2.imread(labelfile)
 
-    assert(ortho.shape[0] == label.shape[0])
-    assert(ortho.shape[1] == label.shape[1])
+    assert ortho.shape[0] == label.shape[0]
+    assert ortho.shape[1] == label.shape[1]
 
     shape = ortho.shape
     xsize = shape[1]
     ysize = shape[0]
-    print(
-        f"converting {dataset} image {orthofile} {xsize}x{ysize} to chips ...")
+    print(f"converting {dataset} image {orthofile} {xsize}x{ysize} to chips ...")
 
     counter = 0
     for xi in range(0, shape[1] - windowx, stridex):
         for yi in range(0, shape[0] - windowy, stridey):
-            orthochip = ortho[yi:yi+windowy, xi:xi+windowx, :]
-            labelchip = label[yi:yi+windowy, xi:xi+windowx, :]
+            orthochip = ortho[yi : yi + windowy, xi : xi + windowx, :]
+            labelchip = label[yi : yi + windowy, xi : xi + windowx, :]
 
             orthochip, classchip = color2class(orthochip, labelchip)
 
             if classchip is None:
                 continue
 
-            orthochip_filename = os.path.join(prefix, 'image-chips',
-                                              scene + '-' + str(counter).zfill(6) + '.png')
-            labelchip_filename = os.path.join(prefix, 'label-chips',
-                                              scene + '-' + str(counter).zfill(6) + '.png')
+            orthochip_filename = os.path.join(
+                prefix, "image-chips", scene + "-" + str(counter).zfill(6) + ".png"
+            )
+            labelchip_filename = os.path.join(
+                prefix, "label-chips", scene + "-" + str(counter).zfill(6) + ".png"
+            )
 
-            with open(f"{prefix}/{dataset}", mode='a') as fd:
-                fd.write(scene + '-' + str(counter).zfill(6) + '.png\n')
+            with open(f"{prefix}/{dataset}", mode="a") as fd:
+                fd.write(scene + "-" + str(counter).zfill(6) + ".png\n")
 
             cv2.imwrite(orthochip_filename, orthochip)
             cv2.imwrite(labelchip_filename, classchip)
@@ -252,18 +272,30 @@ def image2tile(prefix, scene, dataset, orthofile, elevafile, labelfile, windowx,
 
 
 def run(prefix, size=300, stride=300):
-    lines = [line for line in open(f'{prefix}/index.csv')]
-    print("converting images to chips - this may take a few minutes but only needs to be done once.")
+    lines = [line for line in open(f"{prefix}/index.csv")]
+    print(
+        "converting images to chips - this may take a few minutes but only needs to be done once."
+    )
 
     for lineno, line in enumerate(lines):
-        line = line.strip().split(' ')
+        line = line.strip().split(" ")
         scene = line[1]
         dataset = get_split(scene)
 
-        orthofile = os.path.join(prefix, 'images',     scene + '-ortho.tif')
-        elevafile = os.path.join(prefix, 'elevations', scene + '-elev.tif')
-        labelfile = os.path.join(prefix, 'labels',     scene + '-label.png')
+        orthofile = os.path.join(prefix, "images", scene + "-ortho.tif")
+        elevafile = os.path.join(prefix, "elevations", scene + "-elev.tif")
+        labelfile = os.path.join(prefix, "labels", scene + "-label.png")
 
         if os.path.exists(orthofile) and os.path.exists(labelfile):
-            image2tile(prefix, scene, dataset, orthofile, elevafile, labelfile,
-                       windowx=size, windowy=size, stridex=stride, stridey=stride)
+            image2tile(
+                prefix,
+                scene,
+                dataset,
+                orthofile,
+                elevafile,
+                labelfile,
+                windowx=size,
+                windowy=size,
+                stridex=stride,
+                stridey=stride,
+            )

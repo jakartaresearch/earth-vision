@@ -4,7 +4,6 @@ import shutil
 import posixpath
 import numpy as np
 import pandas as pd
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .utils import _urlretrieve, _load_img
@@ -29,32 +28,34 @@ class EuroSat(VisionDataset):
 
     mirrors = "http://madm.dfki.de/files/sentinel"
     resources = "EuroSAT.zip"
-    classes = {"AnnualCrop": 0,
-               "Forest": 1,
-               "HerbaceousVegetation": 2,
-               "Highway": 3,
-               "Industrial": 4,
-               "Pasture": 5,
-               "PermanentCrop": 6,
-               "Residential": 7,
-               "River": 8,
-               "SeaLake": 9}
+    classes = {
+        "AnnualCrop": 0,
+        "Forest": 1,
+        "HerbaceousVegetation": 2,
+        "Highway": 3,
+        "Industrial": 4,
+        "Pasture": 5,
+        "PermanentCrop": 6,
+        "Residential": 7,
+        "River": 8,
+        "SeaLake": 9,
+    }
 
     def __init__(
-            self,
-            root: str,
-            transform=Compose([Resize((64, 64)), ToTensor()]),
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        transform=Compose([Resize((64, 64)), ToTensor()]),
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
-        super(EuroSat, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+        super(EuroSat, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
-        self.data_mode = '2750'
+        self.data_mode = "2750"
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -86,8 +87,7 @@ class EuroSat(VisionDataset):
         return len(self.img_labels)
 
     def _check_exists(self) -> None:
-        self.data_path = os.path.join(
-            self.root, self.data_mode)
+        self.data_path = os.path.join(self.root, self.data_mode)
         self.dir_classes = list(self.classes.keys())
 
         return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
@@ -99,8 +99,7 @@ class EuroSat(VisionDataset):
 
     def extract_file(self) -> None:
         """Extract the .zip file"""
-        shutil.unpack_archive(os.path.join(
-            self.root, self.resources), self.root)
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
 
     def get_path_and_label(self):
@@ -108,13 +107,11 @@ class EuroSat(VisionDataset):
         image_path = []
         label = []
         for cat, enc in self.classes.items():
-            cat_path = os.path.join(
-                self.root, self.data_mode, cat)
-            cat_image = [os.path.join(cat_path, path)
-                         for path in os.listdir(cat_path)]
+            cat_path = os.path.join(self.root, self.data_mode, cat)
+            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
             image_path += cat_image
             label += cat_label
-        df = pd.DataFrame({'image': image_path, 'label': label})
+        df = pd.DataFrame({"image": image_path, "label": label})
 
         return df

@@ -5,7 +5,6 @@ import shutil
 import posixpath
 import numpy as np
 import pandas as pd
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .utils import _urlretrieve, _load_img
@@ -34,21 +33,23 @@ class AerialCactus(VisionDataset):
     resources = "cactus-aerial-photos.zip"
 
     def __init__(
-            self,
-            root: str,
-            train: bool = True,
-            transform=Compose([Resize((32, 32)), ToTensor()]),
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        train: bool = True,
+        transform=Compose([Resize((32, 32)), ToTensor()]),
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
         super(AerialCactus, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+            root, transform=transform, target_transform=target_transform
+        )
 
         self.root = root
-        self.data_mode = 'training_set' if train else 'validation_set'
+        self.data_mode = "training_set" if train else "validation_set"
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -81,39 +82,39 @@ class AerialCactus(VisionDataset):
 
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
-        classes = {'cactus': 1, 'no_cactus': 0}
+        classes = {"cactus": 1, "no_cactus": 0}
         image_path, label = [], []
 
         for cat, enc in classes.items():
             cat_path = os.path.join(
-                self.root, 'cactus-aerial-photos', self.data_mode, self.data_mode, cat)
-            cat_image = [os.path.join(cat_path, path)
-                         for path in os.listdir(cat_path)]
+                self.root, "cactus-aerial-photos", self.data_mode, self.data_mode, cat
+            )
+            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
             image_path += cat_image
             label += cat_label
-        df = pd.DataFrame({'image': image_path, 'label': label})
+        df = pd.DataFrame({"image": image_path, "label": label})
 
         return df
 
     def _check_exists(self):
         self.train_path = os.path.join(
-            self.root, "cactus-aerial-photos", "training_set", "training_set")
+            self.root, "cactus-aerial-photos", "training_set", "training_set"
+        )
         self.valid_path = os.path.join(
-            self.root, "cactus-aerial-photos", "validation_set", "validation_set")
+            self.root, "cactus-aerial-photos", "validation_set", "validation_set"
+        )
 
         folder_status = []
         for path in [self.train_path, self.valid_path]:
             for target in ["cactus", "no_cactus"]:
-                folder_status.append(os.path.exists(
-                    os.path.join(path, target)))
+                folder_status.append(os.path.exists(os.path.join(path, target)))
 
         return all(folder_status)
 
     def download(self) -> None:
         """Download and extract file."""
-        if not os.path.exists(self.root):
-            os.makedirs(self.root)
+        os.makedirs(self.root, exist_ok=True)
 
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
@@ -121,6 +122,5 @@ class AerialCactus(VisionDataset):
     def extract_file(self) -> None:
         """Extract file from compressed."""
         path_destination = os.path.join(self.root, "cactus-aerial-photos")
-        shutil.unpack_archive(os.path.join(
-            self.root, self.resources), path_destination)
+        shutil.unpack_archive(os.path.join(self.root, self.resources), path_destination)
         os.remove(os.path.join(self.root, self.resources))
