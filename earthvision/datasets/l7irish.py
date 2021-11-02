@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import glob
 import requests
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .vision import VisionDataset
@@ -29,26 +28,25 @@ class L7Irish(VisionDataset):
             downloaded again.
     """
 
-    mirrors = 'http://landsat.usgs.gov/cloud-validation/cca_irish_2015/'
+    mirrors = "http://landsat.usgs.gov/cloud-validation/cca_irish_2015/"
 
     def __init__(
-            self,
-            root: str,
-            transform: Optional[Callable] = None,
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
-        super(L7Irish, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+        super(L7Irish, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
         self.download_urls = self.get_download_url()
-        self.resources = [url.split('/')[-1] for url in self.download_urls]
-        self.data_modes = [filename.split('.tar.gz')[0]
-                           for filename in self.resources]
+        self.resources = [url.split("/")[-1] for url in self.download_urls]
+        self.data_modes = [filename.split(".tar.gz")[0] for filename in self.resources]
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -59,13 +57,14 @@ class L7Irish(VisionDataset):
     def get_download_url(self):
         """Get the urls to download the files."""
         page = requests.get(
-            "https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data")
-        soup = BeautifulSoup(page.content, 'html.parser')
+            "https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data"
+        )
+        soup = BeautifulSoup(page.content, "html.parser")
 
-        urls = [url.get('href') for url in soup.find_all('a')]
+        urls = [url.get("href") for url in soup.find_all("a")]
         urls = list(filter(None, urls))
 
-        download_urls = filter(lambda url: url.endswith('.gz'), urls)
+        download_urls = filter(lambda url: url.endswith(".gz"), urls)
         return download_urls
 
     def download(self):
@@ -96,13 +95,12 @@ class L7Irish(VisionDataset):
         image_path, label = [], []
 
         for data_mode in self.data_modes:
-            for image in glob.glob(os.path.join(self.root, data_mode, 'L7*.TIF')):
+            for image in glob.glob(os.path.join(self.root, data_mode, "L7*.TIF")):
                 image_path.append(image)
 
-                label.extend(glob.glob(os.path.join(
-                    self.root, data_mode, '*mask*')))
+                label.extend(glob.glob(os.path.join(self.root, data_mode, "*mask*")))
 
-        df = pd.DataFrame({'image': image_path, 'label': label})
+        df = pd.DataFrame({"image": image_path, "label": label})
         return df
 
     def __getitem__(self, idx: int) -> Tuple[Any, Any]:

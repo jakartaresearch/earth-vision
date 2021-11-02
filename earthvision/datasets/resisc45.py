@@ -5,7 +5,6 @@ import posixpath
 import shutil
 import numpy as np
 import pandas as pd
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .vision import VisionDataset
@@ -31,21 +30,21 @@ class RESISC45(VisionDataset):
     resources = "NWPU-RESISC45.zip"
 
     def __init__(
-            self,
-            root: str,
-            transform: Optional[Callable] = None,
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
-        super(RESISC45, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+        super(RESISC45, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
         self.class_enc = CLASS_ENC
         self.class_dec = CLASS_DEC
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -79,17 +78,16 @@ class RESISC45(VisionDataset):
     def get_path_and_label(self):
         """Return dataframe type consist of image path and corresponding label."""
         DATA_SIZE = 700
-        category = os.listdir(os.path.join(self.root, 'NWPU-RESISC45'))
+        category = os.listdir(os.path.join(self.root, "NWPU-RESISC45"))
         image_path = []
         label = []
         for cat in category:
             cat_enc = self.class_enc[cat]
             label += [cat_enc] * DATA_SIZE
-            for num in range(1, DATA_SIZE+1):
-                filename = cat + '_' + str(num).zfill(3) + '.jpg'
-                image_path += [os.path.join(self.root,
-                                            'NWPU-RESISC45', cat, filename)]
-        df = pd.DataFrame({'image': image_path, 'label': label})
+            for num in range(1, DATA_SIZE + 1):
+                filename = cat + "_" + str(num).zfill(3) + ".jpg"
+                image_path += [os.path.join(self.root, "NWPU-RESISC45", cat, filename)]
+        df = pd.DataFrame({"image": image_path, "label": label})
 
         return df
 
@@ -104,6 +102,5 @@ class RESISC45(VisionDataset):
 
     def extract_file(self) -> None:
         """Extract file from compressed."""
-        shutil.unpack_archive(os.path.join(
-            self.root, self.resources), f"{self.root}")
+        shutil.unpack_archive(os.path.join(self.root, self.resources), f"{self.root}")
         os.remove(os.path.join(self.root, self.resources))

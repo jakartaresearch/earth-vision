@@ -1,17 +1,14 @@
 from PIL import Image
 import os
 import shutil
-import posixpath
-import numpy as np
 import pandas as pd
 import glob
 import requests
-import torch
 
 from bs4 import BeautifulSoup
 from typing import Any, Callable, Optional, Tuple
 from .vision import VisionDataset
-from .utils import _urlretrieve, _load_img, _load_img_hdr, _load_stack_img
+from .utils import _urlretrieve, _load_img_hdr, _load_stack_img
 
 
 class L8Biome(VisionDataset):
@@ -29,24 +26,24 @@ class L8Biome(VisionDataset):
         downloaded again.
     """
 
-    mirrors = 'https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data'
+    mirrors = "https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data"
 
     def __init__(
-            self,
-            root: str,
-            transform: Optional[Callable] = None,
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
-        super(L8Biome, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+        super(L8Biome, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
         self.download_urls = self.get_download_url()
         self.data_modes = [url.split("/")[-1] for url in self.download_urls]
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -57,12 +54,11 @@ class L8Biome(VisionDataset):
     def get_download_url(self):
         """Get the urls to download the files."""
         page = requests.get(self.mirrors)
-        soup = BeautifulSoup(page.content, 'html.parser')
+        soup = BeautifulSoup(page.content, "html.parser")
 
-        urls = [url.get('href') for url in soup.find_all('a')]
+        urls = [url.get("href") for url in soup.find_all("a")]
 
-        download_urls = list(
-            filter(lambda url: url.endswith('.tar.gz') if url else None, urls))
+        download_urls = list(filter(lambda url: url.endswith(".tar.gz") if url else None, urls))
         return download_urls
 
     def download(self):
@@ -83,7 +79,7 @@ class L8Biome(VisionDataset):
             os.mkdir(self.root)
 
         for data_mode in self.data_modes:
-            data_mode = data_mode.replace('.tar.gz', '')
+            data_mode = data_mode.replace(".tar.gz", "")
             data_path = os.path.join(self.root, "BC", data_mode)
             is_exists.append(os.path.exists(data_path))
 
@@ -94,14 +90,13 @@ class L8Biome(VisionDataset):
         image_directory, label = [], []
 
         for data_mode in self.data_modes:
-            data_mode = data_mode.replace('.tar.gz', '')
+            data_mode = data_mode.replace(".tar.gz", "")
             image_dir = os.path.join(self.root, "BC", data_mode)
 
             image_directory.append(image_dir)
-            label.extend(glob.glob(os.path.join(
-                self.root, "BC", data_mode, '*mask.hdr')))
+            label.extend(glob.glob(os.path.join(self.root, "BC", data_mode, "*mask.hdr")))
 
-        df = pd.DataFrame({'image': image_directory, 'label': label})
+        df = pd.DataFrame({"image": image_directory, "label": label})
         return df
 
     def __getitem__(self, idx: int) -> Tuple[Any, Any]:

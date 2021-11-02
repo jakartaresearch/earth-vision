@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import glob
 import cv2
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .utils import _urlretrieve, _load_img
@@ -34,19 +33,21 @@ class LandCover(VisionDataset):
     resources = "landcover.ai.v1.zip"
 
     def __init__(
-            self,
-            root: str,
-            transform=Compose([Resize((256, 256)), ToTensor()]),
-            target_transform=Compose([Resize((256, 256)), ToTensor()]),
-            download: bool = False) -> None:
+        self,
+        root: str,
+        transform=Compose([Resize((256, 256)), ToTensor()]),
+        target_transform=Compose([Resize((256, 256)), ToTensor()]),
+        download: bool = False,
+    ) -> None:
 
         super(LandCover, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+            root, transform=transform, target_transform=target_transform
+        )
 
         self.root = root
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -81,19 +82,16 @@ class LandCover(VisionDataset):
 
     def get_image_path_and_mask_path(self):
         """Return dataframe type consist of image path and mask path."""
-        image_path, mask_path = [], []
 
-        img_path = os.path.join(self.root, 'landcover', 'images')
-        msk_path = os.path.join(self.root, 'landcover', 'masks')
+        img_path = os.path.join(self.root, "landcover", "images")
+        msk_path = os.path.join(self.root, "landcover", "masks")
 
-        images_path = [os.path.join(img_path, path)
-                       for path in os.listdir(img_path)]
+        images_path = [os.path.join(img_path, path) for path in os.listdir(img_path)]
         images_path.sort()
-        masks_path = [os.path.join(img_path, path)
-                      for path in os.listdir(msk_path)]
+        masks_path = [os.path.join(img_path, path) for path in os.listdir(msk_path)]
         masks_path.sort()
 
-        df = pd.DataFrame({'image': images_path, 'mask': masks_path})
+        df = pd.DataFrame({"image": images_path, "mask": masks_path})
         return df
 
     def to_chip_img_mask(self, base):
@@ -125,16 +123,18 @@ class LandCover(VisionDataset):
             k = 0
             for y in range(0, img.shape[0], TARGET_SIZE):
                 for x in range(0, img.shape[1], TARGET_SIZE):
-                    img_tile = img[y:y + TARGET_SIZE, x:x + TARGET_SIZE]
-                    mask_tile = mask[y:y + TARGET_SIZE, x:x + TARGET_SIZE]
+                    img_tile = img[y : y + TARGET_SIZE, x : x + TARGET_SIZE]
+                    mask_tile = mask[y : y + TARGET_SIZE, x : x + TARGET_SIZE]
 
                     if img_tile.shape[0] == TARGET_SIZE and img_tile.shape[1] == TARGET_SIZE:
                         out_img_path = os.path.join(
-                            OUTPUT_DIR, "images", "{}_{}.jpg".format(img_filename, k))
+                            OUTPUT_DIR, "images", "{}_{}.jpg".format(img_filename, k)
+                        )
                         cv2.imwrite(out_img_path, img_tile)
 
                         out_mask_path = os.path.join(
-                            OUTPUT_DIR, "masks", "{}_{}.png".format(mask_filename, k))
+                            OUTPUT_DIR, "masks", "{}_{}.png".format(mask_filename, k)
+                        )
                         cv2.imwrite(out_mask_path, mask_tile)
 
                     k += 1
@@ -142,22 +142,25 @@ class LandCover(VisionDataset):
             print("Processed {} {}/{}".format(img_filename, i + 1, len(img_paths)))
 
     def download(self) -> None:
-        """download and extract file.
-        """
+        """download and extract file."""
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def _check_exists(self):
         """Check file has been download or not"""
         self.data_path = os.path.join(
-            self.root, "landcover",)
+            self.root,
+            "landcover",
+        )
 
-        return os.path.exists(os.path.join(self.data_path, "images")) and \
-            os.path.exists(os.path.join(self.data_path, "masks"))
+        return os.path.exists(os.path.join(self.data_path, "images")) and os.path.exists(
+            os.path.join(self.data_path, "masks")
+        )
 
     def extract_file(self):
         """Extract file from compressed."""
         os.makedirs(os.path.join(self.root, "landcover"))
-        shutil.unpack_archive(os.path.join(
-            self.root, self.resources), os.path.join(self.root, "landcover"))
+        shutil.unpack_archive(
+            os.path.join(self.root, self.resources), os.path.join(self.root, "landcover")
+        )
         os.remove(os.path.join(self.root, self.resources))

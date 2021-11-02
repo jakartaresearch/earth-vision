@@ -31,8 +31,7 @@ class VisionDataset(data.Dataset):
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
     ) -> None:
-        torch._C._log_api_usage_once(
-            f"torchvision.datasets.{self.__class__.__name__}")
+        torch._C._log_api_usage_once(f"torchvision.datasets.{self.__class__.__name__}")
         if isinstance(root, torch._six.string_classes):
             root = os.path.expanduser(root)
         self.root = root
@@ -41,7 +40,8 @@ class VisionDataset(data.Dataset):
         has_separate_transform = transform is not None or target_transform is not None
         if has_transforms and has_separate_transform:
             raise ValueError(
-                "Only transforms or transform/target_transform can " "be passed as argument")
+                "Only transforms or transform/target_transform can " "be passed as argument"
+            )
 
         # for backwards-compatibility
         self.transform = transform
@@ -76,14 +76,18 @@ class VisionDataset(data.Dataset):
 
     def _format_transform_repr(self, transform: Callable, head: str) -> List[str]:
         lines = transform.__repr__().splitlines()
-        return ["{}{}".format(head, lines[0])] + ["{}{}".format(" " * len(head), line) for line in lines[1:]]
+        return ["{}{}".format(head, lines[0])] + [
+            "{}{}".format(" " * len(head), line) for line in lines[1:]
+        ]
 
     def extra_repr(self) -> str:
         return ""
 
 
 class StandardTransform(object):
-    def __init__(self, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None) -> None:
+    def __init__(
+        self, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None
+    ) -> None:
         self.transform = transform
         self.target_transform = target_transform
 
@@ -96,14 +100,15 @@ class StandardTransform(object):
 
     def _format_transform_repr(self, transform: Callable, head: str) -> List[str]:
         lines = transform.__repr__().splitlines()
-        return ["{}{}".format(head, lines[0])] + ["{}{}".format(" " * len(head), line) for line in lines[1:]]
+        return ["{}{}".format(head, lines[0])] + [
+            "{}{}".format(" " * len(head), line) for line in lines[1:]
+        ]
 
     def __repr__(self) -> str:
         body = [self.__class__.__name__]
         if self.transform is not None:
             body += self._format_transform_repr(self.transform, "Transform: ")
         if self.target_transform is not None:
-            body += self._format_transform_repr(
-                self.target_transform, "Target transform: ")
+            body += self._format_transform_repr(self.target_transform, "Target transform: ")
 
         return "\n".join(body)

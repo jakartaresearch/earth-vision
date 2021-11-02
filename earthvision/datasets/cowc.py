@@ -4,7 +4,6 @@ import os
 import shutil
 import posixpath
 import tarfile
-import torch
 import numpy as np
 import pandas as pd
 
@@ -15,7 +14,7 @@ from ..constants.COWC.config import file_mapping_counting, file_mapping_detectio
 
 
 class COWC(VisionDataset):
-    """ Cars Overhead with Context.
+    """Cars Overhead with Context.
     https://gdo152.llnl.gov/cowc/
 
     Args:
@@ -36,38 +35,36 @@ class COWC(VisionDataset):
     resources = "cowc-everything.txz"
 
     def __init__(
-            self,
-            root: str,
-            train: bool = True,
-            task_mode: str = 'counting',
-            transform: Optional[Callable] = None,
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        train: bool = True,
+        task_mode: str = "counting",
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
-        super(COWC, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+        super(COWC, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
         self.train = train
         self.task_mode = task_mode
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
             self.extract_file()
 
-        if self.task_mode == 'counting':
-            self.task_path = os.path.join(
-                self.root, 'cowc/datasets/patch_sets/counting')
+        if self.task_mode == "counting":
+            self.task_path = os.path.join(self.root, "cowc/datasets/patch_sets/counting")
             self.file_mapping = file_mapping_counting
-        elif self.task_mode == 'detection':
-            self.task_path = os.path.join(
-                self.root, 'cowc/datasets/patch_sets/detection')
+        elif self.task_mode == "detection":
+            self.task_path = os.path.join(self.root, "cowc/datasets/patch_sets/detection")
             self.file_mapping = file_mapping_detection
         else:
-            raise ValueError('task_mode not recognized.')
+            raise ValueError("task_mode not recognized.")
 
         for filename, compressed in self.file_mapping.items():
             if not self._check_exists_subfile(filename):
@@ -84,7 +81,7 @@ class COWC(VisionDataset):
         """
         img_path = self.img_labels.iloc[idx, 0]
         target = self.img_labels.iloc[idx, 1]
-        folder = img_path.split('/', 1)[0]
+        folder = img_path.split("/", 1)[0]
         img_path = os.path.join(self.task_path, folder, img_path)
         img = np.array(_load_img(img_path))
 
@@ -104,23 +101,23 @@ class COWC(VisionDataset):
         """Return dataframe type consist of image path
         and corresponding label."""
 
-        if self.task_mode == 'counting':
+        if self.task_mode == "counting":
             if self.train:
-                label_name = 'COWC_train_list_64_class.txt.bz2'
+                label_name = "COWC_train_list_64_class.txt.bz2"
             else:
-                label_name = 'COWC_test_list_64_class.txt.bz2'
+                label_name = "COWC_test_list_64_class.txt.bz2"
 
-        elif self.task_mode == 'detection':
+        elif self.task_mode == "detection":
             if self.train:
-                label_name = 'COWC_train_list_detection.txt.bz2'
+                label_name = "COWC_train_list_detection.txt.bz2"
             else:
-                label_name = 'COWC_test_list_detection.txt.bz2'
+                label_name = "COWC_test_list_detection.txt.bz2"
 
         else:
-            raise ValueError('task_mode not recognized.')
+            raise ValueError("task_mode not recognized.")
 
         label_path = os.path.join(self.task_path, label_name)
-        df = pd.read_csv(label_path, sep=' ', header=None)
+        df = pd.read_csv(label_path, sep=" ", header=None)
 
         return df
 
@@ -145,6 +142,5 @@ class COWC(VisionDataset):
 
     def extract_file(self) -> None:
         """Extract file from compressed."""
-        shutil.unpack_archive(os.path.join(
-            self.root, self.resources), self.root)
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))

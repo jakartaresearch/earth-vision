@@ -2,11 +2,8 @@
 from PIL import Image
 import os
 import shutil
-import posixpath
 import numpy as np
-import glob
 import json
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .utils import _urlretrieve, _load_img
@@ -39,67 +36,65 @@ class XView(VisionDataset):
     """
 
     urls = []
-    resources = ["train_images.tgz",
-                 "train_labels.tgz", "validation_images.tgz"]
+    resources = ["train_images.tgz", "train_labels.tgz", "validation_images.tgz"]
 
     def __init__(
-            self,
-            root: str,
-            train: bool = True,
-            transform: Optional[Callable] = None,
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        train: bool = True,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
-        super(XView, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+        super(XView, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
-        self.data_mode = 'train' if train else 'validation'
+        self.data_mode = "train" if train else "validation"
         self.class_enc = CLASS_ENC
         self.class_dec = CLASS_DEC
         self.coords, self.chips, self.classes = None, None, None
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
             self.extract_file()
 
-        if self.data_mode == 'train':
-            self.coords, self.chips, self.classes = \
-                self.get_path_and_label()
-            self.imgs = list(os.listdir(
-                os.path.join(self.root, 'train_images')))
+        if self.data_mode == "train":
+            self.coords, self.chips, self.classes = self.get_path_and_label()
+            self.imgs = list(os.listdir(os.path.join(self.root, "train_images")))
 
-        elif self.data_mode == 'validation':
-            self.imgs = list(os.listdir(os.path.join(self.root, 'val_images')))
+        elif self.data_mode == "validation":
+            self.imgs = list(os.listdir(os.path.join(self.root, "val_images")))
 
     def _check_exists(self) -> bool:
 
         if not os.path.isdir(self.root):
             os.mkdir(self.root)
 
-        return os.path.exists(os.path.join(self.root, self.resources[0].split('.')[0])) \
-            and os.path.exists(os.path.join(self.root, 'xView_train.geojson')) \
-            if self.data_mode == 'train' \
-            else \
-            os.path.exists(os.path.join(self.root, 'val_images'))
+        return (
+            os.path.exists(os.path.join(self.root, self.resources[0].split(".")[0]))
+            and os.path.exists(os.path.join(self.root, "xView_train.geojson"))
+            if self.data_mode == "train"
+            else os.path.exists(os.path.join(self.root, "val_images"))
+        )
 
     def download(self):
         """Download file by asking users to input the link"""
-        train_images = input("Please follow the following steps to download the required dataset\n" +
-                             "1. Visit https://challenge.xviewdataset.org/login\n" +
-                             "2. Sign up for an account\n" +
-                             "3. Verify your account\n"
-                             "4. Follow this link: https://challenge.xviewdataset.org/download-links\n"
-                             "5. Copy the link for 'Download Training Images (tgz)' and paste it: ")
+        train_images = input(
+            "Please follow the following steps to download the required dataset\n"
+            + "1. Visit https://challenge.xviewdataset.org/login\n"
+            + "2. Sign up for an account\n"
+            + "3. Verify your account\n"
+            "4. Follow this link: https://challenge.xviewdataset.org/download-links\n"
+            "5. Copy the link for 'Download Training Images (tgz)' and paste it: "
+        )
 
-        train_labels = input(
-            "\n6. Copy and paste the link for 'Download Training Labels (tgz)': ")
+        train_labels = input("\n6. Copy and paste the link for 'Download Training Labels (tgz)': ")
 
-        val_images = input(
-            "\n7. Copy and paste the link for 'Download Validation Images (tgz)': ")
+        val_images = input("\n7. Copy and paste the link for 'Download Validation Images (tgz)': ")
 
         self.urls = [train_images, train_labels, val_images]
 
@@ -129,9 +124,9 @@ class XView(VisionDataset):
             classes: classes for each ground truth
         """
         # check existnce
-        coords_path, coords_exists = self._check_exists_label('coords.npy')
-        chips_path, chips_exists = self._check_exists_label('chips.npy')
-        classes_path, classes_exists = self._check_exists_label('classes.npy')
+        coords_path, coords_exists = self._check_exists_label("coords.npy")
+        chips_path, chips_exists = self._check_exists_label("chips.npy")
+        classes_path, classes_exists = self._check_exists_label("classes.npy")
 
         # if exist, load and return
         if coords_exists and chips_exists and classes_exists:
@@ -141,7 +136,7 @@ class XView(VisionDataset):
             return coords, chips, classes
 
         # read xView_train.geojson
-        fname = os.path.join(self.root, 'xView_train.geojson')
+        fname = os.path.join(self.root, "xView_train.geojson")
         with open(fname) as f:
             data = json.load(f)
 
@@ -149,21 +144,19 @@ class XView(VisionDataset):
         coords, chips, classes = [], [], []
 
         # extract
-        feat_len = len(data['features'])
-        img_files = os.listdir(os.path.join(
-            self.root, self.resources[0].split('.')[0]))
+        feat_len = len(data["features"])
+        img_files = os.listdir(os.path.join(self.root, self.resources[0].split(".")[0]))
 
         for i in range(feat_len):
-            properties = data['features'][i]['properties']
-            b_id = properties['image_id']
-            val = [int(num)
-                   for num in properties['bounds_imcoords'].split(',')]
+            properties = data["features"][i]["properties"]
+            b_id = properties["image_id"]
+            val = [int(num) for num in properties["bounds_imcoords"].split(",")]
 
             # type_id 75 and 82 don't belong to any class
             # https://github.com/DIUx-xView/xView1_baseline/issues/3
-            if properties['type_id'] not in [75, 82] and b_id in img_files:
+            if properties["type_id"] not in [75, 82] and b_id in img_files:
                 chips.append(b_id)
-                classes.append(properties['type_id'])
+                classes.append(properties["type_id"])
                 coords.append(val)
 
         # convert to numpy arrays and save
@@ -183,9 +176,9 @@ class XView(VisionDataset):
             tuple: (img, target) where target is a dictionary of target
         consists of bounding boxes and labels.
         """
-        if self.data_mode == 'train':
+        if self.data_mode == "train":
             # image
-            img_path = os.path.join(self.root, 'train_images', self.chips[idx])
+            img_path = os.path.join(self.root, "train_images", self.chips[idx])
             img = np.array(_load_img(img_path))
 
             if self.transform is not None:
@@ -199,13 +192,13 @@ class XView(VisionDataset):
             label = np.vectorize(index_mapping.get)(label)
             # combine bounding box and label
             target = {}
-            target['boxes'] = bbox
-            target['labels'] = label
+            target["boxes"] = bbox
+            target["labels"] = label
             sample = (img, target)
 
-        elif self.data_mode == 'validation':
+        elif self.data_mode == "validation":
             # image
-            img_path = os.path.join(self.root, 'val_images', self.imgs[idx])
+            img_path = os.path.join(self.root, "val_images", self.imgs[idx])
             img = np.array(_load_img(img_path))
 
             if self.transform is not None:

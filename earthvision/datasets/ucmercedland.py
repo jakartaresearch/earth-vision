@@ -4,7 +4,6 @@ import shutil
 import posixpath
 import numpy as np
 import pandas as pd
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from torchvision.transforms import Resize, ToTensor, Compose
@@ -29,43 +28,47 @@ class UCMercedLand(VisionDataset):
 
     mirrors = "http://weegee.vision.ucmerced.edu/datasets/"
     resources = "UCMerced_LandUse.zip"
-    classes = {'agricultural': 0,
-               'airplane': 1,
-               'baseballdiamond': 2,
-               'beach': 3,
-               'buildings': 4,
-               'chaparral': 5,
-               'denseresidential': 6,
-               'forest': 7,
-               'freeway': 8,
-               'golfcourse': 9,
-               'harbor': 10,
-               'intersection': 11,
-               'mediumresidential': 12,
-               'mobilehomepark': 13,
-               'overpass': 14,
-               'parkinglot': 15,
-               'river': 16,
-               'runway': 17,
-               'sparseresidential': 18,
-               'storagetanks': 19,
-               'tenniscourt': 20}
+    classes = {
+        "agricultural": 0,
+        "airplane": 1,
+        "baseballdiamond": 2,
+        "beach": 3,
+        "buildings": 4,
+        "chaparral": 5,
+        "denseresidential": 6,
+        "forest": 7,
+        "freeway": 8,
+        "golfcourse": 9,
+        "harbor": 10,
+        "intersection": 11,
+        "mediumresidential": 12,
+        "mobilehomepark": 13,
+        "overpass": 14,
+        "parkinglot": 15,
+        "river": 16,
+        "runway": 17,
+        "sparseresidential": 18,
+        "storagetanks": 19,
+        "tenniscourt": 20,
+    }
 
     def __init__(
-            self,
-            root: str,
-            transform=Compose([Resize((256, 256)), ToTensor()]),
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        transform=Compose([Resize((256, 256)), ToTensor()]),
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
         super(UCMercedLand, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+            root, transform=transform, target_transform=target_transform
+        )
 
         self.root = root
-        self.data_mode = 'Images'
+        self.data_mode = "Images"
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -101,20 +104,17 @@ class UCMercedLand(VisionDataset):
         image_path = []
         label = []
         for cat, enc in self.classes.items():
-            cat_path = os.path.join(
-                self.root, 'UCMerced_LandUse', self.data_mode, cat)
-            cat_image = [os.path.join(cat_path, path)
-                         for path in os.listdir(cat_path)]
+            cat_path = os.path.join(self.root, "UCMerced_LandUse", self.data_mode, cat)
+            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
             image_path += cat_image
             label += cat_label
-        df = pd.DataFrame({'image': image_path, 'label': label})
+        df = pd.DataFrame({"image": image_path, "label": label})
 
         return df
 
     def _check_exists(self):
-        self.data_path = os.path.join(
-            self.root, "UCMerced_LandUse", "Images")
+        self.data_path = os.path.join(self.root, "UCMerced_LandUse", "Images")
         self.dir_classes = list(self.classes.keys())
         return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
 
@@ -125,6 +125,5 @@ class UCMercedLand(VisionDataset):
 
     def extract_file(self) -> None:
         """Extract file from compressed."""
-        shutil.unpack_archive(os.path.join(
-            self.root, self.resources), self.root)
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))

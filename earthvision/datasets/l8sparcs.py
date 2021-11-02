@@ -5,7 +5,6 @@ import posixpath
 import numpy as np
 import pandas as pd
 import glob
-import torch
 
 from typing import Any, Callable, Optional, Tuple
 from .utils import _urlretrieve, _load_img
@@ -33,20 +32,20 @@ class L8SPARCS(VisionDataset):
     resources = "l8cloudmasks.zip"
 
     def __init__(
-            self,
-            root: str,
-            transform: Optional[Callable] = None,
-            target_transform: Optional[Callable] = None,
-            download: bool = False) -> None:
+        self,
+        root: str,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -> None:
 
-        super(L8SPARCS, self).__init__(
-            root, transform=transform, target_transform=target_transform)
+        super(L8SPARCS, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
-        self.data_mode = 'sending'
+        self.data_mode = "sending"
 
         if download and self._check_exists():
-            print('file already exists.')
+            print("file already exists.")
 
         if download and not self._check_exists():
             self.download()
@@ -55,8 +54,7 @@ class L8SPARCS(VisionDataset):
         self.img_labels = self.get_path_and_label()
 
     def _check_exists(self) -> None:
-        self.data_path = os.path.join(
-            self.root, self.data_mode)
+        self.data_path = os.path.join(self.root, self.data_mode)
         return os.path.exists(self.data_path)
 
     def download(self) -> None:
@@ -66,22 +64,20 @@ class L8SPARCS(VisionDataset):
 
     def extract_file(self) -> None:
         """Extract the .zip file"""
-        shutil.unpack_archive(os.path.join(
-            self.root, self.resources), self.root)
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
 
     def get_path_and_label(self):
         """Get the path of the images and labels (masks) in a dataframe"""
         image_path, label = [], []
 
-        for image in glob.glob(os.path.join(self.root, self.data_mode, '*_photo.png')):
+        for image in glob.glob(os.path.join(self.root, self.data_mode, "*_photo.png")):
             image_path.append(image)
 
-        for mask in glob.glob(os.path.join(self.root, self.data_mode, '*_mask.png')):
+        for mask in glob.glob(os.path.join(self.root, self.data_mode, "*_mask.png")):
             label.append(mask)
 
-        df = pd.DataFrame(
-            {'image': sorted(image_path), 'label': sorted(label)})
+        df = pd.DataFrame({"image": sorted(image_path), "label": sorted(label)})
 
         return df
 
