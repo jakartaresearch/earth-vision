@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>earthvision.datasets.drone_deploy API documentation</title>
+<meta name="description" content="Class for Drone Deploy - Semantic Segmentation." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>earthvision.datasets.drone_deploy</code></h1>
+</header>
+<section id="section-intro">
+<p>Class for Drone Deploy - Semantic Segmentation.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Class for Drone Deploy - Semantic Segmentation.&#34;&#34;&#34;
+from PIL import Image
+import sys
+import os
+import numpy as np
+import random
+import cv2
+
+from typing import Any, Callable, Optional, Tuple
+from .vision import VisionDataset
+from earthvision.constants.DroneDeploy.config import (
+    train_ids,
+    val_ids,
+    test_ids,
+    LABELMAP,
+    INV_LABELMAP,
+)
+from earthvision.datasets.utils import _urlretrieve
+
+
+class DroneDeploy(VisionDataset):
+    &#34;&#34;&#34;Drone Deploy Semantic Dataset.
+
+    Args:
+        root (string): Root directory of dataset.
+        dataset_type (string, optional): Choose dataset type.
+        data_mode (int): 0 for train data, 1 for validation data, and 2 for testing data
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
+
+    &#34;&#34;&#34;
+
+    resources = {
+        &#34;dataset-sample&#34;: &#34;https://dl.dropboxusercontent.com/s/h8a8kev0rktf4kq/dataset-sample.tar.gz?dl=0&#34;,
+        &#34;dataset-medium&#34;: &#34;https://dl.dropboxusercontent.com/s/r0dj9mhyv4bgbme/dataset-medium.tar.gz?dl=0&#34;,
+    }
+
+    def __init__(
+        self,
+        root: str,
+        dataset_type=&#34;dataset-sample&#34;,
+        data_mode: int = 0,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -&gt; None:
+
+        super(DroneDeploy, self).__init__(
+            root, transform=transform, target_transform=target_transform
+        )
+
+        self.root = root
+        self.dataset_type = dataset_type
+        self.filename = f&#34;{dataset_type}.tar.gz&#34;
+        self.filepath = os.path.join(self.root, self.filename)
+        self.data_mode = data_mode
+        self.label_path = f&#34;{dataset_type}/label-chips&#34;
+        self.image_path = f&#34;{dataset_type}/image-chips&#34;
+
+        if download and self._check_exists():
+            print(&#34;file already exists.&#34;)
+
+        if download and not self._check_exists():
+            self.download()
+
+        self.load_dataset()
+
+    def download(self) -&gt; None:
+        &#34;&#34;&#34;Download a dataset, extract it and create the tiles.&#34;&#34;&#34;
+        print(f&#39;Downloading &#34;{self.dataset_type}&#34;&#39;)
+        self.root = os.path.expanduser(self.root)
+        fpath = os.path.join(self.root, self.filename)
+        _urlretrieve(self.resources[self.dataset_type], fpath)
+
+        if not os.path.exists(os.path.join(self.root, self.dataset_type)):
+            print(f&#39;Extracting &#34;{self.filepath}&#34;&#39;)
+            os.system(f&#34;tar -xvf {self.filepath}&#34;)
+            os.system(f&#34;mv {self.dataset_type} {self.root}&#34;)
+        else:
+            print(f&#39;Folder &#34;{self.dataset_type}&#34; already exists.&#39;)
+
+        image_chips = f&#34;{self.dataset_type}/image-chips&#34;
+        label_chips = f&#34;{self.dataset_type}/label-chips&#34;
+
+        if not os.path.exists(image_chips):
+            os.mkdir(os.path.join(self.root, image_chips))
+        if not os.path.exists(label_chips):
+            os.mkdir(os.path.join(self.root, label_chips))
+
+        run(os.path.join(self.root, self.dataset_type))
+
+    def _check_exists(self) -&gt; bool:
+        if self.dataset_type not in self.resources.keys():
+            print(f&#34;Unknown dataset {self.dataset_type}&#34;)
+            print(f&#34;Available dataset : {self.resources.keys()}&#34;)
+            sys.exit(0)
+
+        if os.path.exists(self.filepath):
+            return True
+        else:
+            return False
+
+    def load_dataset(self):
+        if self.data_mode == 0:
+            list_chip = &#34;train.txt&#34;
+        elif self.data_mode == 1:
+            list_chip = &#34;valid.txt&#34;
+        elif self.data_mode == 2:
+            list_chip = &#34;test.txt&#34;
+
+        files = [
+            f&#34;{os.path.join(self.root, self.dataset_type)}/image-chips/{fname}&#34;
+            for fname in load_lines(os.path.join(self.root, self.dataset_type, list_chip))
+        ]
+        self.image_files = files
+
+    def __getitem__(self, idx) -&gt; Tuple[Any, Any]:
+        &#34;&#34;&#34;
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (img, target) where target is index of the target class.
+        &#34;&#34;&#34;
+        image_file = self.image_files[idx]
+        label_file = image_file.replace(self.image_path, self.label_path)
+
+        img = np.array(load_img(image_file))
+        target = mask_to_classes(load_img(label_file))
+        target = np.array(target)
+
+        if self.transform is not None:
+            img = Image.fromarray(img)
+            img = self.transform(img)
+
+        if self.target_transform is not None:
+            target = Image.fromarray(target)
+            target = self.target_transform(target)
+        return img, target
+
+    def __len__(self) -&gt; int:
+        return len(self.image_files)
+
+    def on_epoch_end(self):
+        random.shuffle(self.image_files)
+
+
+def load_lines(fname):
+    with open(fname, &#34;r&#34;) as f:
+        return [line.strip() for line in f.readlines()]
+
+
+def load_img(fname):
+    return np.array(Image.open(fname))
+
+
+def mask_to_classes(mask):
+    return to_categorical(mask[:, :, 0], 6)
+
+
+def to_categorical(y, num_classes=None, dtype=&#34;float32&#34;):
+    &#34;&#34;&#34;Converts a class vector (integers) to binary class matrix.
+    E.g. for use with categorical_crossentropy.
+    Args:
+        y: class vector to be converted into a matrix
+            (integers from 0 to num_classes).
+        num_classes: total number of classes. If `None`, this would be inferred
+          as the (largest number in `y`) + 1.
+        dtype: The data type expected by the input. Default: `&#39;float32&#39;`.
+    Returns:
+        A binary matrix representation of the input. The classes axis is placed
+        last.
+    Raises:
+        Value Error: If input contains string value
+    &#34;&#34;&#34;
+    y = np.array(y, dtype=&#34;int&#34;)
+    input_shape = y.shape
+    if input_shape and input_shape[-1] == 1 and len(input_shape) &gt; 1:
+        input_shape = tuple(input_shape[:-1])
+    y = y.ravel()
+    if not num_classes:
+        num_classes = np.max(y) + 1
+    n = y.shape[0]
+    categorical = np.zeros((n, num_classes), dtype=dtype)
+    categorical[np.arange(n), y] = 1
+    output_shape = input_shape + (num_classes,)
+    categorical = np.reshape(categorical, output_shape)
+    return categorical
+
+
+def get_split(scene):
+    if scene in train_ids:
+        return &#34;train.txt&#34;
+    if scene in val_ids:
+        return &#34;valid.txt&#34;
+    if scene in test_ids:
+        return &#34;test.txt&#34;
+
+
+def color2class(orthochip, img):
+    ret = np.zeros((img.shape[0], img.shape[1]), dtype=&#34;uint8&#34;)
+    ret = np.dstack([ret, ret, ret])
+    colors = np.unique(img.reshape(-1, img.shape[2]), axis=0)
+
+    # Skip any chips that would contain magenta (IGNORE) pixels
+    seen_colors = set([tuple(color) for color in colors])
+    IGNORE_COLOR = LABELMAP[0]
+    if IGNORE_COLOR in seen_colors:
+        return None, None
+
+    for color in colors:
+        locs = np.where(
+            (img[:, :, 0] == color[0]) &amp; (img[:, :, 1] == color[1]) &amp; (img[:, :, 2] == color[2])
+        )
+        ret[locs[0], locs[1], :] = INV_LABELMAP[tuple(color)] - 1
+
+    return orthochip, ret
+
+
+def image2tile(
+    prefix,
+    scene,
+    dataset,
+    orthofile,
+    elevafile,
+    labelfile,
+    windowx,
+    windowy,
+    stridex,
+    stridey,
+):
+
+    ortho = cv2.imread(orthofile)
+    label = cv2.imread(labelfile)
+
+    assert ortho.shape[0] == label.shape[0]
+    assert ortho.shape[1] == label.shape[1]
+
+    shape = ortho.shape
+    xsize = shape[1]
+    ysize = shape[0]
+    print(f&#34;converting {dataset} image {orthofile} {xsize}x{ysize} to chips ...&#34;)
+
+    counter = 0
+    for xi in range(0, shape[1] - windowx, stridex):
+        for yi in range(0, shape[0] - windowy, stridey):
+            orthochip = ortho[yi : yi + windowy, xi : xi + windowx, :]
+            labelchip = label[yi : yi + windowy, xi : xi + windowx, :]
+
+            orthochip, classchip = color2class(orthochip, labelchip)
+
+            if classchip is None:
+                continue
+
+            orthochip_filename = os.path.join(
+                prefix, &#34;image-chips&#34;, scene + &#34;-&#34; + str(counter).zfill(6) + &#34;.png&#34;
+            )
+            labelchip_filename = os.path.join(
+                prefix, &#34;label-chips&#34;, scene + &#34;-&#34; + str(counter).zfill(6) + &#34;.png&#34;
+            )
+
+            with open(f&#34;{prefix}/{dataset}&#34;, mode=&#34;a&#34;) as fd:
+                fd.write(scene + &#34;-&#34; + str(counter).zfill(6) + &#34;.png\n&#34;)
+
+            cv2.imwrite(orthochip_filename, orthochip)
+            cv2.imwrite(labelchip_filename, classchip)
+            counter += 1
+
+
+def run(prefix, size=300, stride=300):
+    lines = [line for line in open(f&#34;{prefix}/index.csv&#34;)]
+    print(
+        &#34;converting images to chips - this may take a few minutes but only needs to be done once.&#34;
+    )
+
+    for lineno, line in enumerate(lines):
+        line = line.strip().split(&#34; &#34;)
+        scene = line[1]
+        dataset = get_split(scene)
+
+        orthofile = os.path.join(prefix, &#34;images&#34;, scene + &#34;-ortho.tif&#34;)
+        elevafile = os.path.join(prefix, &#34;elevations&#34;, scene + &#34;-elev.tif&#34;)
+        labelfile = os.path.join(prefix, &#34;labels&#34;, scene + &#34;-label.png&#34;)
+
+        if os.path.exists(orthofile) and os.path.exists(labelfile):
+            image2tile(
+                prefix,
+                scene,
+                dataset,
+                orthofile,
+                elevafile,
+                labelfile,
+                windowx=size,
+                windowy=size,
+                stridex=stride,
+                stridey=stride,
+            )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="earthvision.datasets.drone_deploy.color2class"><code class="name flex">
+<span>def <span class="ident">color2class</span></span>(<span>orthochip, img)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def color2class(orthochip, img):
+    ret = np.zeros((img.shape[0], img.shape[1]), dtype=&#34;uint8&#34;)
+    ret = np.dstack([ret, ret, ret])
+    colors = np.unique(img.reshape(-1, img.shape[2]), axis=0)
+
+    # Skip any chips that would contain magenta (IGNORE) pixels
+    seen_colors = set([tuple(color) for color in colors])
+    IGNORE_COLOR = LABELMAP[0]
+    if IGNORE_COLOR in seen_colors:
+        return None, None
+
+    for color in colors:
+        locs = np.where(
+            (img[:, :, 0] == color[0]) &amp; (img[:, :, 1] == color[1]) &amp; (img[:, :, 2] == color[2])
+        )
+        ret[locs[0], locs[1], :] = INV_LABELMAP[tuple(color)] - 1
+
+    return orthochip, ret</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.get_split"><code class="name flex">
+<span>def <span class="ident">get_split</span></span>(<span>scene)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_split(scene):
+    if scene in train_ids:
+        return &#34;train.txt&#34;
+    if scene in val_ids:
+        return &#34;valid.txt&#34;
+    if scene in test_ids:
+        return &#34;test.txt&#34;</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.image2tile"><code class="name flex">
+<span>def <span class="ident">image2tile</span></span>(<span>prefix, scene, dataset, orthofile, elevafile, labelfile, windowx, windowy, stridex, stridey)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def image2tile(
+    prefix,
+    scene,
+    dataset,
+    orthofile,
+    elevafile,
+    labelfile,
+    windowx,
+    windowy,
+    stridex,
+    stridey,
+):
+
+    ortho = cv2.imread(orthofile)
+    label = cv2.imread(labelfile)
+
+    assert ortho.shape[0] == label.shape[0]
+    assert ortho.shape[1] == label.shape[1]
+
+    shape = ortho.shape
+    xsize = shape[1]
+    ysize = shape[0]
+    print(f&#34;converting {dataset} image {orthofile} {xsize}x{ysize} to chips ...&#34;)
+
+    counter = 0
+    for xi in range(0, shape[1] - windowx, stridex):
+        for yi in range(0, shape[0] - windowy, stridey):
+            orthochip = ortho[yi : yi + windowy, xi : xi + windowx, :]
+            labelchip = label[yi : yi + windowy, xi : xi + windowx, :]
+
+            orthochip, classchip = color2class(orthochip, labelchip)
+
+            if classchip is None:
+                continue
+
+            orthochip_filename = os.path.join(
+                prefix, &#34;image-chips&#34;, scene + &#34;-&#34; + str(counter).zfill(6) + &#34;.png&#34;
+            )
+            labelchip_filename = os.path.join(
+                prefix, &#34;label-chips&#34;, scene + &#34;-&#34; + str(counter).zfill(6) + &#34;.png&#34;
+            )
+
+            with open(f&#34;{prefix}/{dataset}&#34;, mode=&#34;a&#34;) as fd:
+                fd.write(scene + &#34;-&#34; + str(counter).zfill(6) + &#34;.png\n&#34;)
+
+            cv2.imwrite(orthochip_filename, orthochip)
+            cv2.imwrite(labelchip_filename, classchip)
+            counter += 1</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.load_img"><code class="name flex">
+<span>def <span class="ident">load_img</span></span>(<span>fname)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_img(fname):
+    return np.array(Image.open(fname))</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.load_lines"><code class="name flex">
+<span>def <span class="ident">load_lines</span></span>(<span>fname)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_lines(fname):
+    with open(fname, &#34;r&#34;) as f:
+        return [line.strip() for line in f.readlines()]</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.mask_to_classes"><code class="name flex">
+<span>def <span class="ident">mask_to_classes</span></span>(<span>mask)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mask_to_classes(mask):
+    return to_categorical(mask[:, :, 0], 6)</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>prefix, size=300, stride=300)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(prefix, size=300, stride=300):
+    lines = [line for line in open(f&#34;{prefix}/index.csv&#34;)]
+    print(
+        &#34;converting images to chips - this may take a few minutes but only needs to be done once.&#34;
+    )
+
+    for lineno, line in enumerate(lines):
+        line = line.strip().split(&#34; &#34;)
+        scene = line[1]
+        dataset = get_split(scene)
+
+        orthofile = os.path.join(prefix, &#34;images&#34;, scene + &#34;-ortho.tif&#34;)
+        elevafile = os.path.join(prefix, &#34;elevations&#34;, scene + &#34;-elev.tif&#34;)
+        labelfile = os.path.join(prefix, &#34;labels&#34;, scene + &#34;-label.png&#34;)
+
+        if os.path.exists(orthofile) and os.path.exists(labelfile):
+            image2tile(
+                prefix,
+                scene,
+                dataset,
+                orthofile,
+                elevafile,
+                labelfile,
+                windowx=size,
+                windowy=size,
+                stridex=stride,
+                stridey=stride,
+            )</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.to_categorical"><code class="name flex">
+<span>def <span class="ident">to_categorical</span></span>(<span>y, num_classes=None, dtype='float32')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a class vector (integers) to binary class matrix.
+E.g. for use with categorical_crossentropy.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y</code></strong></dt>
+<dd>class vector to be converted into a matrix
+(integers from 0 to num_classes).</dd>
+<dt><strong><code>num_classes</code></strong></dt>
+<dd>total number of classes. If <code>None</code>, this would be inferred
+as the (largest number in <code>y</code>) + 1.</dd>
+<dt><strong><code>dtype</code></strong></dt>
+<dd>The data type expected by the input. Default: <code>'float32'</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A binary matrix representation of the input. The classes axis is placed
+last.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>Value Error</code></dt>
+<dd>If input contains string value</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_categorical(y, num_classes=None, dtype=&#34;float32&#34;):
+    &#34;&#34;&#34;Converts a class vector (integers) to binary class matrix.
+    E.g. for use with categorical_crossentropy.
+    Args:
+        y: class vector to be converted into a matrix
+            (integers from 0 to num_classes).
+        num_classes: total number of classes. If `None`, this would be inferred
+          as the (largest number in `y`) + 1.
+        dtype: The data type expected by the input. Default: `&#39;float32&#39;`.
+    Returns:
+        A binary matrix representation of the input. The classes axis is placed
+        last.
+    Raises:
+        Value Error: If input contains string value
+    &#34;&#34;&#34;
+    y = np.array(y, dtype=&#34;int&#34;)
+    input_shape = y.shape
+    if input_shape and input_shape[-1] == 1 and len(input_shape) &gt; 1:
+        input_shape = tuple(input_shape[:-1])
+    y = y.ravel()
+    if not num_classes:
+        num_classes = np.max(y) + 1
+    n = y.shape[0]
+    categorical = np.zeros((n, num_classes), dtype=dtype)
+    categorical[np.arange(n), y] = 1
+    output_shape = input_shape + (num_classes,)
+    categorical = np.reshape(categorical, output_shape)
+    return categorical</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="earthvision.datasets.drone_deploy.DroneDeploy"><code class="flex name class">
+<span>class <span class="ident">DroneDeploy</span></span>
+<span>(</span><span>root: str, dataset_type='dataset-sample', data_mode: int = 0, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Drone Deploy Semantic Dataset.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
+<dd>Root directory of dataset.</dd>
+<dt><strong><code>dataset_type</code></strong> :&ensp;<code>string</code>, optional</dt>
+<dd>Choose dataset type.</dd>
+<dt><strong><code>data_mode</code></strong> :&ensp;<code>int</code></dt>
+<dd>0 for train data, 1 for validation data, and 2 for testing data</dd>
+<dt><strong><code>transform</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>A function/transform that
+takes in an PIL image and
+returns a transformed version. E.g, transforms.RandomCrop</dd>
+<dt><strong><code>target_transform</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>A function/transform that takes in the
+target and transforms it.</dd>
+<dt><strong><code>download</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If true, downloads the dataset from the internet and
+puts it in root directory. If dataset is already downloaded, it is not
+downloaded again.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DroneDeploy(VisionDataset):
+    &#34;&#34;&#34;Drone Deploy Semantic Dataset.
+
+    Args:
+        root (string): Root directory of dataset.
+        dataset_type (string, optional): Choose dataset type.
+        data_mode (int): 0 for train data, 1 for validation data, and 2 for testing data
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
+
+    &#34;&#34;&#34;
+
+    resources = {
+        &#34;dataset-sample&#34;: &#34;https://dl.dropboxusercontent.com/s/h8a8kev0rktf4kq/dataset-sample.tar.gz?dl=0&#34;,
+        &#34;dataset-medium&#34;: &#34;https://dl.dropboxusercontent.com/s/r0dj9mhyv4bgbme/dataset-medium.tar.gz?dl=0&#34;,
+    }
+
+    def __init__(
+        self,
+        root: str,
+        dataset_type=&#34;dataset-sample&#34;,
+        data_mode: int = 0,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -&gt; None:
+
+        super(DroneDeploy, self).__init__(
+            root, transform=transform, target_transform=target_transform
+        )
+
+        self.root = root
+        self.dataset_type = dataset_type
+        self.filename = f&#34;{dataset_type}.tar.gz&#34;
+        self.filepath = os.path.join(self.root, self.filename)
+        self.data_mode = data_mode
+        self.label_path = f&#34;{dataset_type}/label-chips&#34;
+        self.image_path = f&#34;{dataset_type}/image-chips&#34;
+
+        if download and self._check_exists():
+            print(&#34;file already exists.&#34;)
+
+        if download and not self._check_exists():
+            self.download()
+
+        self.load_dataset()
+
+    def download(self) -&gt; None:
+        &#34;&#34;&#34;Download a dataset, extract it and create the tiles.&#34;&#34;&#34;
+        print(f&#39;Downloading &#34;{self.dataset_type}&#34;&#39;)
+        self.root = os.path.expanduser(self.root)
+        fpath = os.path.join(self.root, self.filename)
+        _urlretrieve(self.resources[self.dataset_type], fpath)
+
+        if not os.path.exists(os.path.join(self.root, self.dataset_type)):
+            print(f&#39;Extracting &#34;{self.filepath}&#34;&#39;)
+            os.system(f&#34;tar -xvf {self.filepath}&#34;)
+            os.system(f&#34;mv {self.dataset_type} {self.root}&#34;)
+        else:
+            print(f&#39;Folder &#34;{self.dataset_type}&#34; already exists.&#39;)
+
+        image_chips = f&#34;{self.dataset_type}/image-chips&#34;
+        label_chips = f&#34;{self.dataset_type}/label-chips&#34;
+
+        if not os.path.exists(image_chips):
+            os.mkdir(os.path.join(self.root, image_chips))
+        if not os.path.exists(label_chips):
+            os.mkdir(os.path.join(self.root, label_chips))
+
+        run(os.path.join(self.root, self.dataset_type))
+
+    def _check_exists(self) -&gt; bool:
+        if self.dataset_type not in self.resources.keys():
+            print(f&#34;Unknown dataset {self.dataset_type}&#34;)
+            print(f&#34;Available dataset : {self.resources.keys()}&#34;)
+            sys.exit(0)
+
+        if os.path.exists(self.filepath):
+            return True
+        else:
+            return False
+
+    def load_dataset(self):
+        if self.data_mode == 0:
+            list_chip = &#34;train.txt&#34;
+        elif self.data_mode == 1:
+            list_chip = &#34;valid.txt&#34;
+        elif self.data_mode == 2:
+            list_chip = &#34;test.txt&#34;
+
+        files = [
+            f&#34;{os.path.join(self.root, self.dataset_type)}/image-chips/{fname}&#34;
+            for fname in load_lines(os.path.join(self.root, self.dataset_type, list_chip))
+        ]
+        self.image_files = files
+
+    def __getitem__(self, idx) -&gt; Tuple[Any, Any]:
+        &#34;&#34;&#34;
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (img, target) where target is index of the target class.
+        &#34;&#34;&#34;
+        image_file = self.image_files[idx]
+        label_file = image_file.replace(self.image_path, self.label_path)
+
+        img = np.array(load_img(image_file))
+        target = mask_to_classes(load_img(label_file))
+        target = np.array(target)
+
+        if self.transform is not None:
+            img = Image.fromarray(img)
+            img = self.transform(img)
+
+        if self.target_transform is not None:
+            target = Image.fromarray(target)
+            target = self.target_transform(target)
+        return img, target
+
+    def __len__(self) -&gt; int:
+        return len(self.image_files)
+
+    def on_epoch_end(self):
+        random.shuffle(self.image_files)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="earthvision.datasets.vision.VisionDataset" href="vision.html#earthvision.datasets.vision.VisionDataset">VisionDataset</a></li>
+<li>torch.utils.data.dataset.Dataset</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="earthvision.datasets.drone_deploy.DroneDeploy.functions"><code class="name">var <span class="ident">functions</span> : Dict[str, Callable]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.DroneDeploy.resources"><code class="name">var <span class="ident">resources</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="earthvision.datasets.drone_deploy.DroneDeploy.download"><code class="name flex">
+<span>def <span class="ident">download</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Download a dataset, extract it and create the tiles.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def download(self) -&gt; None:
+    &#34;&#34;&#34;Download a dataset, extract it and create the tiles.&#34;&#34;&#34;
+    print(f&#39;Downloading &#34;{self.dataset_type}&#34;&#39;)
+    self.root = os.path.expanduser(self.root)
+    fpath = os.path.join(self.root, self.filename)
+    _urlretrieve(self.resources[self.dataset_type], fpath)
+
+    if not os.path.exists(os.path.join(self.root, self.dataset_type)):
+        print(f&#39;Extracting &#34;{self.filepath}&#34;&#39;)
+        os.system(f&#34;tar -xvf {self.filepath}&#34;)
+        os.system(f&#34;mv {self.dataset_type} {self.root}&#34;)
+    else:
+        print(f&#39;Folder &#34;{self.dataset_type}&#34; already exists.&#39;)
+
+    image_chips = f&#34;{self.dataset_type}/image-chips&#34;
+    label_chips = f&#34;{self.dataset_type}/label-chips&#34;
+
+    if not os.path.exists(image_chips):
+        os.mkdir(os.path.join(self.root, image_chips))
+    if not os.path.exists(label_chips):
+        os.mkdir(os.path.join(self.root, label_chips))
+
+    run(os.path.join(self.root, self.dataset_type))</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.DroneDeploy.load_dataset"><code class="name flex">
+<span>def <span class="ident">load_dataset</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_dataset(self):
+    if self.data_mode == 0:
+        list_chip = &#34;train.txt&#34;
+    elif self.data_mode == 1:
+        list_chip = &#34;valid.txt&#34;
+    elif self.data_mode == 2:
+        list_chip = &#34;test.txt&#34;
+
+    files = [
+        f&#34;{os.path.join(self.root, self.dataset_type)}/image-chips/{fname}&#34;
+        for fname in load_lines(os.path.join(self.root, self.dataset_type, list_chip))
+    ]
+    self.image_files = files</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.drone_deploy.DroneDeploy.on_epoch_end"><code class="name flex">
+<span>def <span class="ident">on_epoch_end</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_epoch_end(self):
+    random.shuffle(self.image_files)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="earthvision.datasets" href="index.html">earthvision.datasets</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="earthvision.datasets.drone_deploy.color2class" href="#earthvision.datasets.drone_deploy.color2class">color2class</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.get_split" href="#earthvision.datasets.drone_deploy.get_split">get_split</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.image2tile" href="#earthvision.datasets.drone_deploy.image2tile">image2tile</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.load_img" href="#earthvision.datasets.drone_deploy.load_img">load_img</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.load_lines" href="#earthvision.datasets.drone_deploy.load_lines">load_lines</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.mask_to_classes" href="#earthvision.datasets.drone_deploy.mask_to_classes">mask_to_classes</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.run" href="#earthvision.datasets.drone_deploy.run">run</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.to_categorical" href="#earthvision.datasets.drone_deploy.to_categorical">to_categorical</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="earthvision.datasets.drone_deploy.DroneDeploy" href="#earthvision.datasets.drone_deploy.DroneDeploy">DroneDeploy</a></code></h4>
+<ul class="">
+<li><code><a title="earthvision.datasets.drone_deploy.DroneDeploy.download" href="#earthvision.datasets.drone_deploy.DroneDeploy.download">download</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.DroneDeploy.functions" href="#earthvision.datasets.drone_deploy.DroneDeploy.functions">functions</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.DroneDeploy.load_dataset" href="#earthvision.datasets.drone_deploy.DroneDeploy.load_dataset">load_dataset</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.DroneDeploy.on_epoch_end" href="#earthvision.datasets.drone_deploy.DroneDeploy.on_epoch_end">on_epoch_end</a></code></li>
+<li><code><a title="earthvision.datasets.drone_deploy.DroneDeploy.resources" href="#earthvision.datasets.drone_deploy.DroneDeploy.resources">resources</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

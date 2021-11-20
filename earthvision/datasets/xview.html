@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>earthvision.datasets.xview API documentation</title>
+<meta name="description" content="Dataset from DIUx xView 2018 Detection Challenge." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>earthvision.datasets.xview</code></h1>
+</header>
+<section id="section-intro">
+<p>Dataset from DIUx xView 2018 Detection Challenge.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Dataset from DIUx xView 2018 Detection Challenge.&#34;&#34;&#34;
+from PIL import Image
+import os
+import shutil
+import numpy as np
+import json
+
+from typing import Any, Callable, Optional, Tuple
+from .utils import _urlretrieve, _load_img
+from .vision import VisionDataset
+from ..constants.XView.config import index_mapping, CLASS_ENC, CLASS_DEC
+
+
+class XView(VisionDataset):
+    &#34;&#34;&#34;Dataset from DIUx xView 2018 Detection Challenge.
+
+    Source:
+    https://challenge.xviewdataset.org/data-download (must login)
+
+    Args:
+        root (string): Root directory of dataset.
+        train (bool, optional): If True, creates dataset from training set, otherwise
+            creates from validation set.
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
+
+    Samples at:
+    https://storage.googleapis.com/ossjr/xview/train_images.tgz
+    https://storage.googleapis.com/ossjr/xview/train_labels.tgz
+    https://storage.googleapis.com/ossjr/xview/validation_images.tgz
+    &#34;&#34;&#34;
+
+    urls = []
+    resources = [&#34;train_images.tgz&#34;, &#34;train_labels.tgz&#34;, &#34;validation_images.tgz&#34;]
+
+    def __init__(
+        self,
+        root: str,
+        train: bool = True,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -&gt; None:
+
+        super(XView, self).__init__(root, transform=transform, target_transform=target_transform)
+
+        self.root = root
+        self.data_mode = &#34;train&#34; if train else &#34;validation&#34;
+        self.class_enc = CLASS_ENC
+        self.class_dec = CLASS_DEC
+        self.coords, self.chips, self.classes = None, None, None
+
+        if download and self._check_exists():
+            print(&#34;file already exists.&#34;)
+
+        if download and not self._check_exists():
+            self.download()
+            self.extract_file()
+
+        if self.data_mode == &#34;train&#34;:
+            self.coords, self.chips, self.classes = self.get_path_and_label()
+            self.imgs = list(os.listdir(os.path.join(self.root, &#34;train_images&#34;)))
+
+        elif self.data_mode == &#34;validation&#34;:
+            self.imgs = list(os.listdir(os.path.join(self.root, &#34;val_images&#34;)))
+
+    def _check_exists(self) -&gt; bool:
+
+        if not os.path.isdir(self.root):
+            os.mkdir(self.root)
+
+        return (
+            os.path.exists(os.path.join(self.root, self.resources[0].split(&#34;.&#34;)[0]))
+            and os.path.exists(os.path.join(self.root, &#34;xView_train.geojson&#34;))
+            if self.data_mode == &#34;train&#34;
+            else os.path.exists(os.path.join(self.root, &#34;val_images&#34;))
+        )
+
+    def download(self):
+        &#34;&#34;&#34;Download file by asking users to input the link&#34;&#34;&#34;
+        train_images = input(
+            &#34;Please follow the following steps to download the required dataset\n&#34;
+            + &#34;1. Visit https://challenge.xviewdataset.org/login\n&#34;
+            + &#34;2. Sign up for an account\n&#34;
+            + &#34;3. Verify your account\n&#34;
+            &#34;4. Follow this link: https://challenge.xviewdataset.org/download-links\n&#34;
+            &#34;5. Copy the link for &#39;Download Training Images (tgz)&#39; and paste it: &#34;
+        )
+
+        train_labels = input(&#34;\n6. Copy and paste the link for &#39;Download Training Labels (tgz)&#39;: &#34;)
+
+        val_images = input(&#34;\n7. Copy and paste the link for &#39;Download Validation Images (tgz)&#39;: &#34;)
+
+        self.urls = [train_images, train_labels, val_images]
+
+        for idx, url in enumerate(self.urls):
+            _urlretrieve(url, os.path.join(self.root, self.resources[idx]))
+
+    def extract_file(self):
+        &#34;&#34;&#34;Extract the .tgz file&#34;&#34;&#34;
+        for resource in self.resources:
+            shutil.unpack_archive(os.path.join(self.root, resource), self.root)
+            os.remove(os.path.join(self.root, resource))
+
+    def _check_exists_label(self, filename):
+        &#34;&#34;&#34;Check whether bounding boxes, image filenames, and labels
+        are already extracted from xView_train.geojson
+        &#34;&#34;&#34;
+        path_to_check = os.path.join(self.root, filename)
+        return path_to_check, os.path.exists(path_to_check)
+
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Gets bounding boxes, image filenames, and labels
+        from xView_train.geojson
+
+        Returns:
+            coords: coordinates of the bounding boxes
+            chips: image file names
+            classes: classes for each ground truth
+        &#34;&#34;&#34;
+        # check existnce
+        coords_path, coords_exists = self._check_exists_label(&#34;coords.npy&#34;)
+        chips_path, chips_exists = self._check_exists_label(&#34;chips.npy&#34;)
+        classes_path, classes_exists = self._check_exists_label(&#34;classes.npy&#34;)
+
+        # if exist, load and return
+        if coords_exists and chips_exists and classes_exists:
+            coords = np.load(coords_path)
+            chips = np.load(chips_path)
+            classes = np.load(classes_path)
+            return coords, chips, classes
+
+        # read xView_train.geojson
+        fname = os.path.join(self.root, &#34;xView_train.geojson&#34;)
+        with open(fname) as f:
+            data = json.load(f)
+
+        # initialize
+        coords, chips, classes = [], [], []
+
+        # extract
+        feat_len = len(data[&#34;features&#34;])
+        img_files = os.listdir(os.path.join(self.root, self.resources[0].split(&#34;.&#34;)[0]))
+
+        for i in range(feat_len):
+            properties = data[&#34;features&#34;][i][&#34;properties&#34;]
+            b_id = properties[&#34;image_id&#34;]
+            val = [int(num) for num in properties[&#34;bounds_imcoords&#34;].split(&#34;,&#34;)]
+
+            # type_id 75 and 82 don&#39;t belong to any class
+            # https://github.com/DIUx-xView/xView1_baseline/issues/3
+            if properties[&#34;type_id&#34;] not in [75, 82] and b_id in img_files:
+                chips.append(b_id)
+                classes.append(properties[&#34;type_id&#34;])
+                coords.append(val)
+
+        # convert to numpy arrays and save
+        coords = np.array(coords)
+        chips = np.array(chips)
+        classes = np.array(classes)
+        np.save(coords_path, coords)
+        np.save(chips_path, chips)
+        np.save(classes_path, classes)
+        return coords, chips, classes
+
+    def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
+        &#34;&#34;&#34;
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (img, target) where target is a dictionary of target
+        consists of bounding boxes and labels.
+        &#34;&#34;&#34;
+        if self.data_mode == &#34;train&#34;:
+            # image
+            img_path = os.path.join(self.root, &#34;train_images&#34;, self.chips[idx])
+            img = np.array(_load_img(img_path))
+
+            if self.transform is not None:
+                img = Image.fromarray(img)
+                img = self.transform(img)
+
+            # bounding box
+            bbox = self.coords[self.chips == self.chips[idx]]
+            # label
+            label = self.classes[self.chips == self.chips[idx]]
+            label = np.vectorize(index_mapping.get)(label)
+            # combine bounding box and label
+            target = {}
+            target[&#34;boxes&#34;] = bbox
+            target[&#34;labels&#34;] = label
+            sample = (img, target)
+
+        elif self.data_mode == &#34;validation&#34;:
+            # image
+            img_path = os.path.join(self.root, &#34;val_images&#34;, self.imgs[idx])
+            img = np.array(_load_img(img_path))
+
+            if self.transform is not None:
+                img = Image.fromarray(img)
+                img = self.transform(img)
+
+            sample = img
+        return sample
+
+    def __len__(self) -&gt; int:
+        return len(self.imgs)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="earthvision.datasets.xview.XView"><code class="flex name class">
+<span>class <span class="ident">XView</span></span>
+<span>(</span><span>root: str, train: bool = True, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dataset from DIUx xView 2018 Detection Challenge.</p>
+<p>Source:
+<a href="https://challenge.xviewdataset.org/data-download">https://challenge.xviewdataset.org/data-download</a> (must login)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
+<dd>Root directory of dataset.</dd>
+<dt><strong><code>train</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, creates dataset from training set, otherwise
+creates from validation set.</dd>
+<dt><strong><code>transform</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>A function/transform that
+takes in an PIL image and
+returns a transformed version. E.g, transforms.RandomCrop</dd>
+<dt><strong><code>target_transform</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>A function/transform that takes in the
+target and transforms it.</dd>
+<dt><strong><code>download</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If true, downloads the dataset from the internet and
+puts it in root directory. If dataset is already downloaded, it is not
+downloaded again.</dd>
+</dl>
+<p>Samples at:
+<a href="https://storage.googleapis.com/ossjr/xview/train_images.tgz">https://storage.googleapis.com/ossjr/xview/train_images.tgz</a>
+<a href="https://storage.googleapis.com/ossjr/xview/train_labels.tgz">https://storage.googleapis.com/ossjr/xview/train_labels.tgz</a>
+<a href="https://storage.googleapis.com/ossjr/xview/validation_images.tgz">https://storage.googleapis.com/ossjr/xview/validation_images.tgz</a></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class XView(VisionDataset):
+    &#34;&#34;&#34;Dataset from DIUx xView 2018 Detection Challenge.
+
+    Source:
+    https://challenge.xviewdataset.org/data-download (must login)
+
+    Args:
+        root (string): Root directory of dataset.
+        train (bool, optional): If True, creates dataset from training set, otherwise
+            creates from validation set.
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
+
+    Samples at:
+    https://storage.googleapis.com/ossjr/xview/train_images.tgz
+    https://storage.googleapis.com/ossjr/xview/train_labels.tgz
+    https://storage.googleapis.com/ossjr/xview/validation_images.tgz
+    &#34;&#34;&#34;
+
+    urls = []
+    resources = [&#34;train_images.tgz&#34;, &#34;train_labels.tgz&#34;, &#34;validation_images.tgz&#34;]
+
+    def __init__(
+        self,
+        root: str,
+        train: bool = True,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+    ) -&gt; None:
+
+        super(XView, self).__init__(root, transform=transform, target_transform=target_transform)
+
+        self.root = root
+        self.data_mode = &#34;train&#34; if train else &#34;validation&#34;
+        self.class_enc = CLASS_ENC
+        self.class_dec = CLASS_DEC
+        self.coords, self.chips, self.classes = None, None, None
+
+        if download and self._check_exists():
+            print(&#34;file already exists.&#34;)
+
+        if download and not self._check_exists():
+            self.download()
+            self.extract_file()
+
+        if self.data_mode == &#34;train&#34;:
+            self.coords, self.chips, self.classes = self.get_path_and_label()
+            self.imgs = list(os.listdir(os.path.join(self.root, &#34;train_images&#34;)))
+
+        elif self.data_mode == &#34;validation&#34;:
+            self.imgs = list(os.listdir(os.path.join(self.root, &#34;val_images&#34;)))
+
+    def _check_exists(self) -&gt; bool:
+
+        if not os.path.isdir(self.root):
+            os.mkdir(self.root)
+
+        return (
+            os.path.exists(os.path.join(self.root, self.resources[0].split(&#34;.&#34;)[0]))
+            and os.path.exists(os.path.join(self.root, &#34;xView_train.geojson&#34;))
+            if self.data_mode == &#34;train&#34;
+            else os.path.exists(os.path.join(self.root, &#34;val_images&#34;))
+        )
+
+    def download(self):
+        &#34;&#34;&#34;Download file by asking users to input the link&#34;&#34;&#34;
+        train_images = input(
+            &#34;Please follow the following steps to download the required dataset\n&#34;
+            + &#34;1. Visit https://challenge.xviewdataset.org/login\n&#34;
+            + &#34;2. Sign up for an account\n&#34;
+            + &#34;3. Verify your account\n&#34;
+            &#34;4. Follow this link: https://challenge.xviewdataset.org/download-links\n&#34;
+            &#34;5. Copy the link for &#39;Download Training Images (tgz)&#39; and paste it: &#34;
+        )
+
+        train_labels = input(&#34;\n6. Copy and paste the link for &#39;Download Training Labels (tgz)&#39;: &#34;)
+
+        val_images = input(&#34;\n7. Copy and paste the link for &#39;Download Validation Images (tgz)&#39;: &#34;)
+
+        self.urls = [train_images, train_labels, val_images]
+
+        for idx, url in enumerate(self.urls):
+            _urlretrieve(url, os.path.join(self.root, self.resources[idx]))
+
+    def extract_file(self):
+        &#34;&#34;&#34;Extract the .tgz file&#34;&#34;&#34;
+        for resource in self.resources:
+            shutil.unpack_archive(os.path.join(self.root, resource), self.root)
+            os.remove(os.path.join(self.root, resource))
+
+    def _check_exists_label(self, filename):
+        &#34;&#34;&#34;Check whether bounding boxes, image filenames, and labels
+        are already extracted from xView_train.geojson
+        &#34;&#34;&#34;
+        path_to_check = os.path.join(self.root, filename)
+        return path_to_check, os.path.exists(path_to_check)
+
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Gets bounding boxes, image filenames, and labels
+        from xView_train.geojson
+
+        Returns:
+            coords: coordinates of the bounding boxes
+            chips: image file names
+            classes: classes for each ground truth
+        &#34;&#34;&#34;
+        # check existnce
+        coords_path, coords_exists = self._check_exists_label(&#34;coords.npy&#34;)
+        chips_path, chips_exists = self._check_exists_label(&#34;chips.npy&#34;)
+        classes_path, classes_exists = self._check_exists_label(&#34;classes.npy&#34;)
+
+        # if exist, load and return
+        if coords_exists and chips_exists and classes_exists:
+            coords = np.load(coords_path)
+            chips = np.load(chips_path)
+            classes = np.load(classes_path)
+            return coords, chips, classes
+
+        # read xView_train.geojson
+        fname = os.path.join(self.root, &#34;xView_train.geojson&#34;)
+        with open(fname) as f:
+            data = json.load(f)
+
+        # initialize
+        coords, chips, classes = [], [], []
+
+        # extract
+        feat_len = len(data[&#34;features&#34;])
+        img_files = os.listdir(os.path.join(self.root, self.resources[0].split(&#34;.&#34;)[0]))
+
+        for i in range(feat_len):
+            properties = data[&#34;features&#34;][i][&#34;properties&#34;]
+            b_id = properties[&#34;image_id&#34;]
+            val = [int(num) for num in properties[&#34;bounds_imcoords&#34;].split(&#34;,&#34;)]
+
+            # type_id 75 and 82 don&#39;t belong to any class
+            # https://github.com/DIUx-xView/xView1_baseline/issues/3
+            if properties[&#34;type_id&#34;] not in [75, 82] and b_id in img_files:
+                chips.append(b_id)
+                classes.append(properties[&#34;type_id&#34;])
+                coords.append(val)
+
+        # convert to numpy arrays and save
+        coords = np.array(coords)
+        chips = np.array(chips)
+        classes = np.array(classes)
+        np.save(coords_path, coords)
+        np.save(chips_path, chips)
+        np.save(classes_path, classes)
+        return coords, chips, classes
+
+    def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
+        &#34;&#34;&#34;
+        Args:
+            idx (int): Index
+        Returns:
+            tuple: (img, target) where target is a dictionary of target
+        consists of bounding boxes and labels.
+        &#34;&#34;&#34;
+        if self.data_mode == &#34;train&#34;:
+            # image
+            img_path = os.path.join(self.root, &#34;train_images&#34;, self.chips[idx])
+            img = np.array(_load_img(img_path))
+
+            if self.transform is not None:
+                img = Image.fromarray(img)
+                img = self.transform(img)
+
+            # bounding box
+            bbox = self.coords[self.chips == self.chips[idx]]
+            # label
+            label = self.classes[self.chips == self.chips[idx]]
+            label = np.vectorize(index_mapping.get)(label)
+            # combine bounding box and label
+            target = {}
+            target[&#34;boxes&#34;] = bbox
+            target[&#34;labels&#34;] = label
+            sample = (img, target)
+
+        elif self.data_mode == &#34;validation&#34;:
+            # image
+            img_path = os.path.join(self.root, &#34;val_images&#34;, self.imgs[idx])
+            img = np.array(_load_img(img_path))
+
+            if self.transform is not None:
+                img = Image.fromarray(img)
+                img = self.transform(img)
+
+            sample = img
+        return sample
+
+    def __len__(self) -&gt; int:
+        return len(self.imgs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="earthvision.datasets.vision.VisionDataset" href="vision.html#earthvision.datasets.vision.VisionDataset">VisionDataset</a></li>
+<li>torch.utils.data.dataset.Dataset</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="earthvision.datasets.xview.XView.functions"><code class="name">var <span class="ident">functions</span> : Dict[str, Callable]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="earthvision.datasets.xview.XView.resources"><code class="name">var <span class="ident">resources</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="earthvision.datasets.xview.XView.urls"><code class="name">var <span class="ident">urls</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="earthvision.datasets.xview.XView.download"><code class="name flex">
+<span>def <span class="ident">download</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Download file by asking users to input the link</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def download(self):
+    &#34;&#34;&#34;Download file by asking users to input the link&#34;&#34;&#34;
+    train_images = input(
+        &#34;Please follow the following steps to download the required dataset\n&#34;
+        + &#34;1. Visit https://challenge.xviewdataset.org/login\n&#34;
+        + &#34;2. Sign up for an account\n&#34;
+        + &#34;3. Verify your account\n&#34;
+        &#34;4. Follow this link: https://challenge.xviewdataset.org/download-links\n&#34;
+        &#34;5. Copy the link for &#39;Download Training Images (tgz)&#39; and paste it: &#34;
+    )
+
+    train_labels = input(&#34;\n6. Copy and paste the link for &#39;Download Training Labels (tgz)&#39;: &#34;)
+
+    val_images = input(&#34;\n7. Copy and paste the link for &#39;Download Validation Images (tgz)&#39;: &#34;)
+
+    self.urls = [train_images, train_labels, val_images]
+
+    for idx, url in enumerate(self.urls):
+        _urlretrieve(url, os.path.join(self.root, self.resources[idx]))</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.xview.XView.extract_file"><code class="name flex">
+<span>def <span class="ident">extract_file</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Extract the .tgz file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_file(self):
+    &#34;&#34;&#34;Extract the .tgz file&#34;&#34;&#34;
+    for resource in self.resources:
+        shutil.unpack_archive(os.path.join(self.root, resource), self.root)
+        os.remove(os.path.join(self.root, resource))</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.xview.XView.get_path_and_label"><code class="name flex">
+<span>def <span class="ident">get_path_and_label</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets bounding boxes, image filenames, and labels
+from xView_train.geojson</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>coords</code></dt>
+<dd>coordinates of the bounding boxes</dd>
+<dt><code>chips</code></dt>
+<dd>image file names</dd>
+<dt><code>classes</code></dt>
+<dd>classes for each ground truth</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_path_and_label(self):
+    &#34;&#34;&#34;Gets bounding boxes, image filenames, and labels
+    from xView_train.geojson
+
+    Returns:
+        coords: coordinates of the bounding boxes
+        chips: image file names
+        classes: classes for each ground truth
+    &#34;&#34;&#34;
+    # check existnce
+    coords_path, coords_exists = self._check_exists_label(&#34;coords.npy&#34;)
+    chips_path, chips_exists = self._check_exists_label(&#34;chips.npy&#34;)
+    classes_path, classes_exists = self._check_exists_label(&#34;classes.npy&#34;)
+
+    # if exist, load and return
+    if coords_exists and chips_exists and classes_exists:
+        coords = np.load(coords_path)
+        chips = np.load(chips_path)
+        classes = np.load(classes_path)
+        return coords, chips, classes
+
+    # read xView_train.geojson
+    fname = os.path.join(self.root, &#34;xView_train.geojson&#34;)
+    with open(fname) as f:
+        data = json.load(f)
+
+    # initialize
+    coords, chips, classes = [], [], []
+
+    # extract
+    feat_len = len(data[&#34;features&#34;])
+    img_files = os.listdir(os.path.join(self.root, self.resources[0].split(&#34;.&#34;)[0]))
+
+    for i in range(feat_len):
+        properties = data[&#34;features&#34;][i][&#34;properties&#34;]
+        b_id = properties[&#34;image_id&#34;]
+        val = [int(num) for num in properties[&#34;bounds_imcoords&#34;].split(&#34;,&#34;)]
+
+        # type_id 75 and 82 don&#39;t belong to any class
+        # https://github.com/DIUx-xView/xView1_baseline/issues/3
+        if properties[&#34;type_id&#34;] not in [75, 82] and b_id in img_files:
+            chips.append(b_id)
+            classes.append(properties[&#34;type_id&#34;])
+            coords.append(val)
+
+    # convert to numpy arrays and save
+    coords = np.array(coords)
+    chips = np.array(chips)
+    classes = np.array(classes)
+    np.save(coords_path, coords)
+    np.save(chips_path, chips)
+    np.save(classes_path, classes)
+    return coords, chips, classes</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="earthvision.datasets" href="index.html">earthvision.datasets</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="earthvision.datasets.xview.XView" href="#earthvision.datasets.xview.XView">XView</a></code></h4>
+<ul class="two-column">
+<li><code><a title="earthvision.datasets.xview.XView.download" href="#earthvision.datasets.xview.XView.download">download</a></code></li>
+<li><code><a title="earthvision.datasets.xview.XView.extract_file" href="#earthvision.datasets.xview.XView.extract_file">extract_file</a></code></li>
+<li><code><a title="earthvision.datasets.xview.XView.functions" href="#earthvision.datasets.xview.XView.functions">functions</a></code></li>
+<li><code><a title="earthvision.datasets.xview.XView.get_path_and_label" href="#earthvision.datasets.xview.XView.get_path_and_label">get_path_and_label</a></code></li>
+<li><code><a title="earthvision.datasets.xview.XView.resources" href="#earthvision.datasets.xview.XView.resources">resources</a></code></li>
+<li><code><a title="earthvision.datasets.xview.XView.urls" href="#earthvision.datasets.xview.XView.urls">urls</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
