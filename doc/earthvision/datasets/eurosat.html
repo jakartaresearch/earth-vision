@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>earthvision.datasets.sentinel2cloud API documentation</title>
+<title>earthvision.datasets.eurosat API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>earthvision.datasets.sentinel2cloud</code></h1>
+<h1 class="title">Module <code>earthvision.datasets.eurosat</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -30,20 +30,18 @@
 import os
 import shutil
 import posixpath
+import numpy as np
 import pandas as pd
-import glob
 
 from typing import Any, Callable, Optional, Tuple
+from .utils import _urlretrieve, _load_img
 from .vision import VisionDataset
-from .utils import _urlretrieve, _load_npy
+from torchvision.transforms import Resize, ToTensor, Compose
 
 
-class Sentinel2Cloud(VisionDataset):
-    &#34;&#34;&#34;
-    Sentinel-2 Cloud Mask Catalogue dataset.
-    classification_tags&lt;https://zenodo.org/record/4172871/files/classification_tags.csv?download=1&gt;
-    subscenes&lt;https://zenodo.org/record/4172871/files/subscenes.zip?download=1&gt;
-    masks&lt;https://zenodo.org/record/4172871/files/masks.zip?download=1&gt;
+class EuroSat(VisionDataset):
+    &#34;&#34;&#34;EuroSat Land Cover Categories.
+    &lt;http://madm.dfki.de/files/sentinel&gt;
 
     Args:
         root (string): Root directory of dataset.
@@ -56,26 +54,33 @@ class Sentinel2Cloud(VisionDataset):
             downloaded again.
     &#34;&#34;&#34;
 
-    mirrors = &#34;https://zenodo.org/record/4172871/files/&#34;
-    resources = &#34;subscenes.zip&#34;
-    mask_resources = &#34;masks.zip&#34;
+    mirrors = &#34;http://madm.dfki.de/files/sentinel&#34;
+    resources = &#34;EuroSAT.zip&#34;
+    classes = {
+        &#34;AnnualCrop&#34;: 0,
+        &#34;Forest&#34;: 1,
+        &#34;HerbaceousVegetation&#34;: 2,
+        &#34;Highway&#34;: 3,
+        &#34;Industrial&#34;: 4,
+        &#34;Pasture&#34;: 5,
+        &#34;PermanentCrop&#34;: 6,
+        &#34;Residential&#34;: 7,
+        &#34;River&#34;: 8,
+        &#34;SeaLake&#34;: 9,
+    }
 
     def __init__(
         self,
         root: str,
-        transform: Optional[Callable] = None,
+        transform=Compose([Resize((64, 64)), ToTensor()]),
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(Sentinel2Cloud, self).__init__(
-            root, transform=transform, target_transform=target_transform
-        )
+        super(EuroSat, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
-
-        if not os.path.exists(self.root):
-            os.makedirs(self.root)
+        self.data_mode = &#34;2750&#34;
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
@@ -84,78 +89,60 @@ class Sentinel2Cloud(VisionDataset):
             self.download()
             self.extract_file()
 
-        self.img_labels = self.get_image_path_and_mask_path()
+        self.img_labels = self.get_path_and_label()
 
     def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
         &#34;&#34;&#34;
         Args:
             idx (int): Index
         Returns:
-            tuple: (img, mask)
+            tuple: (img, target) where target is index of the target class.
         &#34;&#34;&#34;
         img_path = self.img_labels.iloc[idx, 0]
-        mask_path = self.img_labels.iloc[idx, 1]
-
-        img = _load_npy(img_path)
-        mask = _load_npy(mask_path)
+        img = np.array(_load_img(img_path))
+        target = self.img_labels.iloc[idx, 1]
 
         if self.transform is not None:
             img = Image.fromarray(img)
             img = self.transform(img)
 
         if self.target_transform is not None:
-            mask = Image.fromarray(mask)
-            mask = self.target_transform(mask)
-        return img, mask
+            target = Image.fromarray(target)
+            target = self.target_transform(target)
+        return img, target
 
     def __len__(self) -&gt; int:
-        &#34;&#34;&#34;Return the len of the image labels&#34;&#34;&#34;
         return len(self.img_labels)
 
-    def get_image_path_and_mask_path(self):
-        &#34;&#34;&#34;Return dataframe type consist of image path and mask path.&#34;&#34;&#34;
+    def _check_exists(self) -&gt; None:
+        self.data_path = os.path.join(self.root, self.data_mode)
+        self.dir_classes = list(self.classes.keys())
 
-        img_path = os.path.join(self.root, &#34;sentinel2cloud&#34;, &#34;subscenes&#34;)
-        msk_path = os.path.join(self.root, &#34;sentinel2cloud&#34;, &#34;masks&#34;)
-
-        images_path = glob.glob(os.path.join(img_path, &#34;*.npy&#34;))
-        images_path.sort()
-        masks_path = glob.glob(os.path.join(msk_path, &#34;*.npy&#34;))
-        masks_path.sort()
-
-        df = pd.DataFrame({&#34;image&#34;: images_path, &#34;mask&#34;: masks_path})
-        return df
+        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
 
     def download(self) -&gt; None:
-        &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+        &#34;&#34;&#34;Download file&#34;&#34;&#34;
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
-        mask_file_url = posixpath.join(self.mirrors, self.mask_resources)
-        _urlretrieve(mask_file_url, os.path.join(self.root, self.mask_resources))
-
-    def _check_exists(self):
-        &#34;&#34;&#34;Check file has been download or not&#34;&#34;&#34;
-        self.data_path = os.path.join(self.root, &#34;sentinel2cloud&#34;)
-
-        return os.path.exists(os.path.join(self.data_path, &#34;subscenes&#34;)) and os.path.exists(
-            os.path.join(self.data_path, &#34;masks&#34;)
-        )
-
-    def extract_file(self):
-        &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
-
-        os.makedirs(os.path.join(self.root, &#34;sentinel2cloud&#34;))
-
-        shutil.unpack_archive(
-            os.path.join(self.root, self.resources), os.path.join(self.root, &#34;sentinel2cloud&#34;)
-        )
+    def extract_file(self) -&gt; None:
+        &#34;&#34;&#34;Extract the .zip file&#34;&#34;&#34;
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
 
-        shutil.unpack_archive(
-            os.path.join(self.root, self.mask_resources), os.path.join(self.root, &#34;sentinel2cloud&#34;)
-        )
-        os.remove(os.path.join(self.root, self.mask_resources))</code></pre>
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+        image_path = []
+        label = []
+        for cat, enc in self.classes.items():
+            cat_path = os.path.join(self.root, self.data_mode, cat)
+            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
+            cat_label = [enc] * len(cat_image)
+            image_path += cat_image
+            label += cat_label
+        df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
+
+        return df</code></pre>
 </details>
 </section>
 <section>
@@ -167,15 +154,16 @@ class Sentinel2Cloud(VisionDataset):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud"><code class="flex name class">
-<span>class <span class="ident">Sentinel2Cloud</span></span>
-<span>(</span><span>root: str, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False)</span>
+<dt id="earthvision.datasets.eurosat.EuroSat"><code class="flex name class">
+<span>class <span class="ident">EuroSat</span></span>
+<span>(</span><span>root: str, transform=Compose(
+Resize(size=(64, 64), interpolation=bilinear, max_size=None, antialias=None)
+ToTensor()
+), target_transform: Optional[Callable] = None, download: bool = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Sentinel-2 Cloud Mask Catalogue dataset.
-classification_tags<a href="https://zenodo.org/record/4172871/files/classification_tags.csv?download=1">https://zenodo.org/record/4172871/files/classification_tags.csv?download=1</a>
-subscenes<a href="https://zenodo.org/record/4172871/files/subscenes.zip?download=1">https://zenodo.org/record/4172871/files/subscenes.zip?download=1</a>
-masks<a href="https://zenodo.org/record/4172871/files/masks.zip?download=1">https://zenodo.org/record/4172871/files/masks.zip?download=1</a></p>
+<div class="desc"><p>EuroSat Land Cover Categories.
+<a href="http://madm.dfki.de/files/sentinel">http://madm.dfki.de/files/sentinel</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
@@ -196,12 +184,9 @@ downloaded again.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Sentinel2Cloud(VisionDataset):
-    &#34;&#34;&#34;
-    Sentinel-2 Cloud Mask Catalogue dataset.
-    classification_tags&lt;https://zenodo.org/record/4172871/files/classification_tags.csv?download=1&gt;
-    subscenes&lt;https://zenodo.org/record/4172871/files/subscenes.zip?download=1&gt;
-    masks&lt;https://zenodo.org/record/4172871/files/masks.zip?download=1&gt;
+<pre><code class="python">class EuroSat(VisionDataset):
+    &#34;&#34;&#34;EuroSat Land Cover Categories.
+    &lt;http://madm.dfki.de/files/sentinel&gt;
 
     Args:
         root (string): Root directory of dataset.
@@ -214,26 +199,33 @@ downloaded again.</dd>
             downloaded again.
     &#34;&#34;&#34;
 
-    mirrors = &#34;https://zenodo.org/record/4172871/files/&#34;
-    resources = &#34;subscenes.zip&#34;
-    mask_resources = &#34;masks.zip&#34;
+    mirrors = &#34;http://madm.dfki.de/files/sentinel&#34;
+    resources = &#34;EuroSAT.zip&#34;
+    classes = {
+        &#34;AnnualCrop&#34;: 0,
+        &#34;Forest&#34;: 1,
+        &#34;HerbaceousVegetation&#34;: 2,
+        &#34;Highway&#34;: 3,
+        &#34;Industrial&#34;: 4,
+        &#34;Pasture&#34;: 5,
+        &#34;PermanentCrop&#34;: 6,
+        &#34;Residential&#34;: 7,
+        &#34;River&#34;: 8,
+        &#34;SeaLake&#34;: 9,
+    }
 
     def __init__(
         self,
         root: str,
-        transform: Optional[Callable] = None,
+        transform=Compose([Resize((64, 64)), ToTensor()]),
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(Sentinel2Cloud, self).__init__(
-            root, transform=transform, target_transform=target_transform
-        )
+        super(EuroSat, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
-
-        if not os.path.exists(self.root):
-            os.makedirs(self.root)
+        self.data_mode = &#34;2750&#34;
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
@@ -242,78 +234,60 @@ downloaded again.</dd>
             self.download()
             self.extract_file()
 
-        self.img_labels = self.get_image_path_and_mask_path()
+        self.img_labels = self.get_path_and_label()
 
     def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
         &#34;&#34;&#34;
         Args:
             idx (int): Index
         Returns:
-            tuple: (img, mask)
+            tuple: (img, target) where target is index of the target class.
         &#34;&#34;&#34;
         img_path = self.img_labels.iloc[idx, 0]
-        mask_path = self.img_labels.iloc[idx, 1]
-
-        img = _load_npy(img_path)
-        mask = _load_npy(mask_path)
+        img = np.array(_load_img(img_path))
+        target = self.img_labels.iloc[idx, 1]
 
         if self.transform is not None:
             img = Image.fromarray(img)
             img = self.transform(img)
 
         if self.target_transform is not None:
-            mask = Image.fromarray(mask)
-            mask = self.target_transform(mask)
-        return img, mask
+            target = Image.fromarray(target)
+            target = self.target_transform(target)
+        return img, target
 
     def __len__(self) -&gt; int:
-        &#34;&#34;&#34;Return the len of the image labels&#34;&#34;&#34;
         return len(self.img_labels)
 
-    def get_image_path_and_mask_path(self):
-        &#34;&#34;&#34;Return dataframe type consist of image path and mask path.&#34;&#34;&#34;
+    def _check_exists(self) -&gt; None:
+        self.data_path = os.path.join(self.root, self.data_mode)
+        self.dir_classes = list(self.classes.keys())
 
-        img_path = os.path.join(self.root, &#34;sentinel2cloud&#34;, &#34;subscenes&#34;)
-        msk_path = os.path.join(self.root, &#34;sentinel2cloud&#34;, &#34;masks&#34;)
-
-        images_path = glob.glob(os.path.join(img_path, &#34;*.npy&#34;))
-        images_path.sort()
-        masks_path = glob.glob(os.path.join(msk_path, &#34;*.npy&#34;))
-        masks_path.sort()
-
-        df = pd.DataFrame({&#34;image&#34;: images_path, &#34;mask&#34;: masks_path})
-        return df
+        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
 
     def download(self) -&gt; None:
-        &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+        &#34;&#34;&#34;Download file&#34;&#34;&#34;
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
-        mask_file_url = posixpath.join(self.mirrors, self.mask_resources)
-        _urlretrieve(mask_file_url, os.path.join(self.root, self.mask_resources))
-
-    def _check_exists(self):
-        &#34;&#34;&#34;Check file has been download or not&#34;&#34;&#34;
-        self.data_path = os.path.join(self.root, &#34;sentinel2cloud&#34;)
-
-        return os.path.exists(os.path.join(self.data_path, &#34;subscenes&#34;)) and os.path.exists(
-            os.path.join(self.data_path, &#34;masks&#34;)
-        )
-
-    def extract_file(self):
-        &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
-
-        os.makedirs(os.path.join(self.root, &#34;sentinel2cloud&#34;))
-
-        shutil.unpack_archive(
-            os.path.join(self.root, self.resources), os.path.join(self.root, &#34;sentinel2cloud&#34;)
-        )
+    def extract_file(self) -&gt; None:
+        &#34;&#34;&#34;Extract the .zip file&#34;&#34;&#34;
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
         os.remove(os.path.join(self.root, self.resources))
 
-        shutil.unpack_archive(
-            os.path.join(self.root, self.mask_resources), os.path.join(self.root, &#34;sentinel2cloud&#34;)
-        )
-        os.remove(os.path.join(self.root, self.mask_resources))</code></pre>
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+        image_path = []
+        label = []
+        for cat, enc in self.classes.items():
+            cat_path = os.path.join(self.root, self.data_mode, cat)
+            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
+            cat_label = [enc] * len(cat_image)
+            image_path += cat_image
+            label += cat_label
+        df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
+
+        return df</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -323,89 +297,72 @@ downloaded again.</dd>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.functions"><code class="name">var <span class="ident">functions</span> : Dict[str, Callable]</code></dt>
+<dt id="earthvision.datasets.eurosat.EuroSat.classes"><code class="name">var <span class="ident">classes</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.mask_resources"><code class="name">var <span class="ident">mask_resources</span></code></dt>
+<dt id="earthvision.datasets.eurosat.EuroSat.mirrors"><code class="name">var <span class="ident">mirrors</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.mirrors"><code class="name">var <span class="ident">mirrors</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.resources"><code class="name">var <span class="ident">resources</span></code></dt>
+<dt id="earthvision.datasets.eurosat.EuroSat.resources"><code class="name">var <span class="ident">resources</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.download"><code class="name flex">
+<dt id="earthvision.datasets.eurosat.EuroSat.download"><code class="name flex">
 <span>def <span class="ident">download</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>download and extract file.</p></div>
+<div class="desc"><p>Download file</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def download(self) -&gt; None:
-    &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+    &#34;&#34;&#34;Download file&#34;&#34;&#34;
     file_url = posixpath.join(self.mirrors, self.resources)
-    _urlretrieve(file_url, os.path.join(self.root, self.resources))
-
-    mask_file_url = posixpath.join(self.mirrors, self.mask_resources)
-    _urlretrieve(mask_file_url, os.path.join(self.root, self.mask_resources))</code></pre>
+    _urlretrieve(file_url, os.path.join(self.root, self.resources))</code></pre>
 </details>
 </dd>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.extract_file"><code class="name flex">
-<span>def <span class="ident">extract_file</span></span>(<span>self)</span>
+<dt id="earthvision.datasets.eurosat.EuroSat.extract_file"><code class="name flex">
+<span>def <span class="ident">extract_file</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Extract file from compressed.</p></div>
+<div class="desc"><p>Extract the .zip file</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def extract_file(self):
-    &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
-
-    os.makedirs(os.path.join(self.root, &#34;sentinel2cloud&#34;))
-
-    shutil.unpack_archive(
-        os.path.join(self.root, self.resources), os.path.join(self.root, &#34;sentinel2cloud&#34;)
-    )
-    os.remove(os.path.join(self.root, self.resources))
-
-    shutil.unpack_archive(
-        os.path.join(self.root, self.mask_resources), os.path.join(self.root, &#34;sentinel2cloud&#34;)
-    )
-    os.remove(os.path.join(self.root, self.mask_resources))</code></pre>
+<pre><code class="python">def extract_file(self) -&gt; None:
+    &#34;&#34;&#34;Extract the .zip file&#34;&#34;&#34;
+    shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
+    os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 </dd>
-<dt id="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.get_image_path_and_mask_path"><code class="name flex">
-<span>def <span class="ident">get_image_path_and_mask_path</span></span>(<span>self)</span>
+<dt id="earthvision.datasets.eurosat.EuroSat.get_path_and_label"><code class="name flex">
+<span>def <span class="ident">get_path_and_label</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return dataframe type consist of image path and mask path.</p></div>
+<div class="desc"><p>Return dataframe type consist of image path and corresponding label.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_image_path_and_mask_path(self):
-    &#34;&#34;&#34;Return dataframe type consist of image path and mask path.&#34;&#34;&#34;
+<pre><code class="python">def get_path_and_label(self):
+    &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+    image_path = []
+    label = []
+    for cat, enc in self.classes.items():
+        cat_path = os.path.join(self.root, self.data_mode, cat)
+        cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
+        cat_label = [enc] * len(cat_image)
+        image_path += cat_image
+        label += cat_label
+    df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
 
-    img_path = os.path.join(self.root, &#34;sentinel2cloud&#34;, &#34;subscenes&#34;)
-    msk_path = os.path.join(self.root, &#34;sentinel2cloud&#34;, &#34;masks&#34;)
-
-    images_path = glob.glob(os.path.join(img_path, &#34;*.npy&#34;))
-    images_path.sort()
-    masks_path = glob.glob(os.path.join(msk_path, &#34;*.npy&#34;))
-    masks_path.sort()
-
-    df = pd.DataFrame({&#34;image&#34;: images_path, &#34;mask&#34;: masks_path})
     return df</code></pre>
 </details>
 </dd>
@@ -428,15 +385,14 @@ downloaded again.</dd>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud">Sentinel2Cloud</a></code></h4>
-<ul class="">
-<li><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.download" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud.download">download</a></code></li>
-<li><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.extract_file" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud.extract_file">extract_file</a></code></li>
-<li><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.functions" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud.functions">functions</a></code></li>
-<li><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.get_image_path_and_mask_path" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud.get_image_path_and_mask_path">get_image_path_and_mask_path</a></code></li>
-<li><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.mask_resources" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud.mask_resources">mask_resources</a></code></li>
-<li><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.mirrors" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud.mirrors">mirrors</a></code></li>
-<li><code><a title="earthvision.datasets.sentinel2cloud.Sentinel2Cloud.resources" href="#earthvision.datasets.sentinel2cloud.Sentinel2Cloud.resources">resources</a></code></li>
+<h4><code><a title="earthvision.datasets.eurosat.EuroSat" href="#earthvision.datasets.eurosat.EuroSat">EuroSat</a></code></h4>
+<ul class="two-column">
+<li><code><a title="earthvision.datasets.eurosat.EuroSat.classes" href="#earthvision.datasets.eurosat.EuroSat.classes">classes</a></code></li>
+<li><code><a title="earthvision.datasets.eurosat.EuroSat.download" href="#earthvision.datasets.eurosat.EuroSat.download">download</a></code></li>
+<li><code><a title="earthvision.datasets.eurosat.EuroSat.extract_file" href="#earthvision.datasets.eurosat.EuroSat.extract_file">extract_file</a></code></li>
+<li><code><a title="earthvision.datasets.eurosat.EuroSat.get_path_and_label" href="#earthvision.datasets.eurosat.EuroSat.get_path_and_label">get_path_and_label</a></code></li>
+<li><code><a title="earthvision.datasets.eurosat.EuroSat.mirrors" href="#earthvision.datasets.eurosat.EuroSat.mirrors">mirrors</a></code></li>
+<li><code><a title="earthvision.datasets.eurosat.EuroSat.resources" href="#earthvision.datasets.eurosat.EuroSat.resources">resources</a></code></li>
 </ul>
 </li>
 </ul>

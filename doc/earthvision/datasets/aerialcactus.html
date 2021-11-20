@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>earthvision.datasets.ucmercedland API documentation</title>
-<meta name="description" content="" />
+<title>earthvision.datasets.aerialcactus API documentation</title>
+<meta name="description" content="Aerial Cactus Dataset from Kaggle." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,14 +19,16 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>earthvision.datasets.ucmercedland</code></h1>
+<h1 class="title">Module <code>earthvision.datasets.aerialcactus</code></h1>
 </header>
 <section id="section-intro">
+<p>Aerial Cactus Dataset from Kaggle.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PIL import Image
+<pre><code class="python">&#34;&#34;&#34;Aerial Cactus Dataset from Kaggle.&#34;&#34;&#34;
+from PIL import Image
 import os
 import shutil
 import posixpath
@@ -34,17 +36,19 @@ import numpy as np
 import pandas as pd
 
 from typing import Any, Callable, Optional, Tuple
-from torchvision.transforms import Resize, ToTensor, Compose
-from .vision import VisionDataset
 from .utils import _urlretrieve, _load_img
+from .vision import VisionDataset
+from torchvision.transforms import Resize, ToTensor, Compose
 
 
-class UCMercedLand(VisionDataset):
-    &#34;&#34;&#34;UC Merced Land Use Dataset.
-    &lt;http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip&gt;
+class AerialCactus(VisionDataset):
+    &#34;&#34;&#34;Aerial Cactus Dataset.
+    &lt;https://www.kaggle.com/c/aerial-cactus-identification&gt;
 
     Args:
         root (string): Root directory of dataset.
+        train (bool, optional): If True, creates dataset from training set, otherwise
+            creates from validation set.
         transform (callable, optional): A function/transform that  takes in an PIL image and
             returns a transformed version. E.g, transforms.RandomCrop
         target_transform (callable, optional): A function/transform that takes in the
@@ -54,46 +58,24 @@ class UCMercedLand(VisionDataset):
             downloaded again.
     &#34;&#34;&#34;
 
-    mirrors = &#34;http://weegee.vision.ucmerced.edu/datasets/&#34;
-    resources = &#34;UCMerced_LandUse.zip&#34;
-    classes = {
-        &#34;agricultural&#34;: 0,
-        &#34;airplane&#34;: 1,
-        &#34;baseballdiamond&#34;: 2,
-        &#34;beach&#34;: 3,
-        &#34;buildings&#34;: 4,
-        &#34;chaparral&#34;: 5,
-        &#34;denseresidential&#34;: 6,
-        &#34;forest&#34;: 7,
-        &#34;freeway&#34;: 8,
-        &#34;golfcourse&#34;: 9,
-        &#34;harbor&#34;: 10,
-        &#34;intersection&#34;: 11,
-        &#34;mediumresidential&#34;: 12,
-        &#34;mobilehomepark&#34;: 13,
-        &#34;overpass&#34;: 14,
-        &#34;parkinglot&#34;: 15,
-        &#34;river&#34;: 16,
-        &#34;runway&#34;: 17,
-        &#34;sparseresidential&#34;: 18,
-        &#34;storagetanks&#34;: 19,
-        &#34;tenniscourt&#34;: 20,
-    }
+    mirrors = &#34;https://storage.googleapis.com/ossjr&#34;
+    resources = &#34;cactus-aerial-photos.zip&#34;
 
     def __init__(
         self,
         root: str,
-        transform=Compose([Resize((256, 256)), ToTensor()]),
+        train: bool = True,
+        transform=Compose([Resize((32, 32)), ToTensor()]),
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(UCMercedLand, self).__init__(
+        super(AerialCactus, self).__init__(
             root, transform=transform, target_transform=target_transform
         )
 
         self.root = root
-        self.data_mode = &#34;Images&#34;
+        self.data_mode = &#34;training_set&#34; if train else &#34;validation_set&#34;
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
@@ -129,10 +111,13 @@ class UCMercedLand(VisionDataset):
 
     def get_path_and_label(self):
         &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
-        image_path = []
-        label = []
-        for cat, enc in self.classes.items():
-            cat_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, self.data_mode, cat)
+        classes = {&#34;cactus&#34;: 1, &#34;no_cactus&#34;: 0}
+        image_path, label = [], []
+
+        for cat, enc in classes.items():
+            cat_path = os.path.join(
+                self.root, &#34;cactus-aerial-photos&#34;, self.data_mode, self.data_mode, cat
+            )
             cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
             image_path += cat_image
@@ -142,18 +127,31 @@ class UCMercedLand(VisionDataset):
         return df
 
     def _check_exists(self):
-        self.data_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, &#34;Images&#34;)
-        self.dir_classes = list(self.classes.keys())
-        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
+        self.train_path = os.path.join(
+            self.root, &#34;cactus-aerial-photos&#34;, &#34;training_set&#34;, &#34;training_set&#34;
+        )
+        self.valid_path = os.path.join(
+            self.root, &#34;cactus-aerial-photos&#34;, &#34;validation_set&#34;, &#34;validation_set&#34;
+        )
+
+        folder_status = []
+        for path in [self.train_path, self.valid_path]:
+            for target in [&#34;cactus&#34;, &#34;no_cactus&#34;]:
+                folder_status.append(os.path.exists(os.path.join(path, target)))
+
+        return all(folder_status)
 
     def download(self) -&gt; None:
-        &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+        &#34;&#34;&#34;Download and extract file.&#34;&#34;&#34;
+        os.makedirs(self.root, exist_ok=True)
+
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def extract_file(self) -&gt; None:
         &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
-        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
+        path_destination = os.path.join(self.root, &#34;cactus-aerial-photos&#34;)
+        shutil.unpack_archive(os.path.join(self.root, self.resources), path_destination)
         os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 </section>
@@ -166,20 +164,23 @@ class UCMercedLand(VisionDataset):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand"><code class="flex name class">
-<span>class <span class="ident">UCMercedLand</span></span>
-<span>(</span><span>root: str, transform=Compose(
-Resize(size=(256, 256), interpolation=bilinear, max_size=None, antialias=None)
+<dt id="earthvision.datasets.aerialcactus.AerialCactus"><code class="flex name class">
+<span>class <span class="ident">AerialCactus</span></span>
+<span>(</span><span>root: str, train: bool = True, transform=Compose(
+Resize(size=(32, 32), interpolation=bilinear, max_size=None, antialias=None)
 ToTensor()
 ), target_transform: Optional[Callable] = None, download: bool = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>UC Merced Land Use Dataset.
-<a href="http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip">http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip</a></p>
+<div class="desc"><p>Aerial Cactus Dataset.
+<a href="https://www.kaggle.com/c/aerial-cactus-identification">https://www.kaggle.com/c/aerial-cactus-identification</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
 <dd>Root directory of dataset.</dd>
+<dt><strong><code>train</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, creates dataset from training set, otherwise
+creates from validation set.</dd>
 <dt><strong><code>transform</code></strong> :&ensp;<code>callable</code>, optional</dt>
 <dd>A function/transform that
 takes in an PIL image and
@@ -196,12 +197,14 @@ downloaded again.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class UCMercedLand(VisionDataset):
-    &#34;&#34;&#34;UC Merced Land Use Dataset.
-    &lt;http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip&gt;
+<pre><code class="python">class AerialCactus(VisionDataset):
+    &#34;&#34;&#34;Aerial Cactus Dataset.
+    &lt;https://www.kaggle.com/c/aerial-cactus-identification&gt;
 
     Args:
         root (string): Root directory of dataset.
+        train (bool, optional): If True, creates dataset from training set, otherwise
+            creates from validation set.
         transform (callable, optional): A function/transform that  takes in an PIL image and
             returns a transformed version. E.g, transforms.RandomCrop
         target_transform (callable, optional): A function/transform that takes in the
@@ -211,46 +214,24 @@ downloaded again.</dd>
             downloaded again.
     &#34;&#34;&#34;
 
-    mirrors = &#34;http://weegee.vision.ucmerced.edu/datasets/&#34;
-    resources = &#34;UCMerced_LandUse.zip&#34;
-    classes = {
-        &#34;agricultural&#34;: 0,
-        &#34;airplane&#34;: 1,
-        &#34;baseballdiamond&#34;: 2,
-        &#34;beach&#34;: 3,
-        &#34;buildings&#34;: 4,
-        &#34;chaparral&#34;: 5,
-        &#34;denseresidential&#34;: 6,
-        &#34;forest&#34;: 7,
-        &#34;freeway&#34;: 8,
-        &#34;golfcourse&#34;: 9,
-        &#34;harbor&#34;: 10,
-        &#34;intersection&#34;: 11,
-        &#34;mediumresidential&#34;: 12,
-        &#34;mobilehomepark&#34;: 13,
-        &#34;overpass&#34;: 14,
-        &#34;parkinglot&#34;: 15,
-        &#34;river&#34;: 16,
-        &#34;runway&#34;: 17,
-        &#34;sparseresidential&#34;: 18,
-        &#34;storagetanks&#34;: 19,
-        &#34;tenniscourt&#34;: 20,
-    }
+    mirrors = &#34;https://storage.googleapis.com/ossjr&#34;
+    resources = &#34;cactus-aerial-photos.zip&#34;
 
     def __init__(
         self,
         root: str,
-        transform=Compose([Resize((256, 256)), ToTensor()]),
+        train: bool = True,
+        transform=Compose([Resize((32, 32)), ToTensor()]),
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(UCMercedLand, self).__init__(
+        super(AerialCactus, self).__init__(
             root, transform=transform, target_transform=target_transform
         )
 
         self.root = root
-        self.data_mode = &#34;Images&#34;
+        self.data_mode = &#34;training_set&#34; if train else &#34;validation_set&#34;
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
@@ -286,10 +267,13 @@ downloaded again.</dd>
 
     def get_path_and_label(self):
         &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
-        image_path = []
-        label = []
-        for cat, enc in self.classes.items():
-            cat_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, self.data_mode, cat)
+        classes = {&#34;cactus&#34;: 1, &#34;no_cactus&#34;: 0}
+        image_path, label = [], []
+
+        for cat, enc in classes.items():
+            cat_path = os.path.join(
+                self.root, &#34;cactus-aerial-photos&#34;, self.data_mode, self.data_mode, cat
+            )
             cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
             cat_label = [enc] * len(cat_image)
             image_path += cat_image
@@ -299,18 +283,31 @@ downloaded again.</dd>
         return df
 
     def _check_exists(self):
-        self.data_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, &#34;Images&#34;)
-        self.dir_classes = list(self.classes.keys())
-        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
+        self.train_path = os.path.join(
+            self.root, &#34;cactus-aerial-photos&#34;, &#34;training_set&#34;, &#34;training_set&#34;
+        )
+        self.valid_path = os.path.join(
+            self.root, &#34;cactus-aerial-photos&#34;, &#34;validation_set&#34;, &#34;validation_set&#34;
+        )
+
+        folder_status = []
+        for path in [self.train_path, self.valid_path]:
+            for target in [&#34;cactus&#34;, &#34;no_cactus&#34;]:
+                folder_status.append(os.path.exists(os.path.join(path, target)))
+
+        return all(folder_status)
 
     def download(self) -&gt; None:
-        &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+        &#34;&#34;&#34;Download and extract file.&#34;&#34;&#34;
+        os.makedirs(self.root, exist_ok=True)
+
         file_url = posixpath.join(self.mirrors, self.resources)
         _urlretrieve(file_url, os.path.join(self.root, self.resources))
 
     def extract_file(self) -&gt; None:
         &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
-        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
+        path_destination = os.path.join(self.root, &#34;cactus-aerial-photos&#34;)
+        shutil.unpack_archive(os.path.join(self.root, self.resources), path_destination)
         os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -321,41 +318,35 @@ downloaded again.</dd>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand.classes"><code class="name">var <span class="ident">classes</span></code></dt>
+<dt id="earthvision.datasets.aerialcactus.AerialCactus.mirrors"><code class="name">var <span class="ident">mirrors</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand.functions"><code class="name">var <span class="ident">functions</span> : Dict[str, Callable]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand.mirrors"><code class="name">var <span class="ident">mirrors</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand.resources"><code class="name">var <span class="ident">resources</span></code></dt>
+<dt id="earthvision.datasets.aerialcactus.AerialCactus.resources"><code class="name">var <span class="ident">resources</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand.download"><code class="name flex">
+<dt id="earthvision.datasets.aerialcactus.AerialCactus.download"><code class="name flex">
 <span>def <span class="ident">download</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>download and extract file.</p></div>
+<div class="desc"><p>Download and extract file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def download(self) -&gt; None:
-    &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+    &#34;&#34;&#34;Download and extract file.&#34;&#34;&#34;
+    os.makedirs(self.root, exist_ok=True)
+
     file_url = posixpath.join(self.mirrors, self.resources)
     _urlretrieve(file_url, os.path.join(self.root, self.resources))</code></pre>
 </details>
 </dd>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand.extract_file"><code class="name flex">
+<dt id="earthvision.datasets.aerialcactus.AerialCactus.extract_file"><code class="name flex">
 <span>def <span class="ident">extract_file</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
@@ -366,11 +357,12 @@ downloaded again.</dd>
 </summary>
 <pre><code class="python">def extract_file(self) -&gt; None:
     &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
-    shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
+    path_destination = os.path.join(self.root, &#34;cactus-aerial-photos&#34;)
+    shutil.unpack_archive(os.path.join(self.root, self.resources), path_destination)
     os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 </dd>
-<dt id="earthvision.datasets.ucmercedland.UCMercedLand.get_path_and_label"><code class="name flex">
+<dt id="earthvision.datasets.aerialcactus.AerialCactus.get_path_and_label"><code class="name flex">
 <span>def <span class="ident">get_path_and_label</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -381,10 +373,13 @@ downloaded again.</dd>
 </summary>
 <pre><code class="python">def get_path_and_label(self):
     &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
-    image_path = []
-    label = []
-    for cat, enc in self.classes.items():
-        cat_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, self.data_mode, cat)
+    classes = {&#34;cactus&#34;: 1, &#34;no_cactus&#34;: 0}
+    image_path, label = [], []
+
+    for cat, enc in classes.items():
+        cat_path = os.path.join(
+            self.root, &#34;cactus-aerial-photos&#34;, self.data_mode, self.data_mode, cat
+        )
         cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
         cat_label = [enc] * len(cat_image)
         image_path += cat_image
@@ -413,15 +408,13 @@ downloaded again.</dd>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="earthvision.datasets.ucmercedland.UCMercedLand" href="#earthvision.datasets.ucmercedland.UCMercedLand">UCMercedLand</a></code></h4>
-<ul class="two-column">
-<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.classes" href="#earthvision.datasets.ucmercedland.UCMercedLand.classes">classes</a></code></li>
-<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.download" href="#earthvision.datasets.ucmercedland.UCMercedLand.download">download</a></code></li>
-<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.extract_file" href="#earthvision.datasets.ucmercedland.UCMercedLand.extract_file">extract_file</a></code></li>
-<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.functions" href="#earthvision.datasets.ucmercedland.UCMercedLand.functions">functions</a></code></li>
-<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.get_path_and_label" href="#earthvision.datasets.ucmercedland.UCMercedLand.get_path_and_label">get_path_and_label</a></code></li>
-<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.mirrors" href="#earthvision.datasets.ucmercedland.UCMercedLand.mirrors">mirrors</a></code></li>
-<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.resources" href="#earthvision.datasets.ucmercedland.UCMercedLand.resources">resources</a></code></li>
+<h4><code><a title="earthvision.datasets.aerialcactus.AerialCactus" href="#earthvision.datasets.aerialcactus.AerialCactus">AerialCactus</a></code></h4>
+<ul class="">
+<li><code><a title="earthvision.datasets.aerialcactus.AerialCactus.download" href="#earthvision.datasets.aerialcactus.AerialCactus.download">download</a></code></li>
+<li><code><a title="earthvision.datasets.aerialcactus.AerialCactus.extract_file" href="#earthvision.datasets.aerialcactus.AerialCactus.extract_file">extract_file</a></code></li>
+<li><code><a title="earthvision.datasets.aerialcactus.AerialCactus.get_path_and_label" href="#earthvision.datasets.aerialcactus.AerialCactus.get_path_and_label">get_path_and_label</a></code></li>
+<li><code><a title="earthvision.datasets.aerialcactus.AerialCactus.mirrors" href="#earthvision.datasets.aerialcactus.AerialCactus.mirrors">mirrors</a></code></li>
+<li><code><a title="earthvision.datasets.aerialcactus.AerialCactus.resources" href="#earthvision.datasets.aerialcactus.AerialCactus.resources">resources</a></code></li>
 </ul>
 </li>
 </ul>

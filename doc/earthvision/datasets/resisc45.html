@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>earthvision.datasets.deepsat API documentation</title>
-<meta name="description" content="Class for Deepsat - Scene Classification." />
+<title>earthvision.datasets.resisc45 API documentation</title>
+<meta name="description" content="RESISC45 Dataset." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,33 +19,33 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>earthvision.datasets.deepsat</code></h1>
+<h1 class="title">Module <code>earthvision.datasets.resisc45</code></h1>
 </header>
 <section id="section-intro">
-<p>Class for Deepsat - Scene Classification.</p>
+<p>RESISC45 Dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;Class for Deepsat - Scene Classification.&#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34;RESISC45 Dataset.&#34;&#34;&#34;
 from PIL import Image
 import os
-import scipy.io as sio
-import gdown
-import sys
+import posixpath
+import shutil
+import numpy as np
+import pandas as pd
 
 from typing import Any, Callable, Optional, Tuple
 from .vision import VisionDataset
+from earthvision.constants.RESISC45.config import CLASS_ENC, CLASS_DEC
+from earthvision.datasets.utils import _urlretrieve, _load_img
 
 
-class DeepSat(VisionDataset):
-    &#34;&#34;&#34;DeepSat Dataset.
+class RESISC45(VisionDataset):
+    &#34;&#34;&#34;RESISC45 Dataset.
 
     Args:
         root (string): Root directory of dataset.
-        dataset_type (string, optional): Choose dataset type [&#39;SAT-4&#39;, &#39;SAT-6&#39;].
-        train (bool, optional): If True, creates dataset from training set, otherwise
-            creates from test set.
         transform (callable, optional): A function/transform that  takes in an PIL image and
             returns a transformed version. E.g, transforms.RandomCrop
         target_transform (callable, optional): A function/transform that takes in the
@@ -55,83 +55,31 @@ class DeepSat(VisionDataset):
             downloaded again.
     &#34;&#34;&#34;
 
-    resources = {
-        &#34;SAT-4_and_SAT-6_datasets&#34;: &#34;https://drive.google.com/uc?id=0B0Fef71_vt3PUkZ4YVZ5WWNvZWs&amp;export=download&#34;
-    }
-    dataset_types = [&#34;SAT-4&#34;, &#34;SAT-6&#34;]
+    mirrors = &#34;https://storage.googleapis.com/ossjr&#34;
+    resources = &#34;NWPU-RESISC45.zip&#34;
 
     def __init__(
         self,
         root: str,
-        dataset_type=&#34;SAT-4&#34;,
-        train: bool = True,
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(DeepSat, self).__init__(root, transform=transform, target_transform=target_transform)
+        super(RESISC45, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
-        self.dataset_type = dataset_type
-        self.train = train
-        self.folder_pth = os.path.join(self.root, list(self.resources.keys())[0])
-        self.filename = list(self.resources.keys())[0] + &#34;.tar.gz&#34;
+        self.class_enc = CLASS_ENC
+        self.class_dec = CLASS_DEC
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
 
         if download and not self._check_exists():
             self.download()
+            self.extract_file()
 
-        dataset = self.load_dataset()
-        self.choose_data_mode(dataset)
-
-    def download(self) -&gt; None:
-        &#34;&#34;&#34;Download dataset and extract it&#34;&#34;&#34;
-
-        self.root = os.path.expanduser(self.root)
-        print(&#34;Download dataset...&#34;)
-
-        gdown.download(
-            self.resources[&#34;SAT-4_and_SAT-6_datasets&#34;],
-            os.path.join(self.root, self.filename),
-            quiet=False,
-        )
-
-        if os.path.exists(self.folder_pth):
-            print(f&#34;file {self.folder_pth} already exists&#34;)
-        else:
-            os.mkdir(self.folder_pth)
-            print(f&#34;Extracting file {self.filename}&#34;)
-            os.system(f&#34;tar -xvf {os.path.join(self.root, self.filename)} -C {self.folder_pth}&#34;)
-            os.system(f&#34;mv {self.folder_pth} {self.root}&#34;)
-            print(&#34;Extracting file success !&#34;)
-
-    def _check_exists(self) -&gt; bool:
-        if self.dataset_type not in self.dataset_types:
-            print(f&#34;Unknown dataset {self.dataset_type}&#34;)
-            print(f&#34;Available dataset : {self.dataset_types}&#34;)
-            sys.exit(0)
-
-        if os.path.exists(self.filename):
-            return True
-        else:
-            return False
-
-    def load_dataset(self):
-        filename = {&#34;SAT-4&#34;: &#34;sat-4-full.mat&#34;, &#34;SAT-6&#34;: &#34;sat-6-full.mat&#34;}
-        dataset = sio.loadmat(os.path.join(self.folder_pth, filename[self.dataset_type]))
-        return dataset
-
-    def choose_data_mode(self, dataset):
-        if self.train:
-            x_type, y_type = &#34;train_x&#34;, &#34;train_y&#34;
-        else:
-            x_type, y_type = &#34;test_x&#34;, &#34;test_y&#34;
-
-        self.x, self.y = dataset[x_type], dataset[y_type]
-        self.annot = dataset[&#34;annotations&#34;]
+        self.img_labels = self.get_path_and_label()
 
     def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
         &#34;&#34;&#34;
@@ -140,8 +88,9 @@ class DeepSat(VisionDataset):
         Returns:
             tuple: (img, target) where target is index of the target class.
         &#34;&#34;&#34;
-        img = self.x[:, :, :, idx]
-        target = self.y[:, idx]
+        img_path = self.img_labels.iloc[idx, 0]
+        img = np.array(_load_img(img_path))
+        target = self.img_labels.iloc[idx, 1]
 
         if self.transform is not None:
             img = Image.fromarray(img)
@@ -153,7 +102,37 @@ class DeepSat(VisionDataset):
         return img, target
 
     def __len__(self) -&gt; int:
-        return self.x.shape[3]</code></pre>
+        return len(self.img_labels)
+
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+        DATA_SIZE = 700
+        category = os.listdir(os.path.join(self.root, &#34;NWPU-RESISC45&#34;))
+        image_path = []
+        label = []
+        for cat in category:
+            cat_enc = self.class_enc[cat]
+            label += [cat_enc] * DATA_SIZE
+            for num in range(1, DATA_SIZE + 1):
+                filename = cat + &#34;_&#34; + str(num).zfill(3) + &#34;.jpg&#34;
+                image_path += [os.path.join(self.root, &#34;NWPU-RESISC45&#34;, cat, filename)]
+        df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
+
+        return df
+
+    def _check_exists(self):
+        is_exists = os.path.exists(os.path.join(self.root, &#34;NWPU-RESISC45&#34;))
+        return is_exists
+
+    def download(self) -&gt; None:
+        &#34;&#34;&#34;Download and extract file.&#34;&#34;&#34;
+        file_url = posixpath.join(self.mirrors, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
+
+    def extract_file(self) -&gt; None:
+        &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
+        shutil.unpack_archive(os.path.join(self.root, self.resources), f&#34;{self.root}&#34;)
+        os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 </section>
 <section>
@@ -165,21 +144,16 @@ class DeepSat(VisionDataset):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="earthvision.datasets.deepsat.DeepSat"><code class="flex name class">
-<span>class <span class="ident">DeepSat</span></span>
-<span>(</span><span>root: str, dataset_type='SAT-4', train: bool = True, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False)</span>
+<dt id="earthvision.datasets.resisc45.RESISC45"><code class="flex name class">
+<span>class <span class="ident">RESISC45</span></span>
+<span>(</span><span>root: str, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>DeepSat Dataset.</p>
+<div class="desc"><p>RESISC45 Dataset.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
 <dd>Root directory of dataset.</dd>
-<dt><strong><code>dataset_type</code></strong> :&ensp;<code>string</code>, optional</dt>
-<dd>Choose dataset type ['SAT-4', 'SAT-6'].</dd>
-<dt><strong><code>train</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>If True, creates dataset from training set, otherwise
-creates from test set.</dd>
 <dt><strong><code>transform</code></strong> :&ensp;<code>callable</code>, optional</dt>
 <dd>A function/transform that
 takes in an PIL image and
@@ -196,14 +170,11 @@ downloaded again.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class DeepSat(VisionDataset):
-    &#34;&#34;&#34;DeepSat Dataset.
+<pre><code class="python">class RESISC45(VisionDataset):
+    &#34;&#34;&#34;RESISC45 Dataset.
 
     Args:
         root (string): Root directory of dataset.
-        dataset_type (string, optional): Choose dataset type [&#39;SAT-4&#39;, &#39;SAT-6&#39;].
-        train (bool, optional): If True, creates dataset from training set, otherwise
-            creates from test set.
         transform (callable, optional): A function/transform that  takes in an PIL image and
             returns a transformed version. E.g, transforms.RandomCrop
         target_transform (callable, optional): A function/transform that takes in the
@@ -213,83 +184,31 @@ downloaded again.</dd>
             downloaded again.
     &#34;&#34;&#34;
 
-    resources = {
-        &#34;SAT-4_and_SAT-6_datasets&#34;: &#34;https://drive.google.com/uc?id=0B0Fef71_vt3PUkZ4YVZ5WWNvZWs&amp;export=download&#34;
-    }
-    dataset_types = [&#34;SAT-4&#34;, &#34;SAT-6&#34;]
+    mirrors = &#34;https://storage.googleapis.com/ossjr&#34;
+    resources = &#34;NWPU-RESISC45.zip&#34;
 
     def __init__(
         self,
         root: str,
-        dataset_type=&#34;SAT-4&#34;,
-        train: bool = True,
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(DeepSat, self).__init__(root, transform=transform, target_transform=target_transform)
+        super(RESISC45, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.root = root
-        self.dataset_type = dataset_type
-        self.train = train
-        self.folder_pth = os.path.join(self.root, list(self.resources.keys())[0])
-        self.filename = list(self.resources.keys())[0] + &#34;.tar.gz&#34;
+        self.class_enc = CLASS_ENC
+        self.class_dec = CLASS_DEC
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
 
         if download and not self._check_exists():
             self.download()
+            self.extract_file()
 
-        dataset = self.load_dataset()
-        self.choose_data_mode(dataset)
-
-    def download(self) -&gt; None:
-        &#34;&#34;&#34;Download dataset and extract it&#34;&#34;&#34;
-
-        self.root = os.path.expanduser(self.root)
-        print(&#34;Download dataset...&#34;)
-
-        gdown.download(
-            self.resources[&#34;SAT-4_and_SAT-6_datasets&#34;],
-            os.path.join(self.root, self.filename),
-            quiet=False,
-        )
-
-        if os.path.exists(self.folder_pth):
-            print(f&#34;file {self.folder_pth} already exists&#34;)
-        else:
-            os.mkdir(self.folder_pth)
-            print(f&#34;Extracting file {self.filename}&#34;)
-            os.system(f&#34;tar -xvf {os.path.join(self.root, self.filename)} -C {self.folder_pth}&#34;)
-            os.system(f&#34;mv {self.folder_pth} {self.root}&#34;)
-            print(&#34;Extracting file success !&#34;)
-
-    def _check_exists(self) -&gt; bool:
-        if self.dataset_type not in self.dataset_types:
-            print(f&#34;Unknown dataset {self.dataset_type}&#34;)
-            print(f&#34;Available dataset : {self.dataset_types}&#34;)
-            sys.exit(0)
-
-        if os.path.exists(self.filename):
-            return True
-        else:
-            return False
-
-    def load_dataset(self):
-        filename = {&#34;SAT-4&#34;: &#34;sat-4-full.mat&#34;, &#34;SAT-6&#34;: &#34;sat-6-full.mat&#34;}
-        dataset = sio.loadmat(os.path.join(self.folder_pth, filename[self.dataset_type]))
-        return dataset
-
-    def choose_data_mode(self, dataset):
-        if self.train:
-            x_type, y_type = &#34;train_x&#34;, &#34;train_y&#34;
-        else:
-            x_type, y_type = &#34;test_x&#34;, &#34;test_y&#34;
-
-        self.x, self.y = dataset[x_type], dataset[y_type]
-        self.annot = dataset[&#34;annotations&#34;]
+        self.img_labels = self.get_path_and_label()
 
     def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
         &#34;&#34;&#34;
@@ -298,8 +217,9 @@ downloaded again.</dd>
         Returns:
             tuple: (img, target) where target is index of the target class.
         &#34;&#34;&#34;
-        img = self.x[:, :, :, idx]
-        target = self.y[:, idx]
+        img_path = self.img_labels.iloc[idx, 0]
+        img = np.array(_load_img(img_path))
+        target = self.img_labels.iloc[idx, 1]
 
         if self.transform is not None:
             img = Image.fromarray(img)
@@ -311,7 +231,37 @@ downloaded again.</dd>
         return img, target
 
     def __len__(self) -&gt; int:
-        return self.x.shape[3]</code></pre>
+        return len(self.img_labels)
+
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+        DATA_SIZE = 700
+        category = os.listdir(os.path.join(self.root, &#34;NWPU-RESISC45&#34;))
+        image_path = []
+        label = []
+        for cat in category:
+            cat_enc = self.class_enc[cat]
+            label += [cat_enc] * DATA_SIZE
+            for num in range(1, DATA_SIZE + 1):
+                filename = cat + &#34;_&#34; + str(num).zfill(3) + &#34;.jpg&#34;
+                image_path += [os.path.join(self.root, &#34;NWPU-RESISC45&#34;, cat, filename)]
+        df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
+
+        return df
+
+    def _check_exists(self):
+        is_exists = os.path.exists(os.path.join(self.root, &#34;NWPU-RESISC45&#34;))
+        return is_exists
+
+    def download(self) -&gt; None:
+        &#34;&#34;&#34;Download and extract file.&#34;&#34;&#34;
+        file_url = posixpath.join(self.mirrors, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
+
+    def extract_file(self) -&gt; None:
+        &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
+        shutil.unpack_archive(os.path.join(self.root, self.resources), f&#34;{self.root}&#34;)
+        os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -321,84 +271,71 @@ downloaded again.</dd>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="earthvision.datasets.deepsat.DeepSat.dataset_types"><code class="name">var <span class="ident">dataset_types</span></code></dt>
+<dt id="earthvision.datasets.resisc45.RESISC45.mirrors"><code class="name">var <span class="ident">mirrors</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="earthvision.datasets.deepsat.DeepSat.functions"><code class="name">var <span class="ident">functions</span> : Dict[str, Callable]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="earthvision.datasets.deepsat.DeepSat.resources"><code class="name">var <span class="ident">resources</span></code></dt>
+<dt id="earthvision.datasets.resisc45.RESISC45.resources"><code class="name">var <span class="ident">resources</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="earthvision.datasets.deepsat.DeepSat.choose_data_mode"><code class="name flex">
-<span>def <span class="ident">choose_data_mode</span></span>(<span>self, dataset)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def choose_data_mode(self, dataset):
-    if self.train:
-        x_type, y_type = &#34;train_x&#34;, &#34;train_y&#34;
-    else:
-        x_type, y_type = &#34;test_x&#34;, &#34;test_y&#34;
-
-    self.x, self.y = dataset[x_type], dataset[y_type]
-    self.annot = dataset[&#34;annotations&#34;]</code></pre>
-</details>
-</dd>
-<dt id="earthvision.datasets.deepsat.DeepSat.download"><code class="name flex">
+<dt id="earthvision.datasets.resisc45.RESISC45.download"><code class="name flex">
 <span>def <span class="ident">download</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Download dataset and extract it</p></div>
+<div class="desc"><p>Download and extract file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def download(self) -&gt; None:
-    &#34;&#34;&#34;Download dataset and extract it&#34;&#34;&#34;
-
-    self.root = os.path.expanduser(self.root)
-    print(&#34;Download dataset...&#34;)
-
-    gdown.download(
-        self.resources[&#34;SAT-4_and_SAT-6_datasets&#34;],
-        os.path.join(self.root, self.filename),
-        quiet=False,
-    )
-
-    if os.path.exists(self.folder_pth):
-        print(f&#34;file {self.folder_pth} already exists&#34;)
-    else:
-        os.mkdir(self.folder_pth)
-        print(f&#34;Extracting file {self.filename}&#34;)
-        os.system(f&#34;tar -xvf {os.path.join(self.root, self.filename)} -C {self.folder_pth}&#34;)
-        os.system(f&#34;mv {self.folder_pth} {self.root}&#34;)
-        print(&#34;Extracting file success !&#34;)</code></pre>
+    &#34;&#34;&#34;Download and extract file.&#34;&#34;&#34;
+    file_url = posixpath.join(self.mirrors, self.resources)
+    _urlretrieve(file_url, os.path.join(self.root, self.resources))</code></pre>
 </details>
 </dd>
-<dt id="earthvision.datasets.deepsat.DeepSat.load_dataset"><code class="name flex">
-<span>def <span class="ident">load_dataset</span></span>(<span>self)</span>
+<dt id="earthvision.datasets.resisc45.RESISC45.extract_file"><code class="name flex">
+<span>def <span class="ident">extract_file</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Extract file from compressed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_dataset(self):
-    filename = {&#34;SAT-4&#34;: &#34;sat-4-full.mat&#34;, &#34;SAT-6&#34;: &#34;sat-6-full.mat&#34;}
-    dataset = sio.loadmat(os.path.join(self.folder_pth, filename[self.dataset_type]))
-    return dataset</code></pre>
+<pre><code class="python">def extract_file(self) -&gt; None:
+    &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
+    shutil.unpack_archive(os.path.join(self.root, self.resources), f&#34;{self.root}&#34;)
+    os.remove(os.path.join(self.root, self.resources))</code></pre>
+</details>
+</dd>
+<dt id="earthvision.datasets.resisc45.RESISC45.get_path_and_label"><code class="name flex">
+<span>def <span class="ident">get_path_and_label</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return dataframe type consist of image path and corresponding label.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_path_and_label(self):
+    &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+    DATA_SIZE = 700
+    category = os.listdir(os.path.join(self.root, &#34;NWPU-RESISC45&#34;))
+    image_path = []
+    label = []
+    for cat in category:
+        cat_enc = self.class_enc[cat]
+        label += [cat_enc] * DATA_SIZE
+        for num in range(1, DATA_SIZE + 1):
+            filename = cat + &#34;_&#34; + str(num).zfill(3) + &#34;.jpg&#34;
+            image_path += [os.path.join(self.root, &#34;NWPU-RESISC45&#34;, cat, filename)]
+    df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
+
+    return df</code></pre>
 </details>
 </dd>
 </dl>
@@ -420,14 +357,13 @@ downloaded again.</dd>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="earthvision.datasets.deepsat.DeepSat" href="#earthvision.datasets.deepsat.DeepSat">DeepSat</a></code></h4>
-<ul class="two-column">
-<li><code><a title="earthvision.datasets.deepsat.DeepSat.choose_data_mode" href="#earthvision.datasets.deepsat.DeepSat.choose_data_mode">choose_data_mode</a></code></li>
-<li><code><a title="earthvision.datasets.deepsat.DeepSat.dataset_types" href="#earthvision.datasets.deepsat.DeepSat.dataset_types">dataset_types</a></code></li>
-<li><code><a title="earthvision.datasets.deepsat.DeepSat.download" href="#earthvision.datasets.deepsat.DeepSat.download">download</a></code></li>
-<li><code><a title="earthvision.datasets.deepsat.DeepSat.functions" href="#earthvision.datasets.deepsat.DeepSat.functions">functions</a></code></li>
-<li><code><a title="earthvision.datasets.deepsat.DeepSat.load_dataset" href="#earthvision.datasets.deepsat.DeepSat.load_dataset">load_dataset</a></code></li>
-<li><code><a title="earthvision.datasets.deepsat.DeepSat.resources" href="#earthvision.datasets.deepsat.DeepSat.resources">resources</a></code></li>
+<h4><code><a title="earthvision.datasets.resisc45.RESISC45" href="#earthvision.datasets.resisc45.RESISC45">RESISC45</a></code></h4>
+<ul class="">
+<li><code><a title="earthvision.datasets.resisc45.RESISC45.download" href="#earthvision.datasets.resisc45.RESISC45.download">download</a></code></li>
+<li><code><a title="earthvision.datasets.resisc45.RESISC45.extract_file" href="#earthvision.datasets.resisc45.RESISC45.extract_file">extract_file</a></code></li>
+<li><code><a title="earthvision.datasets.resisc45.RESISC45.get_path_and_label" href="#earthvision.datasets.resisc45.RESISC45.get_path_and_label">get_path_and_label</a></code></li>
+<li><code><a title="earthvision.datasets.resisc45.RESISC45.mirrors" href="#earthvision.datasets.resisc45.RESISC45.mirrors">mirrors</a></code></li>
+<li><code><a title="earthvision.datasets.resisc45.RESISC45.resources" href="#earthvision.datasets.resisc45.RESISC45.resources">resources</a></code></li>
 </ul>
 </li>
 </ul>

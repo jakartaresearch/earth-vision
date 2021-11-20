@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>earthvision.datasets.l8sparcs API documentation</title>
+<title>earthvision.datasets.ucmercedland API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>earthvision.datasets.l8sparcs</code></h1>
+<h1 class="title">Module <code>earthvision.datasets.ucmercedland</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -32,18 +32,16 @@ import shutil
 import posixpath
 import numpy as np
 import pandas as pd
-import glob
 
 from typing import Any, Callable, Optional, Tuple
-from .utils import _urlretrieve, _load_img
+from torchvision.transforms import Resize, ToTensor, Compose
 from .vision import VisionDataset
+from .utils import _urlretrieve, _load_img
 
 
-class L8SPARCS(VisionDataset):
-    &#34;&#34;&#34;Landsat 8 SPARCS Cloud.
-    &lt;https://www.usgs.gov/core-science-systems/nli/landsat/spatial-procedures-automated-removal-cloud-and-shadow-sparcs&gt;
-
-    Download: &lt;https://landsat.usgs.gov/cloud-validation/sparcs/l8cloudmasks.zip&gt;
+class UCMercedLand(VisionDataset):
+    &#34;&#34;&#34;UC Merced Land Use Dataset.
+    &lt;http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip&gt;
 
     Args:
         root (string): Root directory of dataset.
@@ -56,21 +54,46 @@ class L8SPARCS(VisionDataset):
             downloaded again.
     &#34;&#34;&#34;
 
-    mirrors = &#34;https://landsat.usgs.gov/cloud-validation/sparcs/&#34;
-    resources = &#34;l8cloudmasks.zip&#34;
+    mirrors = &#34;http://weegee.vision.ucmerced.edu/datasets/&#34;
+    resources = &#34;UCMerced_LandUse.zip&#34;
+    classes = {
+        &#34;agricultural&#34;: 0,
+        &#34;airplane&#34;: 1,
+        &#34;baseballdiamond&#34;: 2,
+        &#34;beach&#34;: 3,
+        &#34;buildings&#34;: 4,
+        &#34;chaparral&#34;: 5,
+        &#34;denseresidential&#34;: 6,
+        &#34;forest&#34;: 7,
+        &#34;freeway&#34;: 8,
+        &#34;golfcourse&#34;: 9,
+        &#34;harbor&#34;: 10,
+        &#34;intersection&#34;: 11,
+        &#34;mediumresidential&#34;: 12,
+        &#34;mobilehomepark&#34;: 13,
+        &#34;overpass&#34;: 14,
+        &#34;parkinglot&#34;: 15,
+        &#34;river&#34;: 16,
+        &#34;runway&#34;: 17,
+        &#34;sparseresidential&#34;: 18,
+        &#34;storagetanks&#34;: 19,
+        &#34;tenniscourt&#34;: 20,
+    }
 
     def __init__(
         self,
         root: str,
-        transform: Optional[Callable] = None,
+        transform=Compose([Resize((256, 256)), ToTensor()]),
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(L8SPARCS, self).__init__(root, transform=transform, target_transform=target_transform)
+        super(UCMercedLand, self).__init__(
+            root, transform=transform, target_transform=target_transform
+        )
 
         self.root = root
-        self.data_mode = &#34;sending&#34;
+        self.data_mode = &#34;Images&#34;
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
@@ -81,58 +104,57 @@ class L8SPARCS(VisionDataset):
 
         self.img_labels = self.get_path_and_label()
 
-    def _check_exists(self) -&gt; None:
-        self.data_path = os.path.join(self.root, self.data_mode)
-        return os.path.exists(self.data_path)
-
-    def download(self) -&gt; None:
-        &#34;&#34;&#34;Download file&#34;&#34;&#34;
-        file_url = posixpath.join(self.mirrors, self.resources)
-        _urlretrieve(file_url, os.path.join(self.root, self.resources))
-
-    def extract_file(self) -&gt; None:
-        &#34;&#34;&#34;Extract the .zip file&#34;&#34;&#34;
-        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
-        os.remove(os.path.join(self.root, self.resources))
-
-    def get_path_and_label(self):
-        &#34;&#34;&#34;Get the path of the images and labels (masks) in a dataframe&#34;&#34;&#34;
-        image_path, label = [], []
-
-        for image in glob.glob(os.path.join(self.root, self.data_mode, &#34;*_photo.png&#34;)):
-            image_path.append(image)
-
-        for mask in glob.glob(os.path.join(self.root, self.data_mode, &#34;*_mask.png&#34;)):
-            label.append(mask)
-
-        df = pd.DataFrame({&#34;image&#34;: sorted(image_path), &#34;label&#34;: sorted(label)})
-
-        return df
-
     def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
         &#34;&#34;&#34;
         Args:
             idx (int): Index
         Returns:
-            tuple: (img, mask)
+            tuple: (img, target) where target is index of the target class.
         &#34;&#34;&#34;
         img_path = self.img_labels.iloc[idx, 0]
-        mask_path = self.img_labels.iloc[idx, 1]
-
         img = np.array(_load_img(img_path))
-        mask = np.array(_load_img(mask_path))
+        target = self.img_labels.iloc[idx, 1]
 
         if self.transform is not None:
             img = Image.fromarray(img)
             img = self.transform(img)
 
         if self.target_transform is not None:
-            mask = Image.fromarray(mask)
-            mask = self.target_transform(mask)
-        return img, mask
+            target = Image.fromarray(target)
+            target = self.target_transform(target)
+        return img, target
 
     def __len__(self) -&gt; int:
-        return len(self.img_labels)</code></pre>
+        return len(self.img_labels)
+
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+        image_path = []
+        label = []
+        for cat, enc in self.classes.items():
+            cat_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, self.data_mode, cat)
+            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
+            cat_label = [enc] * len(cat_image)
+            image_path += cat_image
+            label += cat_label
+        df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
+
+        return df
+
+    def _check_exists(self):
+        self.data_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, &#34;Images&#34;)
+        self.dir_classes = list(self.classes.keys())
+        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
+
+    def download(self) -&gt; None:
+        &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+        file_url = posixpath.join(self.mirrors, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
+
+    def extract_file(self) -&gt; None:
+        &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
+        os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 </section>
 <section>
@@ -144,14 +166,16 @@ class L8SPARCS(VisionDataset):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="earthvision.datasets.l8sparcs.L8SPARCS"><code class="flex name class">
-<span>class <span class="ident">L8SPARCS</span></span>
-<span>(</span><span>root: str, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False)</span>
+<dt id="earthvision.datasets.ucmercedland.UCMercedLand"><code class="flex name class">
+<span>class <span class="ident">UCMercedLand</span></span>
+<span>(</span><span>root: str, transform=Compose(
+Resize(size=(256, 256), interpolation=bilinear, max_size=None, antialias=None)
+ToTensor()
+), target_transform: Optional[Callable] = None, download: bool = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Landsat 8 SPARCS Cloud.
-<a href="https://www.usgs.gov/core-science-systems/nli/landsat/spatial-procedures-automated-removal-cloud-and-shadow-sparcs">https://www.usgs.gov/core-science-systems/nli/landsat/spatial-procedures-automated-removal-cloud-and-shadow-sparcs</a></p>
-<p>Download: <a href="https://landsat.usgs.gov/cloud-validation/sparcs/l8cloudmasks.zip">https://landsat.usgs.gov/cloud-validation/sparcs/l8cloudmasks.zip</a></p>
+<div class="desc"><p>UC Merced Land Use Dataset.
+<a href="http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip">http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
@@ -172,11 +196,9 @@ downloaded again.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class L8SPARCS(VisionDataset):
-    &#34;&#34;&#34;Landsat 8 SPARCS Cloud.
-    &lt;https://www.usgs.gov/core-science-systems/nli/landsat/spatial-procedures-automated-removal-cloud-and-shadow-sparcs&gt;
-
-    Download: &lt;https://landsat.usgs.gov/cloud-validation/sparcs/l8cloudmasks.zip&gt;
+<pre><code class="python">class UCMercedLand(VisionDataset):
+    &#34;&#34;&#34;UC Merced Land Use Dataset.
+    &lt;http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip&gt;
 
     Args:
         root (string): Root directory of dataset.
@@ -189,21 +211,46 @@ downloaded again.</dd>
             downloaded again.
     &#34;&#34;&#34;
 
-    mirrors = &#34;https://landsat.usgs.gov/cloud-validation/sparcs/&#34;
-    resources = &#34;l8cloudmasks.zip&#34;
+    mirrors = &#34;http://weegee.vision.ucmerced.edu/datasets/&#34;
+    resources = &#34;UCMerced_LandUse.zip&#34;
+    classes = {
+        &#34;agricultural&#34;: 0,
+        &#34;airplane&#34;: 1,
+        &#34;baseballdiamond&#34;: 2,
+        &#34;beach&#34;: 3,
+        &#34;buildings&#34;: 4,
+        &#34;chaparral&#34;: 5,
+        &#34;denseresidential&#34;: 6,
+        &#34;forest&#34;: 7,
+        &#34;freeway&#34;: 8,
+        &#34;golfcourse&#34;: 9,
+        &#34;harbor&#34;: 10,
+        &#34;intersection&#34;: 11,
+        &#34;mediumresidential&#34;: 12,
+        &#34;mobilehomepark&#34;: 13,
+        &#34;overpass&#34;: 14,
+        &#34;parkinglot&#34;: 15,
+        &#34;river&#34;: 16,
+        &#34;runway&#34;: 17,
+        &#34;sparseresidential&#34;: 18,
+        &#34;storagetanks&#34;: 19,
+        &#34;tenniscourt&#34;: 20,
+    }
 
     def __init__(
         self,
         root: str,
-        transform: Optional[Callable] = None,
+        transform=Compose([Resize((256, 256)), ToTensor()]),
         target_transform: Optional[Callable] = None,
         download: bool = False,
     ) -&gt; None:
 
-        super(L8SPARCS, self).__init__(root, transform=transform, target_transform=target_transform)
+        super(UCMercedLand, self).__init__(
+            root, transform=transform, target_transform=target_transform
+        )
 
         self.root = root
-        self.data_mode = &#34;sending&#34;
+        self.data_mode = &#34;Images&#34;
 
         if download and self._check_exists():
             print(&#34;file already exists.&#34;)
@@ -214,58 +261,57 @@ downloaded again.</dd>
 
         self.img_labels = self.get_path_and_label()
 
-    def _check_exists(self) -&gt; None:
-        self.data_path = os.path.join(self.root, self.data_mode)
-        return os.path.exists(self.data_path)
-
-    def download(self) -&gt; None:
-        &#34;&#34;&#34;Download file&#34;&#34;&#34;
-        file_url = posixpath.join(self.mirrors, self.resources)
-        _urlretrieve(file_url, os.path.join(self.root, self.resources))
-
-    def extract_file(self) -&gt; None:
-        &#34;&#34;&#34;Extract the .zip file&#34;&#34;&#34;
-        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
-        os.remove(os.path.join(self.root, self.resources))
-
-    def get_path_and_label(self):
-        &#34;&#34;&#34;Get the path of the images and labels (masks) in a dataframe&#34;&#34;&#34;
-        image_path, label = [], []
-
-        for image in glob.glob(os.path.join(self.root, self.data_mode, &#34;*_photo.png&#34;)):
-            image_path.append(image)
-
-        for mask in glob.glob(os.path.join(self.root, self.data_mode, &#34;*_mask.png&#34;)):
-            label.append(mask)
-
-        df = pd.DataFrame({&#34;image&#34;: sorted(image_path), &#34;label&#34;: sorted(label)})
-
-        return df
-
     def __getitem__(self, idx: int) -&gt; Tuple[Any, Any]:
         &#34;&#34;&#34;
         Args:
             idx (int): Index
         Returns:
-            tuple: (img, mask)
+            tuple: (img, target) where target is index of the target class.
         &#34;&#34;&#34;
         img_path = self.img_labels.iloc[idx, 0]
-        mask_path = self.img_labels.iloc[idx, 1]
-
         img = np.array(_load_img(img_path))
-        mask = np.array(_load_img(mask_path))
+        target = self.img_labels.iloc[idx, 1]
 
         if self.transform is not None:
             img = Image.fromarray(img)
             img = self.transform(img)
 
         if self.target_transform is not None:
-            mask = Image.fromarray(mask)
-            mask = self.target_transform(mask)
-        return img, mask
+            target = Image.fromarray(target)
+            target = self.target_transform(target)
+        return img, target
 
     def __len__(self) -&gt; int:
-        return len(self.img_labels)</code></pre>
+        return len(self.img_labels)
+
+    def get_path_and_label(self):
+        &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+        image_path = []
+        label = []
+        for cat, enc in self.classes.items():
+            cat_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, self.data_mode, cat)
+            cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
+            cat_label = [enc] * len(cat_image)
+            image_path += cat_image
+            label += cat_label
+        df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
+
+        return df
+
+    def _check_exists(self):
+        self.data_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, &#34;Images&#34;)
+        self.dir_classes = list(self.classes.keys())
+        return all([os.path.exists(os.path.join(self.data_path, i)) for i in self.dir_classes])
+
+    def download(self) -&gt; None:
+        &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
+        file_url = posixpath.join(self.mirrors, self.resources)
+        _urlretrieve(file_url, os.path.join(self.root, self.resources))
+
+    def extract_file(self) -&gt; None:
+        &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
+        shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
+        os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -275,71 +321,71 @@ downloaded again.</dd>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="earthvision.datasets.l8sparcs.L8SPARCS.functions"><code class="name">var <span class="ident">functions</span> : Dict[str, Callable]</code></dt>
+<dt id="earthvision.datasets.ucmercedland.UCMercedLand.classes"><code class="name">var <span class="ident">classes</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="earthvision.datasets.l8sparcs.L8SPARCS.mirrors"><code class="name">var <span class="ident">mirrors</span></code></dt>
+<dt id="earthvision.datasets.ucmercedland.UCMercedLand.mirrors"><code class="name">var <span class="ident">mirrors</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="earthvision.datasets.l8sparcs.L8SPARCS.resources"><code class="name">var <span class="ident">resources</span></code></dt>
+<dt id="earthvision.datasets.ucmercedland.UCMercedLand.resources"><code class="name">var <span class="ident">resources</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="earthvision.datasets.l8sparcs.L8SPARCS.download"><code class="name flex">
+<dt id="earthvision.datasets.ucmercedland.UCMercedLand.download"><code class="name flex">
 <span>def <span class="ident">download</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Download file</p></div>
+<div class="desc"><p>download and extract file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def download(self) -&gt; None:
-    &#34;&#34;&#34;Download file&#34;&#34;&#34;
+    &#34;&#34;&#34;download and extract file.&#34;&#34;&#34;
     file_url = posixpath.join(self.mirrors, self.resources)
     _urlretrieve(file_url, os.path.join(self.root, self.resources))</code></pre>
 </details>
 </dd>
-<dt id="earthvision.datasets.l8sparcs.L8SPARCS.extract_file"><code class="name flex">
+<dt id="earthvision.datasets.ucmercedland.UCMercedLand.extract_file"><code class="name flex">
 <span>def <span class="ident">extract_file</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Extract the .zip file</p></div>
+<div class="desc"><p>Extract file from compressed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def extract_file(self) -&gt; None:
-    &#34;&#34;&#34;Extract the .zip file&#34;&#34;&#34;
+    &#34;&#34;&#34;Extract file from compressed.&#34;&#34;&#34;
     shutil.unpack_archive(os.path.join(self.root, self.resources), self.root)
     os.remove(os.path.join(self.root, self.resources))</code></pre>
 </details>
 </dd>
-<dt id="earthvision.datasets.l8sparcs.L8SPARCS.get_path_and_label"><code class="name flex">
+<dt id="earthvision.datasets.ucmercedland.UCMercedLand.get_path_and_label"><code class="name flex">
 <span>def <span class="ident">get_path_and_label</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the path of the images and labels (masks) in a dataframe</p></div>
+<div class="desc"><p>Return dataframe type consist of image path and corresponding label.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_path_and_label(self):
-    &#34;&#34;&#34;Get the path of the images and labels (masks) in a dataframe&#34;&#34;&#34;
-    image_path, label = [], []
-
-    for image in glob.glob(os.path.join(self.root, self.data_mode, &#34;*_photo.png&#34;)):
-        image_path.append(image)
-
-    for mask in glob.glob(os.path.join(self.root, self.data_mode, &#34;*_mask.png&#34;)):
-        label.append(mask)
-
-    df = pd.DataFrame({&#34;image&#34;: sorted(image_path), &#34;label&#34;: sorted(label)})
+    &#34;&#34;&#34;Return dataframe type consist of image path and corresponding label.&#34;&#34;&#34;
+    image_path = []
+    label = []
+    for cat, enc in self.classes.items():
+        cat_path = os.path.join(self.root, &#34;UCMerced_LandUse&#34;, self.data_mode, cat)
+        cat_image = [os.path.join(cat_path, path) for path in os.listdir(cat_path)]
+        cat_label = [enc] * len(cat_image)
+        image_path += cat_image
+        label += cat_label
+    df = pd.DataFrame({&#34;image&#34;: image_path, &#34;label&#34;: label})
 
     return df</code></pre>
 </details>
@@ -363,14 +409,14 @@ downloaded again.</dd>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="earthvision.datasets.l8sparcs.L8SPARCS" href="#earthvision.datasets.l8sparcs.L8SPARCS">L8SPARCS</a></code></h4>
+<h4><code><a title="earthvision.datasets.ucmercedland.UCMercedLand" href="#earthvision.datasets.ucmercedland.UCMercedLand">UCMercedLand</a></code></h4>
 <ul class="two-column">
-<li><code><a title="earthvision.datasets.l8sparcs.L8SPARCS.download" href="#earthvision.datasets.l8sparcs.L8SPARCS.download">download</a></code></li>
-<li><code><a title="earthvision.datasets.l8sparcs.L8SPARCS.extract_file" href="#earthvision.datasets.l8sparcs.L8SPARCS.extract_file">extract_file</a></code></li>
-<li><code><a title="earthvision.datasets.l8sparcs.L8SPARCS.functions" href="#earthvision.datasets.l8sparcs.L8SPARCS.functions">functions</a></code></li>
-<li><code><a title="earthvision.datasets.l8sparcs.L8SPARCS.get_path_and_label" href="#earthvision.datasets.l8sparcs.L8SPARCS.get_path_and_label">get_path_and_label</a></code></li>
-<li><code><a title="earthvision.datasets.l8sparcs.L8SPARCS.mirrors" href="#earthvision.datasets.l8sparcs.L8SPARCS.mirrors">mirrors</a></code></li>
-<li><code><a title="earthvision.datasets.l8sparcs.L8SPARCS.resources" href="#earthvision.datasets.l8sparcs.L8SPARCS.resources">resources</a></code></li>
+<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.classes" href="#earthvision.datasets.ucmercedland.UCMercedLand.classes">classes</a></code></li>
+<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.download" href="#earthvision.datasets.ucmercedland.UCMercedLand.download">download</a></code></li>
+<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.extract_file" href="#earthvision.datasets.ucmercedland.UCMercedLand.extract_file">extract_file</a></code></li>
+<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.get_path_and_label" href="#earthvision.datasets.ucmercedland.UCMercedLand.get_path_and_label">get_path_and_label</a></code></li>
+<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.mirrors" href="#earthvision.datasets.ucmercedland.UCMercedLand.mirrors">mirrors</a></code></li>
+<li><code><a title="earthvision.datasets.ucmercedland.UCMercedLand.resources" href="#earthvision.datasets.ucmercedland.UCMercedLand.resources">resources</a></code></li>
 </ul>
 </li>
 </ul>
