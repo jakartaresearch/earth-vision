@@ -1,0 +1,2 @@
+class BigEarthNet():
+    raise NotImplementedError

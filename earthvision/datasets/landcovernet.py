@@ -1,0 +1,2 @@
+class LandCoverNet():
+    raise NotImplementedError

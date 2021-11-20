@@ -1,33 +1,41 @@
-# JREO (Jakarta Research Earth Observation)
-Jakarta Research Earth Observatory - Library
+# earth-vision
+
+Earth Vision is a python library for solving computer vision tasks specifically for satellite imagery.
 
 ## Objective
-To ease dataset preparation for AI or Deep Learning analytics in solving __Earth Observation__ (EO) tasks.
+
+To ease researcher to run ML pipelines for AI or Deep Learning Applications in solving **Earth Observation** (EO) tasks.
 
 ## Examples
-### 1. Dataset Download
+
+### Dataset Download
+
 ```
-from jreo import dataset
+from torch.utils.data import DataLoader
+from earthvision.datasets import DeepSat
 
-l8sparcs = dataset.L8Sparcs()
+train_dataset = DeepSat(root='./', dataset_type='SAT-4', download=True, data_mode=0)
+test_dataset = DeepSat(root='./', dataset_type='SAT-4', download=False, data_mode=1)
 
-# Downloading (1 tifs downloaded at root directory dataset)
-l8sparcs.download(n=1, out_dir='./dataset')
+train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True)
+
+train_data, train_label = next(iter(train_dataloader))
+test_data, test_label = next(iter(test_dataloader))
 ```
 
+## Features
 
-## Features In Progress
 1. Wrapper to download open sourced EO dataset for ML tasks:
-- Landsat 8 Biome
-- Landsat 8 SPARCS
-- Landsat 7
-2. Data pre-processors:
-- Resizers
-- Reflectance normalizers
-- Dataset loader integration with popular ML frameworks
 
-## Features Plans
-Feel free to suggest features you would like to see by __opening an issue__.
-1. GPU memory optimization
-2. High-level pipeline to integrate varied data sources
+- AerialCactus
+- COWC
+- DeepSat
+- DroneDeploy
+- EuroSat
+- L8SPARCS
+- LandCover
+- RESISC45
+- UCMercedLand
+
 

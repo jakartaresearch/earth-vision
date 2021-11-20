@@ -1,0 +1,2 @@
+class SkyScapes():
+    raise NotImplementedError
