@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>earthvision API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="`Earth Vision` is a python library for solving computer vision tasks specifically for satellite imagery …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,52 @@
 <h1 class="title">Package <code>earthvision</code></h1>
 </header>
 <section id="section-intro">
+<p><code>Earth Vision</code> is a python library for solving computer vision tasks specifically for satellite imagery.</p>
+<h2 id="objective">Objective</h2>
+<p>To ease researcher to run ML pipelines for AI or Deep Learning Applications in solving Earth Observation (EO) tasks.</p>
+<h2 id="installation">Installation</h2>
+<pre><code>pip install earth-vision
+</code></pre>
+<h2 id="example">Example</h2>
+<pre><code class="language-python">
+from torch.utils.data import DataLoader
+from torchvision.transforms import Resize, ToTensor, Compose, Normalize
+from earthvision.datasets import RESISC45
+from earthvision.models import resnet50
+
+# Transformation
+preprocess = Compose([ToTensor(), 
+                      Normalize(mean=[0.3680, 0.3810, 0.3436], 
+                                std=[0.1454, 0.1356, 0.1320])])
+
+# Dataset and Dataloader
+dataset = RESISC45(root='../dataset', transform=preprocess, download=True)
+dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+# Model
+model = resnet50(pretrained=True)
+batch_data, batch_label = next(iter(dataloader))
+model(batch_data)
+</code></pre>
+<h2 id="features-in-progress">Features In Progress</h2>
+<ul>
+<li>Pretrained model for <code><a title="earthvision.datasets" href="datasets/index.html">earthvision.datasets</a></code></li>
+</ul>
+<h2 id="features-plans">Features Plans</h2>
+<p>Feel free to suggest features you would like to see by <strong>opening an issue</strong>.</p>
+<ul>
+<li>GPU memory optimization [TBD]</li>
+<li>High-level pipeline to integrate varied data sources [TBD]</li>
+</ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from earthvision import constants
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ./documentation.md
+&#34;&#34;&#34;
+
+from earthvision import constants
 from earthvision import datasets</code></pre>
 </details>
 </section>
@@ -57,7 +98,13 @@ from earthvision import datasets</code></pre>
 <nav id="sidebar">
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#objective">Objective</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#features-in-progress">Features In Progress</a></li>
+<li><a href="#features-plans">Features Plans</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
