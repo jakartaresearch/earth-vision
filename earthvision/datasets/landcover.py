@@ -1,3 +1,4 @@
+"""The LandCover.ai (Land Cover from Aerial Imagery) Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -14,8 +15,8 @@ from torchvision.transforms import Resize, ToTensor, Compose
 
 
 class LandCover(VisionDataset):
-    """
-    The LandCover.ai (Land Cover from Aerial Imagery) dataset.
+    """The LandCover.ai (Land Cover from Aerial Imagery) dataset.
+
     <https://landcover.ai/download/landcover.ai.v1.zip>
 
     Args:

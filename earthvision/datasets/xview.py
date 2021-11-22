@@ -14,8 +14,7 @@ from ..constants.XView.config import index_mapping, CLASS_ENC, CLASS_DEC
 class XView(VisionDataset):
     """Dataset from DIUx xView 2018 Detection Challenge.
 
-    Source:
-    https://challenge.xviewdataset.org/data-download (must login)
+    Source: https://challenge.xviewdataset.org/data-download (must login)
 
     Args:
         root (string): Root directory of dataset.
@@ -30,9 +29,9 @@ class XView(VisionDataset):
             downloaded again.
 
     Samples at:
-    https://storage.googleapis.com/ossjr/xview/train_images.tgz
-    https://storage.googleapis.com/ossjr/xview/train_labels.tgz
-    https://storage.googleapis.com/ossjr/xview/validation_images.tgz
+    - https://storage.googleapis.com/ossjr/xview/train_images.tgz
+    - https://storage.googleapis.com/ossjr/xview/train_labels.tgz
+    - https://storage.googleapis.com/ossjr/xview/validation_images.tgz
     """
 
     urls = []

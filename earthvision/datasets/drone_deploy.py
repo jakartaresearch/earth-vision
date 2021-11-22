@@ -1,4 +1,4 @@
-"""Class for Drone Deploy - Semantic Segmentation."""
+"""Drone Deploy Dataset - Semantic Segmentation."""
 from PIL import Image
 import sys
 import os

@@ -1,3 +1,4 @@
+"""UC Merced Land Use Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -13,6 +14,7 @@ from .utils import _urlretrieve, _load_img
 
 class UCMercedLand(VisionDataset):
     """UC Merced Land Use Dataset.
+
     <http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip>
 
     Args:

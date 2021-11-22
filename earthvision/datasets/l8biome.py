@@ -1,3 +1,4 @@
+"""L8 Biome Cloud Cover Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -12,18 +13,19 @@ from .utils import _urlretrieve, _load_img_hdr, _load_stack_img
 
 
 class L8Biome(VisionDataset):
-    """L8 Biome Cloud Cover
+    """L8 Biome Cloud Cover.
+
     Download page https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data
 
     Args:
-    root (string): Root directory of dataset.
-    transform (callable, optional): A function/transform that  takes in an PIL image and
-        returns a transformed version. E.g, transforms.RandomCrop
-    target_transform (callable, optional): A function/transform that takes in the
-        target and transforms it.
-    download (bool, optional): If true, downloads the dataset from the internet and
-        puts it in root directory. If dataset is already downloaded, it is not
-        downloaded again.
+        root (string): Root directory of dataset.
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
     """
 
     mirrors = "https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data"

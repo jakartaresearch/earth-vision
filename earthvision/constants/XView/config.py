@@ -1,4 +1,5 @@
 """Configuration file for labels, labelmap, data ids."""
+
 class_id = [
     11, 12, 13, 15, 17, 18, 19, 20, 21, 23, 
     24, 25, 26, 27, 28, 29, 32, 33, 34, 35, 

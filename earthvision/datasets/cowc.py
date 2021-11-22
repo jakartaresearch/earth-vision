@@ -1,4 +1,4 @@
-"""Cars Overhead with Context."""
+"""Cars Overhead with Context Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -15,6 +15,7 @@ from ..constants.COWC.config import file_mapping_counting, file_mapping_detectio
 
 class COWC(VisionDataset):
     """Cars Overhead with Context.
+    
     https://gdo152.llnl.gov/cowc/
 
     Args:

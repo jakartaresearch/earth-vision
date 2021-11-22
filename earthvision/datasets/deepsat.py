@@ -1,4 +1,4 @@
-"""Class for Deepsat - Scene Classification."""
+"""Deepsat Dataset - Scene Classification."""
 from PIL import Image
 import os
 import scipy.io as sio
