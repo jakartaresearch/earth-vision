@@ -1,3 +1,5 @@
+"""Configuration file for mapping counting and detection tasks."""
+
 file_mapping_counting = {
     "Columbus_CSUAV_AFRL": "COWC_Counting_Columbus_CSUAV_AFRL.tbz",
     "Potsdam_ISPRS": "COWC_Counting_Potsdam_ISPRS.tbz",

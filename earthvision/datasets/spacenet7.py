@@ -1,4 +1,4 @@
-"""Class for SpaceNet 7: Multi-Temporal Urban Development Challenge - Instance Segmentation."""
+"""SpaceNet 7 Dataset: Multi-Temporal Urban Development Challenge - Instance Segmentation."""
 from PIL import Image
 import os
 import shutil
@@ -13,8 +13,8 @@ from .spacenet7_utils import map_wrapper, make_geojsons_and_masks
 
 
 class SpaceNet7(VisionDataset):
-    """SpaceNet7
-    SN7: Multi-Temporal Urban Development Challenge
+    """SpaceNet7 (SN7): Multi-Temporal Urban Development Challenge
+    
     <https://spacenet.ai/sn7-challenge/>
 
     Args:

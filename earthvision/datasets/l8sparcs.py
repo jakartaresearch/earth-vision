@@ -1,3 +1,4 @@
+"""Landsat 8 SPARCS Cloud Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -13,8 +14,9 @@ from .vision import VisionDataset
 
 class L8SPARCS(VisionDataset):
     """Landsat 8 SPARCS Cloud.
+    
     <https://www.usgs.gov/core-science-systems/nli/landsat/spatial-procedures-automated-removal-cloud-and-shadow-sparcs>
-
+    
     Download: <https://landsat.usgs.gov/cloud-validation/sparcs/l8cloudmasks.zip>
 
     Args:

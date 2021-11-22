@@ -14,6 +14,7 @@ from torchvision.transforms import Resize, ToTensor, Compose
 
 class AerialCactus(VisionDataset):
     """Aerial Cactus Dataset.
+    
     <https://www.kaggle.com/c/aerial-cactus-identification>
 
     Args:

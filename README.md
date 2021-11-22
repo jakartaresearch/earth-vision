@@ -1,41 +1,35 @@
 # earth-vision
-
-Earth Vision is a python library for solving computer vision tasks specifically for satellite imagery.
+`Earth Vision` is a python library for solving computer vision tasks specifically for satellite imagery.
 
 ## Objective
+To ease researcher to run ML pipelines for AI or Deep Learning Applications in solving Earth Observation (EO) tasks.
 
-To ease researcher to run ML pipelines for AI or Deep Learning Applications in solving **Earth Observation** (EO) tasks.
-
-## Examples
-
-### Dataset Download
-
+## Installation
 ```
+pip install earth-vision
+```
+
+## Example
+```python
 from torch.utils.data import DataLoader
-from earthvision.datasets import DeepSat
+from torchvision.transforms import ToTensor, Compose, Normalize
+from earthvision.datasets import RESISC45
 
-train_dataset = DeepSat(root='./', dataset_type='SAT-4', download=True, data_mode=0)
-test_dataset = DeepSat(root='./', dataset_type='SAT-4', download=False, data_mode=1)
+# Transformation
+preprocess = Compose([ToTensor(), 
+                      Normalize(mean=[0.3680, 0.3810, 0.3436], 
+                                std=[0.1454, 0.1356, 0.1320])])
 
-train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True)
-
-train_data, train_label = next(iter(train_dataloader))
-test_data, test_label = next(iter(test_dataloader))
+# Dataset and Dataloader
+dataset = RESISC45(root='../dataset', transform=preprocess, download=True)
+dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 ```
 
-## Features
+## Features In Progress
+- Pretrained model for `earthvision.datasets`
 
-1. Wrapper to download open sourced EO dataset for ML tasks:
+## Features Plans
+Feel free to suggest features you would like to see by __opening an issue__.
 
-- AerialCactus
-- COWC
-- DeepSat
-- DroneDeploy
-- EuroSat
-- L8SPARCS
-- LandCover
-- RESISC45
-- UCMercedLand
-
-
+- GPU memory optimization [TBD]
+- High-level pipeline to integrate varied data sources [TBD]

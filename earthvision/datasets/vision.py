@@ -1,4 +1,4 @@
-"""This script is from torchvision/datasets/vision.py"""
+"""Vision Dataset from torchvision/datasets/vision.py"""
 import os
 from typing import Any, Callable, List, Optional, Tuple
 

@@ -1,3 +1,4 @@
+"""Landsat 7 Irish Cloud Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -15,6 +16,7 @@ from bs4 import BeautifulSoup
 
 class L7Irish(VisionDataset):
     """Landsat 7 Irish Cloud.
+
     <https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data>
 
     Args:
