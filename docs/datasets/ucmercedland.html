@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>earthvision.datasets.ucmercedland API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="UC Merced Land Use Dataset." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,13 @@
 <h1 class="title">Module <code>earthvision.datasets.ucmercedland</code></h1>
 </header>
 <section id="section-intro">
+<p>UC Merced Land Use Dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PIL import Image
+<pre><code class="python">&#34;&#34;&#34;UC Merced Land Use Dataset.&#34;&#34;&#34;
+from PIL import Image
 import os
 import shutil
 import posixpath
@@ -41,6 +43,7 @@ from .utils import _urlretrieve, _load_img
 
 class UCMercedLand(VisionDataset):
     &#34;&#34;&#34;UC Merced Land Use Dataset.
+
     &lt;http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip&gt;
 
     Args:
@@ -174,8 +177,8 @@ ToTensor()
 ), target_transform: Optional[Callable] = None, download: bool = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>UC Merced Land Use Dataset.
-<a href="http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip">http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip</a></p>
+<div class="desc"><p>UC Merced Land Use Dataset.</p>
+<p><a href="http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip">http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
@@ -198,6 +201,7 @@ downloaded again.</dd>
 </summary>
 <pre><code class="python">class UCMercedLand(VisionDataset):
     &#34;&#34;&#34;UC Merced Land Use Dataset.
+
     &lt;http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip&gt;
 
     Args:

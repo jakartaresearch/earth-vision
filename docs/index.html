@@ -31,9 +31,8 @@
 <h2 id="example">Example</h2>
 <pre><code class="language-python">
 from torch.utils.data import DataLoader
-from torchvision.transforms import Resize, ToTensor, Compose, Normalize
+from torchvision.transforms import ToTensor, Compose, Normalize
 from earthvision.datasets import RESISC45
-from earthvision.models import resnet50
 
 # Transformation
 preprocess = Compose([ToTensor(), 
@@ -43,11 +42,6 @@ preprocess = Compose([ToTensor(),
 # Dataset and Dataloader
 dataset = RESISC45(root='../dataset', transform=preprocess, download=True)
 dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
-
-# Model
-model = resnet50(pretrained=True)
-batch_data, batch_label = next(iter(dataloader))
-model(batch_data)
 </code></pre>
 <h2 id="features-in-progress">Features In Progress</h2>
 <ul>
@@ -80,7 +74,7 @@ from earthvision import datasets</code></pre>
 </dd>
 <dt><code class="name"><a title="earthvision.datasets" href="datasets/index.html">earthvision.datasets</a></code></dt>
 <dd>
-<div class="desc"><p>Import specific class that will use.</p></div>
+<div class="desc"></div>
 </dd>
 <dt><code class="name"><a title="earthvision.models" href="models/index.html">earthvision.models</a></code></dt>
 <dd>

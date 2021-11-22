@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>earthvision.datasets.l7irish API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Landsat 7 Irish Cloud Dataset." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,13 @@
 <h1 class="title">Module <code>earthvision.datasets.l7irish</code></h1>
 </header>
 <section id="section-intro">
+<p>Landsat 7 Irish Cloud Dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PIL import Image
+<pre><code class="python">&#34;&#34;&#34;Landsat 7 Irish Cloud Dataset.&#34;&#34;&#34;
+from PIL import Image
 import os
 import shutil
 import posixpath
@@ -43,6 +45,7 @@ from bs4 import BeautifulSoup
 
 class L7Irish(VisionDataset):
     &#34;&#34;&#34;Landsat 7 Irish Cloud.
+
     &lt;https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data&gt;
 
     Args:
@@ -171,8 +174,8 @@ class L7Irish(VisionDataset):
 <span>(</span><span>root: str, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Landsat 7 Irish Cloud.
-<a href="https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data">https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data</a></p>
+<div class="desc"><p>Landsat 7 Irish Cloud.</p>
+<p><a href="https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data">https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>root</code></strong> :&ensp;<code>string</code></dt>
@@ -195,6 +198,7 @@ downloaded again.</dd>
 </summary>
 <pre><code class="python">class L7Irish(VisionDataset):
     &#34;&#34;&#34;Landsat 7 Irish Cloud.
+
     &lt;https://landsat.usgs.gov/landsat-7-cloud-cover-assessment-validation-data&gt;
 
     Args:

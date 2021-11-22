@@ -12,9 +12,8 @@ pip install earth-vision
 ```python
 
 from torch.utils.data import DataLoader
-from torchvision.transforms import Resize, ToTensor, Compose, Normalize
+from torchvision.transforms import ToTensor, Compose, Normalize
 from earthvision.datasets import RESISC45
-from earthvision.models import resnet50
 
 # Transformation
 preprocess = Compose([ToTensor(), 
@@ -24,11 +23,6 @@ preprocess = Compose([ToTensor(),
 # Dataset and Dataloader
 dataset = RESISC45(root='../dataset', transform=preprocess, download=True)
 dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
-
-# Model
-model = resnet50(pretrained=True)
-batch_data, batch_label = next(iter(dataloader))
-model(batch_data)
 ```
 
 ## Features In Progress
