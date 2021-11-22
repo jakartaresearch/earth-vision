@@ -1,3 +1,5 @@
+"""Configuration file for encode and decode class."""
+
 CLASS_ENC = {
     "airplane": 0,
     "airport": 1,

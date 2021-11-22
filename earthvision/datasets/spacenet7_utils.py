@@ -1,6 +1,7 @@
 """
-Script from https://github.com/CosmiQ/solaris and
-https://github.com/avanetten/CosmiQ_SN7_Baseline/blob/master/src/sn7_baseline_prep_funcs.py
+Script from: 
+- https://github.com/CosmiQ/solaris
+- https://github.com/avanetten/CosmiQ_SN7_Baseline/blob/master/src/sn7_baseline_prep_funcs.py
 """
 import pandas as pd
 import numpy as np

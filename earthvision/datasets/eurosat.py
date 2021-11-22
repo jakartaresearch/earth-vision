@@ -1,3 +1,4 @@
+"""EuroSat Land Cover Categories Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -13,6 +14,7 @@ from torchvision.transforms import Resize, ToTensor, Compose
 
 class EuroSat(VisionDataset):
     """EuroSat Land Cover Categories.
+
     <http://madm.dfki.de/files/sentinel>
 
     Args:

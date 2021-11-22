@@ -1,3 +1,4 @@
+"""Sentinel-2 Cloud Mask Catalogue Dataset."""
 from PIL import Image
 import os
 import shutil
@@ -11,11 +12,11 @@ from .utils import _urlretrieve, _load_npy
 
 
 class Sentinel2Cloud(VisionDataset):
-    """
-    Sentinel-2 Cloud Mask Catalogue dataset.
-    classification_tags<https://zenodo.org/record/4172871/files/classification_tags.csv?download=1>
-    subscenes<https://zenodo.org/record/4172871/files/subscenes.zip?download=1>
-    masks<https://zenodo.org/record/4172871/files/masks.zip?download=1>
+    """Sentinel-2 Cloud Mask Catalogue dataset.
+    
+    classification_tags: <https://zenodo.org/record/4172871/files/classification_tags.csv?download=1>
+    subscenes: <https://zenodo.org/record/4172871/files/subscenes.zip?download=1>
+    masks: <https://zenodo.org/record/4172871/files/masks.zip?download=1>
 
     Args:
         root (string): Root directory of dataset.

@@ -1,3 +1,4 @@
+"""38-Cloud: A Cloud Segmentation Dataset."""
 # Reference https://github.com/cordmaur/38Cloud-Medium
 from PIL import Image
 from pathlib import Path

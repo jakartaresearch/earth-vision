@@ -1,4 +1,5 @@
 """Configuration file for labels, labelmap, data ids."""
+
 LABELS = ["BUILDING", "CLUTTER", "VEGETATION", "WATER", "GROUND", "CAR"]
 
 # Class to color (BGR)

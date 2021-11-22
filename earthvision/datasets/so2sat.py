@@ -1,4 +1,4 @@
-"""So2Sat Imagery"""
+"""So2Sat Dataset to Predict Local Climate Zone (LCZ)."""
 from PIL import Image
 import os
 import posixpath
@@ -11,19 +11,21 @@ from .vision import VisionDataset
 
 
 class So2Sat(VisionDataset):
-    """So2Sat Dataset to Predict Local Climate Zone (LCZ): <https://mediatum.ub.tum.de/1454690>
+    """So2Sat Dataset to Predict Local Climate Zone (LCZ): 
+    
+    <https://mediatum.ub.tum.de/1454690>
 
     Args:
-    root (string): Root directory of dataset.
-    train (bool, optional): If True, creates dataset from training set, otherwise
-        creates from validation set.
-    transform (callable, optional): A function/transform that  takes in an PIL image and
-        returns a transformed version. E.g, transforms.RandomCrop
-    target_transform (callable, optional): A function/transform that takes in the
-        target and transforms it.
-    download (bool, optional): If true, downloads the dataset from the internet and
-        puts it in root directory. If dataset is already downloaded, it is not
-        downloaded again.
+        root (string): Root directory of dataset.
+        train (bool, optional): If True, creates dataset from training set, otherwise
+            creates from validation set.
+        transform (callable, optional): A function/transform that  takes in an PIL image and
+            returns a transformed version. E.g, transforms.RandomCrop
+        target_transform (callable, optional): A function/transform that takes in the
+            target and transforms it.
+        download (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
     """
 
     mirrors = "https://dataserv.ub.tum.de/s/m1454690/download?path=/&files="
