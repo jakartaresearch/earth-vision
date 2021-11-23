@@ -1,3 +1,4 @@
+import os
 from setuptools import setup, find_packages
 
 with open('README.md', encoding='utf8') as f:
@@ -6,7 +7,12 @@ with open('README.md', encoding='utf8') as f:
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
-version = '0.0.5'
+cwd = os.path.dirname(os.path.abspath(__file__))
+version_txt = os.path.join(cwd, "version.txt")
+
+with open(version_txt) as f:
+    version = f.readline().strip()
+
 download_url = f'https://github.com/jakartaresearch/earth-vision/archive/v{version}.tar.gz'
 
 setup(
@@ -31,8 +37,8 @@ setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
 )
