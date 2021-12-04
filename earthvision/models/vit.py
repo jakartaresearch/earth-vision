@@ -1,20 +1,16 @@
 """Inspired by huggingface vision transformers"""
 import math
 import torch
-import collections.abc
 from torch import nn
+from .utils import to_2tuple
+from transformers import ViTConfig
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import BaseModelOutput, BaseModelOutputWithPooling, SequenceClassifierOutput
+from transformers.modeling_utils import PreTrainedModel, find_pruneable_heads_and_indices, prune_linear_layer
+
 
 __all__ = ["VisionTransformers"]
 
-# Inspired by
-# https://github.com/rwightman/pytorch-image-models/blob/b9bd960a032c75ca6b808ddeed76bee5f3ed4972/timm/models/layers/helpers.py
-# From PyTorch internals
-def to_2tuple(x):
-    if isinstance(x, collections.abc.Iterable):
-        return x
-    return (x, x)
 
 class ViTEmbeddings(nn.Module):
     """
@@ -86,6 +82,7 @@ class ViTEmbeddings(nn.Module):
 
         return embeddings
 
+
 class PatchEmbeddings(nn.Module):
     """
     Image to Patch Embedding.
@@ -113,6 +110,7 @@ class PatchEmbeddings(nn.Module):
         x = self.projection(pixel_values).flatten(2).transpose(1, 2)
         return x
 
+
 class ViTSelfOutput(nn.Module):
     """
     The residual connection is defined in ViTLayer instead of here (as is the case with other models), due to the
@@ -130,6 +128,7 @@ class ViTSelfOutput(nn.Module):
         hidden_states = self.dropout(hidden_states)
 
         return hidden_states
+
 
 class ViTSelfAttention(nn.Module):
     def __init__(self, config):
@@ -188,6 +187,7 @@ class ViTSelfAttention(nn.Module):
 
         return outputs
 
+
 class ViTAttention(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -221,6 +221,7 @@ class ViTAttention(nn.Module):
         outputs = (attention_output,) + self_outputs[1:]  # add attentions if we output them
         return outputs
 
+
 class ViTIntermediate(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -237,6 +238,7 @@ class ViTIntermediate(nn.Module):
 
         return hidden_states
 
+
 class ViTOutput(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -250,6 +252,7 @@ class ViTOutput(nn.Module):
         hidden_states = hidden_states + input_tensor
 
         return hidden_states
+
 
 class ViTLayer(nn.Module):
     """This corresponds to the Block class in the timm implementation."""
@@ -297,6 +300,7 @@ class ViTLayer(nn.Module):
         intermediate_output = self.intermediate(attention_output)
         layer_output = self.output(intermediate_output)
         return layer_output
+
 
 class ViTEncoder(nn.Module):
     def __init__(self, config):
@@ -354,8 +358,6 @@ class ViTEncoder(nn.Module):
             attentions=all_self_attentions,
         )
 
-from transformers.modeling_utils import PreTrainedModel, find_pruneable_heads_and_indices, prune_linear_layer
-from transformers import ViTConfig
 
 class ViTPreTrainedModel(PreTrainedModel):
     """
@@ -400,6 +402,7 @@ class ViTPooler(nn.Module):
         pooled_output = self.dense(first_token_tensor)
         pooled_output = self.activation(pooled_output)
         return pooled_output
+
 
 class ViTModel(ViTPreTrainedModel):
     def __init__(self, config, add_pooling_layer=True):
@@ -476,6 +479,7 @@ class ViTModel(ViTPreTrainedModel):
             hidden_states=encoder_outputs.hidden_states,
             attentions=encoder_outputs.attentions,
         )
+
 
 class VisionTransformers(nn.Module):
     def __init__(self, num_labels, pretrained: bool):

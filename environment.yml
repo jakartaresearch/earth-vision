@@ -25,3 +25,4 @@ dependencies:
       - beautifulsoup4>=4.9.3
       - scikit-image>=0.18.2
       - spectral>=0.22.2
+      - transformers=4.2.15

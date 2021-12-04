@@ -2,6 +2,7 @@ import os
 import warnings
 import torch
 import gdown
+import collections.abc
 
 ENV_TORCH_HOME = "TORCH_HOME"
 ENV_XDG_CACHE_HOME = "XDG_CACHE_HOME"
@@ -68,3 +69,11 @@ def load_state_dict_from_url(url, model_dir=None, map_location=None):
     if not os.path.exists(cached_file):
         gdown.download(url[0], cached_file, quiet=False)
     return torch.load(cached_file, map_location=map_location)
+
+# Inspired by
+# https://github.com/rwightman/pytorch-image-models/blob/b9bd960a032c75ca6b808ddeed76bee5f3ed4972/timm/models/layers/helpers.py
+# From PyTorch internals
+def to_2tuple(x):
+    if isinstance(x, collections.abc.Iterable):
+        return x
+    return (x, x)
