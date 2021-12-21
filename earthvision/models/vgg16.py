@@ -1,8 +1,8 @@
 from torch import nn
 from typing import Any
 from torchvision.models import VGG
-from torchvision.models.vgg import make_layers, cfgs
 from .utils import load_state_dict_from_url
+from torchvision.models.vgg import make_layers, cfgs
 
 __all__ = ['VGG', 'vgg16']
 
@@ -31,3 +31,14 @@ def _vgg(arch: str, cfg: str, batch_norm: bool, pretrained: bool, progress: bool
                                               progress=progress)
         model.load_state_dict(state_dict)
     return model
+
+def vgg16(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> VGG16:
+    r"""VGG 16-layer model (configuration "D")
+    `"Very Deep Convolutional Networks For Large-Scale Image Recognition" <https://arxiv.org/pdf/1409.1556.pdf>`_.
+    The required minimum input size of the model is 32x32.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    return _vgg('vgg16', 'D', False, pretrained, progress, **kwargs)
