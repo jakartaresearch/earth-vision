@@ -11,7 +11,7 @@ __all__ = ['VGG', 'vgg16']
 
 model_urls = {
     "vgg16": (
-        "https://drive.google.com/uc?id=1XW0iB-068A-knPXgZL3gSjvgDXjymy0Q",
+        "https://drive.google.com/uc?id=1fxw_aFVAI7Z-XxmFjp-q0XapWyrBMYdA",
         "resisc45_vgg16.pth",
     )
 }
