@@ -1,0 +1,1 @@
+from earthvision.models import resisc45

@@ -25,6 +25,7 @@ GDAL is actually a C++ library with python bindings. That means it relies on und
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor, Compose, Normalize
 from earthvision.datasets import RESISC45
+from earthvision.models.resisc45 import regnet_y_400mf
 
 # Transformation
 preprocess = Compose([ToTensor(), 
@@ -34,10 +35,10 @@ preprocess = Compose([ToTensor(),
 # Dataset and Dataloader
 dataset = RESISC45(root='../dataset', transform=preprocess, download=True)
 dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
-```
 
-## Features In Progress
-- Pretrained model for `earthvision.datasets`
+# Model
+model = regnet_y_400mf(pretrained=True)
+```
 
 ## Features Plans
 Feel free to suggest features you would like to see by __opening an issue__.
