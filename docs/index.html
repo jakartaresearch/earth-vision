@@ -26,13 +26,21 @@
 <h2 id="objective">Objective</h2>
 <p>To ease researcher to run ML pipelines for AI or Deep Learning Applications in solving Earth Observation (EO) tasks.</p>
 <h2 id="installation">Installation</h2>
+<p>We recommend Anaconda as Python package management system and using Python 3.9.</p>
+<p>pip:</p>
 <pre><code>pip install earth-vision
+conda install gdal
 </code></pre>
+<p>From source:</p>
+<pre><code>python setup.py install
+conda install gdal
+</code></pre>
+<p>GDAL is actually a C++ library with python bindings. That means it relies on underlying C++ code and the package must be built/compiled in a certain manner to be usable with Python. So, we prefer to install it from Anaconda.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-python">
-from torch.utils.data import DataLoader
+<pre><code class="language-python">from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor, Compose, Normalize
 from earthvision.datasets import RESISC45
+from earthvision.models.resisc45 import regnet_y_400mf
 
 # Transformation
 preprocess = Compose([ToTensor(), 
@@ -42,11 +50,10 @@ preprocess = Compose([ToTensor(),
 # Dataset and Dataloader
 dataset = RESISC45(root='../dataset', transform=preprocess, download=True)
 dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+# Model
+model = regnet_y_400mf(pretrained=True)
 </code></pre>
-<h2 id="features-in-progress">Features In Progress</h2>
-<ul>
-<li>Pretrained model for <code><a title="earthvision.datasets" href="datasets/index.html">earthvision.datasets</a></code></li>
-</ul>
 <h2 id="features-plans">Features Plans</h2>
 <p>Feel free to suggest features you would like to see by <strong>opening an issue</strong>.</p>
 <ul>
@@ -62,7 +69,8 @@ dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 &#34;&#34;&#34;
 
 from earthvision import constants
-from earthvision import datasets</code></pre>
+from earthvision import datasets
+from earthvision import models</code></pre>
 </details>
 </section>
 <section>
@@ -96,7 +104,6 @@ from earthvision import datasets</code></pre>
 <li><a href="#objective">Objective</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#example">Example</a></li>
-<li><a href="#features-in-progress">Features In Progress</a></li>
 <li><a href="#features-plans">Features Plans</a></li>
 </ul>
 </div>
