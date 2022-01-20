@@ -18,3 +18,4 @@ wget>=3.2
 spectral>=0.22.2
 scikit-image>=0.18.2
 beautifulsoup4>=4.9.3
+einops>=0.3.2
