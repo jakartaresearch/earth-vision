@@ -10,3 +10,6 @@
 | CoAtNet-0 | 16 | 20 | Adam | 1e-4 | 0.138 | 0.955 | 0.632 | 0.858 | 0.608 | 0.860 |
 | Vision Transformers | 35 | 110 | Adam | 0.0001, finetuning(1e-5) | 0.001 | 1.000 | 0.007 | 0.998 | 0.005 | 1.000 |
 | VGG16 | 32 | 110 | Adam | 0.0001, finetuning(1e-5) | 0.010 | 0.996 | 0.024 | 0.993 | 0.009 | 0.997 |
+
+**Note:**
+If you want to using pre-trained model with Vision Transformers architecture, please read in this [link](https://github.com/jakartaresearch/earth-vision/blob/model/vit/earthvision/models/how_to_use_vit.md) for how to use it.
